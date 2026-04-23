@@ -6,10 +6,7 @@
   <title>Ami Lesson Booking</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       padding: 20px;
@@ -17,12 +14,7 @@
       background: #f7f7f7;
       color: #222;
     }
-
-    .container {
-      max-width: 420px;
-      margin: 0 auto;
-    }
-
+    .container { max-width: 420px; margin: 0 auto; }
     .card {
       background: #fff;
       border-radius: 18px;
@@ -30,25 +22,15 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
       margin-top: 20px;
     }
-
-    h1, h2 {
-      text-align: center;
-    }
-
+    h1, h2 { text-align: center; }
     p {
       font-size: 14px;
       line-height: 1.7;
       color: #666;
       text-align: center;
     }
-
-    .hidden {
-      display: none;
-    }
-
-    .lesson-button,
-    .main-button,
-    .sub-button {
+    .hidden { display: none; }
+    .lesson-button, .main-button, .sub-button {
       width: 100%;
       padding: 14px;
       border: none;
@@ -57,18 +39,14 @@
       cursor: pointer;
       margin-top: 12px;
     }
-
-    .lesson-button,
-    .main-button {
+    .lesson-button, .main-button {
       background: #06C755;
       color: #fff;
     }
-
     .sub-button {
       background: #999;
       color: #fff;
     }
-
     .lesson-name {
       font-size: 22px;
       font-weight: bold;
@@ -76,7 +54,6 @@
       text-align: center;
       margin-top: 8px;
     }
-
     .price {
       font-size: 30px;
       font-weight: bold;
@@ -84,7 +61,6 @@
       text-align: center;
       margin: 16px 0 8px;
     }
-
     select {
       width: 100%;
       padding: 14px;
@@ -94,7 +70,6 @@
       background: #fff;
       margin-top: 10px;
     }
-
     .info-box {
       background: #fafafa;
       border: 1px solid #eee;
@@ -103,13 +78,11 @@
       text-align: left;
       margin: 16px 0;
     }
-
     .info-row {
       margin-bottom: 10px;
       font-size: 15px;
       line-height: 1.6;
     }
-
     .status {
       margin-top: 14px;
       text-align: center;
@@ -117,10 +90,7 @@
       min-height: 20px;
       color: #06C755;
     }
-
-    .error {
-      color: #d93025;
-    }
+    .error { color: #d93025; }
   </style>
 </head>
 <body>
@@ -236,6 +206,16 @@
       el.className = isError ? "status error" : "status";
     }
 
+    function normalizeTime(time) {
+      const [hour, minute] = String(time).trim().split(":");
+      return `${String(hour).padStart(2, "0")}:${String(minute || "00").padStart(2, "0")}`;
+    }
+
+    async function fetchReserved() {
+      const res = await fetch(GAS_URL);
+      return await res.json();
+    }
+
     function selectLesson(minutes) {
       selectedMinutes = minutes;
       selectedPrice = prices[minutes];
@@ -270,16 +250,6 @@
       }
     }
 
-    async function fetchReserved() {
-      const res = await fetch(GAS_URL);
-      return await res.json();
-    }
-
-    function normalizeTime(time) {
-  const [hour, minute] = String(time).trim().split(":");
-  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-}
-
     async function generateTimeOptions(dateString) {
       const select = document.getElementById("time-select");
       const note = document.getElementById("time-note");
@@ -296,10 +266,7 @@
         const diffHours = diffMs / (1000 * 60 * 60);
 
         const alreadyReserved = reserved.some(r => {
-          const sheetDate = String(r.date).trim();
-          const sheetTime = normalizeTime(r.time);
-          const targetTime = normalizeTime(time);
-          return sheetDate === dateString && sheetTime === targetTime;
+          return String(r.date).trim() === dateString && normalizeTime(r.time) === normalizeTime(time);
         });
 
         if (diffHours >= 12 && !alreadyReserved) {
@@ -335,10 +302,7 @@
     async function isReserved(date, time) {
       const reserved = await fetchReserved();
       return reserved.some(r => {
-        const sheetDate = String(r.date).trim();
-        const sheetTime = normalizeTime(r.time);
-        const targetTime = normalizeTime(time);
-        return sheetDate === date && sheetTime === targetTime;
+        return String(r.date).trim() === date && normalizeTime(r.time) === normalizeTime(time);
       });
     }
 
