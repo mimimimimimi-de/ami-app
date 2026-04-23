@@ -31,15 +31,7 @@
       margin-top: 20px;
     }
 
-    h1 {
-      font-size: 24px;
-      margin: 0 0 12px;
-      text-align: center;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin: 0 0 12px;
+    h1, h2 {
       text-align: center;
     }
 
@@ -47,12 +39,60 @@
       font-size: 14px;
       line-height: 1.7;
       color: #666;
-      margin: 0 0 16px;
       text-align: center;
     }
 
     .hidden {
       display: none;
+    }
+
+    .lesson-button,
+    .main-button,
+    .sub-button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .lesson-button,
+    .main-button {
+      background: #06C755;
+      color: #fff;
+    }
+
+    .sub-button {
+      background: #999;
+      color: #fff;
+    }
+
+    .lesson-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #06C755;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .price {
+      font-size: 30px;
+      font-weight: bold;
+      color: #06C755;
+      text-align: center;
+      margin: 16px 0 8px;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      background: #fff;
+      margin-top: 10px;
     }
 
     .info-box {
@@ -70,77 +110,6 @@
       line-height: 1.6;
     }
 
-    .info-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .main-button,
-    .sub-button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-
-    .main-button {
-      background: #06C755;
-      color: #fff;
-    }
-
-    .sub-button {
-      background: #999;
-      color: #fff;
-    }
-
-    .lesson-button {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      font-size: 18px;
-      cursor: pointer;
-      margin-top: 12px;
-      background: #06C755;
-      color: #fff;
-    }
-
-    select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      background: #fff;
-      margin-top: 10px;
-    }
-
-    .price {
-      font-size: 30px;
-      font-weight: bold;
-      color: #06C755;
-      text-align: center;
-      margin: 16px 0 8px;
-    }
-
-    .lesson-name {
-      font-size: 22px;
-      font-weight: bold;
-      color: #06C755;
-      text-align: center;
-      margin-top: 8px;
-    }
-
-    .small-note {
-      font-size: 13px;
-      color: #888;
-      text-align: center;
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-
     .status {
       margin-top: 14px;
       text-align: center;
@@ -152,91 +121,45 @@
     .error {
       color: #d93025;
     }
-
-    .success {
-      color: #06C755;
-    }
-
-    .header-badge {
-      display: inline-block;
-      background: #eafaf0;
-      color: #06C755;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 13px;
-      margin: 0 auto 14px;
-    }
-
-    .center {
-      text-align: center;
-    }
   </style>
 </head>
 <body>
   <div class="container">
 
-    <!-- 1. トップ -->
     <div class="card" id="page-top">
-      <div class="center">
-        <div class="header-badge">Ami Lesson Booking</div>
-      </div>
       <h1>レッスンを選んでください</h1>
       <p>ご希望のレッスン時間を選んでください。</p>
-
       <button class="lesson-button" onclick="selectLesson(25)">25分レッスン</button>
       <button class="lesson-button" onclick="selectLesson(50)">50分レッスン</button>
-
-      <div class="small-note">
-        ※ 今はテスト版です。<br>
-        予約内容はLINE送信画面から送る形になります。
-      </div>
     </div>
 
-    <!-- 2. 料金確認 -->
     <div class="card hidden" id="page-price">
       <h2>料金の確認</h2>
-      <p>選択したレッスン内容をご確認ください。</p>
-
       <div class="lesson-name" id="lesson-name-price"></div>
       <div class="price" id="lesson-price"></div>
-
-      <div class="small-note">
-        ※ 今は仮の料金を表示しています
-      </div>
-
       <button class="sub-button" onclick="goToPage('page-top')">戻る</button>
       <button class="main-button" onclick="showDatePage()">次へ</button>
     </div>
 
-    <!-- 3. 日付選択 -->
     <div class="card hidden" id="page-date">
       <h2>日付を選んでください</h2>
       <p>今日以降の7日分から選べます。</p>
-
       <select id="date-select"></select>
-
       <button class="sub-button" onclick="goToPage('page-price')">戻る</button>
       <button class="main-button" onclick="showTimePage()">次へ</button>
     </div>
 
-    <!-- 4. 時間選択 -->
     <div class="card hidden" id="page-time">
       <h2>時間を選んでください</h2>
       <p>12時間前を過ぎた時間は表示されません。</p>
-
       <select id="time-select"></select>
-
-      <div class="small-note" id="time-note"></div>
-
+      <p id="time-note"></p>
       <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
       <button class="main-button" onclick="showConfirmPage()">次へ</button>
     </div>
 
-    <!-- 5. 最終確認 -->
     <div class="card hidden" id="page-confirm">
       <h2>予約内容の最終確認</h2>
-      <p>この内容でLINEの送信画面を開きます。</p>
-
       <div class="info-box">
         <div class="info-row"><strong>レッスン:</strong> <span id="confirm-lesson"></span></div>
         <div class="info-row"><strong>料金:</strong> <span id="confirm-price"></span></div>
@@ -245,7 +168,7 @@
       </div>
 
       <button class="sub-button" onclick="goToPage('page-time')">戻る</button>
-      <button class="main-button" onclick="sendReservationToLine()">LINEで送る</button>
+      <button class="main-button" onclick="goToCheckout()">決済に進む</button>
 
       <div class="status" id="status-message"></div>
     </div>
@@ -260,13 +183,11 @@
     let selectedDate = null;
     let selectedTime = null;
 
-    // ここはあとで生徒ごとの料金に変えられる
     const prices = {
       25: "$10",
       50: "$18"
     };
 
-    // 仮の時間枠
     const baseTimeSlots = [
       "09:00",
       "10:00",
@@ -284,7 +205,6 @@
     async function initializeLiff() {
       try {
         await liff.init({ liffId: LIFF_ID });
-
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
@@ -312,16 +232,14 @@
       const el = document.getElementById("status-message");
       if (!el) return;
       el.textContent = message;
-      el.className = isError ? "status error" : "status success";
+      el.className = isError ? "status error" : "status";
     }
 
     function selectLesson(minutes) {
       selectedMinutes = minutes;
       selectedPrice = prices[minutes];
-
       document.getElementById("lesson-name-price").textContent = `${minutes}分レッスン`;
       document.getElementById("lesson-price").textContent = selectedPrice;
-
       goToPage("page-price");
     }
 
@@ -368,7 +286,6 @@
       baseTimeSlots.forEach(time => {
         const [hour, minute] = time.split(":").map(Number);
         const lessonDateTime = new Date(`${dateString}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00`);
-
         const diffMs = lessonDateTime.getTime() - now.getTime();
         const diffHours = diffMs / (1000 * 60 * 60);
 
@@ -413,40 +330,33 @@
       goToPage("page-confirm");
     }
 
-    async function sendReservationToLine() {
+    async function goToCheckout() {
       try {
         setStatus("");
 
-        const messageText =
-`予約希望です
+        const response = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            lessonType: selectedMinutes,
+            selectedDate,
+            selectedTime,
+          }),
+        });
 
-レッスン: ${selectedMinutes}分
-料金: ${selectedPrice}
-日付: ${selectedDate}
-時間: ${selectedTime}
+        const data = await response.json();
 
-よろしくお願いします。`;
-
-        if (!liff.isApiAvailable("shareTargetPicker")) {
-          setStatus("この環境では送信画面を開けません。LINEアプリ内で開いてください。", true);
+        if (!response.ok) {
+          setStatus("決済ページを開けませんでした。", true);
           return;
         }
 
-        const result = await liff.shareTargetPicker([
-          {
-            type: "text",
-            text: messageText
-          }
-        ]);
-
-        if (result) {
-          setStatus("送信画面を開きました。送信先を選んで送ってください。");
-        } else {
-          setStatus("送信がキャンセルされました。", true);
-        }
+        window.location.href = data.url;
       } catch (error) {
         console.error(error);
-        setStatus("送信画面を開けませんでした。設定を確認してください。", true);
+        setStatus("エラーが発生しました。", true);
       }
     }
 
