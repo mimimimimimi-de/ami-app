@@ -14,36 +14,20 @@ module.exports = async (req, res) => {
     let lessonLabel = "";
     let priceLabel = "";
 
-    if (lessonType === 25) {
-      unitAmount = 1000; // $10.00
+    // 👇 テスト用の安い金額（ここ重要）
+    if (lessonType == 25) {
+      unitAmount = 50; // $0.50
       lessonLabel = "25分レッスン";
-      priceLabel = "$10";
-    } else if (lessonType === 50) {
-      unitAmount = 1800; // $18.00
+      priceLabel = "$0.50";
+    } else if (lessonType == 50) {
+      unitAmount = 100; // $1.00
       lessonLabel = "50分レッスン";
-      priceLabel = "$18";
+      priceLabel = "$1.00";
     } else {
       return res.status(400).json({ error: "Invalid lesson type" });
     }
 
     const origin = req.headers.origin || "https://ami-app-eta.vercel.app";
-
-    // 先にスプレッドシートへ仮保存
-    await fetch("https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: "LINEユーザー",
-        date: selectedDate,
-        time: selectedTime,
-        lesson: lessonLabel,
-        price: priceLabel,
-        email: "",
-        status: "決済前"
-      })
-    });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -60,11 +44,12 @@ module.exports = async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/success.html`,
       cancel_url: `${origin}/cancel.html`,
     });
 
     return res.status(200).json({ url: session.url });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({
