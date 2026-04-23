@@ -96,6 +96,24 @@
       margin-bottom: 10px;
       font-size: 16px;
     }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-top: 16px;
+      resize: vertical;
+    }
+
+    .success {
+      color: #06C755;
+      font-weight: bold;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
@@ -164,7 +182,20 @@
     </div>
 
     <button onclick="backToTimePage()" class="sub-button">戻る</button>
-    <button onclick="completeReservation()">この内容で予約する</button>
+    <button onclick="showReservationMessagePage()">この内容で予約する</button>
+  </div>
+
+  <!-- 7: 送信用メッセージ -->
+  <div class="card hidden" id="page-message">
+    <h1>予約内容を送ってください</h1>
+    <p>下の内容をコピーして、LINEで送信してください。</p>
+
+    <textarea id="reservation-message" readonly></textarea>
+
+    <button onclick="copyReservationMessage()">予約内容をコピー</button>
+    <button onclick="backToFinalConfirm()" class="sub-button">戻る</button>
+
+    <div class="success" id="copy-success"></div>
   </div>
 
   <script>
@@ -196,6 +227,7 @@
       document.getElementById("page-date").classList.add("hidden");
       document.getElementById("page-time").classList.add("hidden");
       document.getElementById("page-final-confirm").classList.add("hidden");
+      document.getElementById("page-message").classList.add("hidden");
     }
 
     function selectLesson(minutes) {
@@ -304,15 +336,35 @@
       document.getElementById("page-time").classList.remove("hidden");
     }
 
-    function completeReservation() {
-      alert(
-        "予約内容\n\n" +
-        "レッスン: " + selectedMinutes + "分\n" +
-        "料金: " + selectedPrice + "\n" +
-        "日付: " + selectedDate + "\n" +
-        "時間: " + selectedTime + "\n\n" +
-        "この次に決済画面へ進みます。"
-      );
+    function showReservationMessagePage() {
+      const message =
+`予約希望です
+
+レッスン: ${selectedMinutes}分
+料金: ${selectedPrice}
+日付: ${selectedDate}
+時間: ${selectedTime}
+
+よろしくお願いします。`;
+
+      document.getElementById("reservation-message").value = message;
+      document.getElementById("copy-success").textContent = "";
+
+      hideAllPages();
+      document.getElementById("page-message").classList.remove("hidden");
+    }
+
+    function backToFinalConfirm() {
+      hideAllPages();
+      document.getElementById("page-final-confirm").classList.remove("hidden");
+    }
+
+    function copyReservationMessage() {
+      const textarea = document.getElementById("reservation-message");
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      document.getElementById("copy-success").textContent = "コピーしました！LINEに貼り付けて送ってください。";
     }
   </script>
 </body>
