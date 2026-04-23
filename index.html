@@ -151,7 +151,7 @@
 
     <div class="card hidden" id="page-time">
       <h2>時間を選んでください</h2>
-      <p>12時間前を過ぎた時間は表示されません。</p>
+      <p>12時間前を過ぎた時間と、予約済みの時間は選べません。</p>
       <select id="time-select"></select>
       <p id="time-note"></p>
       <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
@@ -177,6 +177,7 @@
 
   <script>
     const LIFF_ID = "2009874208-p2dHU5i2";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKmQCdsQa7Yjwxdgsh7BUur6BjhK211-j_4Es0UWy7-fV5h0mLOVsOXbRTTjup1WeQEA/exec";
 
     let selectedMinutes = null;
     let selectedPrice = null;
@@ -269,18 +270,18 @@
       }
     }
 
-    function showTimePage() {
-      selectedDate = document.getElementById("date-select").value;
-      generateTimeOptions(selectedDate);
-      goToPage("page-time");
+    async function fetchReserved() {
+      const res = await fetch(GAS_URL);
+      return await res.json();
     }
 
-    function generateTimeOptions(dateString) {
+    async function generateTimeOptions(dateString) {
       const select = document.getElementById("time-select");
       const note = document.getElementById("time-note");
       select.innerHTML = "";
 
       const now = new Date();
+      const reserved = await fetchReserved();
       const availableSlots = [];
 
       baseTimeSlots.forEach(time => {
@@ -289,7 +290,13 @@
         const diffMs = lessonDateTime.getTime() - now.getTime();
         const diffHours = diffMs / (1000 * 60 * 60);
 
-        if (diffHours >= 12) {
+        const alreadyReserved = reserved.some(r => {
+          const sheetDate = String(r.date).trim();
+          const sheetTime = String(r.time).trim();
+          return sheetDate === dateString && sheetTime === time;
+        });
+
+        if (diffHours >= 12 && !alreadyReserved) {
           availableSlots.push(time);
         }
       });
@@ -299,7 +306,7 @@
         option.value = "";
         option.textContent = "選べる時間がありません";
         select.appendChild(option);
-        note.textContent = "この日は12時間前ルールにより選択できる時間がありません。";
+        note.textContent = "この日は予約可能な時間がありません。";
         return;
       }
 
@@ -313,12 +320,32 @@
       note.textContent = `${dateString} の予約可能時間です。`;
     }
 
-    function showConfirmPage() {
+    async function showTimePage() {
+      selectedDate = document.getElementById("date-select").value;
+      await generateTimeOptions(selectedDate);
+      goToPage("page-time");
+    }
+
+    async function isReserved(date, time) {
+      const reserved = await fetchReserved();
+      return reserved.some(r => {
+        const sheetDate = String(r.date).trim();
+        const sheetTime = String(r.time).trim();
+        return sheetDate === date && sheetTime === time;
+      });
+    }
+
+    async function showConfirmPage() {
       selectedDate = document.getElementById("date-select").value;
       selectedTime = document.getElementById("time-select").value;
 
       if (!selectedTime) {
         alert("選べる時間がありません。別の日付を選んでください。");
+        return;
+      }
+
+      if (await isReserved(selectedDate, selectedTime)) {
+        alert("この時間はすでに予約されています。別の時間を選んでください。");
         return;
       }
 
@@ -333,6 +360,16 @@
     async function goToCheckout() {
       try {
         setStatus("");
+
+        if (await isReserved(selectedDate, selectedTime)) {
+          alert("この時間はすでに予約されています。別の時間を選んでください。");
+          goToPage("page-time");
+          return;
+        }
+
+        localStorage.setItem("selectedDate", selectedDate);
+        localStorage.setItem("selectedTime", selectedTime);
+        localStorage.setItem("lessonType", selectedMinutes);
 
         const response = await fetch("/api/create-checkout-session", {
           method: "POST",
