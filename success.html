@@ -32,3 +32,32 @@
   </div>
 </body>
 </html>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+
+const date = localStorage.getItem("selectedDate");
+const time = localStorage.getItem("selectedTime");
+const lesson = localStorage.getItem("lessonType");
+
+let lessonLabel = lesson == 50 ? "50分レッスン" : "25分レッスン";
+let priceLabel = lesson == 50 ? "$18" : "$10";
+
+fetch("https://script.google.com/macros/s/AKfycbxGcTGhgTTfa3ImilpdlkL0B8qUZFf_5XpLWItGRw8hQHWVBVoGtgdMosS3UZ_G4Kk_zg/exec", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "LINEユーザー",
+    date: date,
+    time: time,
+    lesson: lessonLabel,
+    price: priceLabel,
+    email: "",
+    status: "予約確定"
+  })
+})
+.then(res => res.text())
+.then(data => console.log("保存成功:", data))
+.catch(err => console.error("保存エラー:", err));
+</script>
