@@ -8,7 +8,7 @@
     body {
       font-family: sans-serif;
       text-align: center;
-      padding: 24px;
+      padding: 20px;
       background: #f7f7f7;
       margin: 0;
     }
@@ -16,7 +16,7 @@
     .card {
       background: white;
       max-width: 420px;
-      margin: 30px auto;
+      margin: 24px auto;
       padding: 24px;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -29,8 +29,8 @@
 
     p {
       color: #555;
-      margin-bottom: 20px;
       line-height: 1.6;
+      margin-bottom: 20px;
     }
 
     button {
@@ -56,7 +56,7 @@
     .lesson-info {
       font-size: 22px;
       font-weight: bold;
-      margin: 20px 0 10px;
+      margin: 16px 0 10px;
       color: #06C755;
     }
 
@@ -80,106 +80,159 @@
       border-radius: 12px;
       border: 1px solid #ccc;
       margin-top: 12px;
+      background: white;
+    }
+
+    .summary-box {
+      text-align: left;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .summary-box div {
+      margin-bottom: 10px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <!-- 1ページ目 -->
+
+  <!-- 1: レッスン選択 -->
   <div class="card" id="page-select">
     <h1>レッスンを選んでください</h1>
     <p>ご希望のレッスン時間を選んでください。</p>
-
     <button onclick="selectLesson(25)">25分レッスン</button>
     <button onclick="selectLesson(50)">50分レッスン</button>
   </div>
 
-  <!-- 2ページ目 -->
-  <div class="card hidden" id="page-confirm">
+  <!-- 2: レッスン確認 -->
+  <div class="card hidden" id="page-confirm-lesson">
     <h1>選択内容の確認</h1>
     <p>選択したレッスンは以下です。</p>
-
     <div class="lesson-info" id="selected-lesson"></div>
-
     <button onclick="backToSelect()" class="sub-button">戻る</button>
-    <button onclick="showPrice()">次へ</button>
+    <button onclick="showPricePage()">次へ</button>
   </div>
 
-  <!-- 3ページ目 -->
+  <!-- 3: 料金表示 -->
   <div class="card hidden" id="page-price">
     <h1>料金の確認</h1>
     <p>選択したレッスンの料金です。</p>
-
     <div class="lesson-info" id="price-lesson"></div>
     <div class="price-info" id="selected-price"></div>
     <div class="note">※ 今は仮の料金を表示しています</div>
-
-    <button onclick="backToConfirm()" class="sub-button">戻る</button>
-    <button onclick="showDatePage()">この内容で進む</button>
+    <button onclick="backToLessonConfirm()" class="sub-button">戻る</button>
+    <button onclick="showDatePage()">次へ</button>
   </div>
 
-  <!-- 4ページ目 -->
+  <!-- 4: 日付選択 -->
   <div class="card hidden" id="page-date">
     <h1>日付を選んでください</h1>
     <p>ご希望の日付を選択してください。</p>
-
     <div class="lesson-info" id="date-lesson"></div>
     <div class="price-info" id="date-price"></div>
-
     <select id="date-select"></select>
+    <button onclick="backToPricePage()" class="sub-button">戻る</button>
+    <button onclick="showTimePage()">次へ</button>
+  </div>
 
-    <button onclick="backToPrice()" class="sub-button">戻る</button>
-    <button onclick="confirmDate()">この日付で進む</button>
+  <!-- 5: 時間選択 -->
+  <div class="card hidden" id="page-time">
+    <h1>時間を選んでください</h1>
+    <p>ご希望の時間を選択してください。</p>
+    <div class="lesson-info" id="time-lesson"></div>
+    <div class="price-info" id="time-price"></div>
+    <div id="time-date" class="note"></div>
+    <select id="time-select"></select>
+    <button onclick="backToDatePage()" class="sub-button">戻る</button>
+    <button onclick="showFinalConfirmPage()">次へ</button>
+  </div>
+
+  <!-- 6: 最終確認 -->
+  <div class="card hidden" id="page-final-confirm">
+    <h1>予約内容の最終確認</h1>
+    <p>以下の内容でよろしいですか？</p>
+
+    <div class="summary-box">
+      <div><strong>レッスン:</strong> <span id="final-lesson"></span></div>
+      <div><strong>料金:</strong> <span id="final-price"></span></div>
+      <div><strong>日付:</strong> <span id="final-date"></span></div>
+      <div><strong>時間:</strong> <span id="final-time"></span></div>
+    </div>
+
+    <button onclick="backToTimePage()" class="sub-button">戻る</button>
+    <button onclick="completeReservation()">この内容で予約する</button>
   </div>
 
   <script>
     let selectedMinutes = null;
     let selectedPrice = null;
     let selectedDate = null;
+    let selectedTime = null;
 
     const prices = {
       25: "$10",
       50: "$18"
     };
 
+    const timeSlots = [
+      "09:00",
+      "10:00",
+      "11:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00"
+    ];
+
+    function hideAllPages() {
+      document.getElementById("page-select").classList.add("hidden");
+      document.getElementById("page-confirm-lesson").classList.add("hidden");
+      document.getElementById("page-price").classList.add("hidden");
+      document.getElementById("page-date").classList.add("hidden");
+      document.getElementById("page-time").classList.add("hidden");
+      document.getElementById("page-final-confirm").classList.add("hidden");
+    }
+
     function selectLesson(minutes) {
       selectedMinutes = minutes;
       selectedPrice = prices[minutes];
-
       document.getElementById("selected-lesson").textContent = minutes + "分レッスン";
-      document.getElementById("page-select").classList.add("hidden");
-      document.getElementById("page-confirm").classList.remove("hidden");
+      hideAllPages();
+      document.getElementById("page-confirm-lesson").classList.remove("hidden");
     }
 
     function backToSelect() {
-      document.getElementById("page-confirm").classList.add("hidden");
+      hideAllPages();
       document.getElementById("page-select").classList.remove("hidden");
     }
 
-    function showPrice() {
+    function showPricePage() {
       document.getElementById("price-lesson").textContent = selectedMinutes + "分レッスン";
       document.getElementById("selected-price").textContent = selectedPrice;
-
-      document.getElementById("page-confirm").classList.add("hidden");
+      hideAllPages();
       document.getElementById("page-price").classList.remove("hidden");
     }
 
-    function backToConfirm() {
-      document.getElementById("page-price").classList.add("hidden");
-      document.getElementById("page-confirm").classList.remove("hidden");
+    function backToLessonConfirm() {
+      hideAllPages();
+      document.getElementById("page-confirm-lesson").classList.remove("hidden");
     }
 
     function showDatePage() {
       document.getElementById("date-lesson").textContent = selectedMinutes + "分レッスン";
       document.getElementById("date-price").textContent = selectedPrice;
-
       generateDateOptions();
-
-      document.getElementById("page-price").classList.add("hidden");
+      hideAllPages();
       document.getElementById("page-date").classList.remove("hidden");
     }
 
-    function backToPrice() {
-      document.getElementById("page-date").classList.add("hidden");
+    function backToPricePage() {
+      hideAllPages();
       document.getElementById("page-price").classList.remove("hidden");
     }
 
@@ -204,12 +257,61 @@
       }
     }
 
-    function confirmDate() {
+    function showTimePage() {
       selectedDate = document.getElementById("date-select").value;
+
+      document.getElementById("time-lesson").textContent = selectedMinutes + "分レッスン";
+      document.getElementById("time-price").textContent = selectedPrice;
+      document.getElementById("time-date").textContent = selectedDate;
+
+      generateTimeOptions();
+
+      hideAllPages();
+      document.getElementById("page-time").classList.remove("hidden");
+    }
+
+    function backToDatePage() {
+      hideAllPages();
+      document.getElementById("page-date").classList.remove("hidden");
+    }
+
+    function generateTimeOptions() {
+      const select = document.getElementById("time-select");
+      select.innerHTML = "";
+
+      timeSlots.forEach((time) => {
+        const option = document.createElement("option");
+        option.value = time;
+        option.textContent = time;
+        select.appendChild(option);
+      });
+    }
+
+    function showFinalConfirmPage() {
+      selectedTime = document.getElementById("time-select").value;
+
+      document.getElementById("final-lesson").textContent = selectedMinutes + "分レッスン";
+      document.getElementById("final-price").textContent = selectedPrice;
+      document.getElementById("final-date").textContent = selectedDate;
+      document.getElementById("final-time").textContent = selectedTime;
+
+      hideAllPages();
+      document.getElementById("page-final-confirm").classList.remove("hidden");
+    }
+
+    function backToTimePage() {
+      hideAllPages();
+      document.getElementById("page-time").classList.remove("hidden");
+    }
+
+    function completeReservation() {
       alert(
-        selectedMinutes + "分レッスン / " +
-        selectedPrice + " / " +
-        selectedDate + " を選択しました。"
+        "予約内容\n\n" +
+        "レッスン: " + selectedMinutes + "分\n" +
+        "料金: " + selectedPrice + "\n" +
+        "日付: " + selectedDate + "\n" +
+        "時間: " + selectedTime + "\n\n" +
+        "この次に決済画面へ進みます。"
       );
     }
   </script>
