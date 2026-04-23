@@ -2,9 +2,37 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Ami App</title>
+  <title>Ami Lesson Booking</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    button {
+      width: 80%;
+      padding: 15px;
+      margin: 10px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      background-color: #06C755;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello Ami App 🚀</h1>
+
+  <h1>レッスンを選んでください</h1>
+
+  <button onclick="selectLesson(25)">25分レッスン</button>
+  <button onclick="selectLesson(50)">50分レッスン</button>
+
+  <script>
+    function selectLesson(minutes) {
+      alert(minutes + "分レッスンを選択しました！");
+    }
+  </script>
+
 </body>
 </html>
