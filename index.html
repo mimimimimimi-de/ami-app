@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ami Lesson Booking</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -97,22 +98,15 @@
       font-size: 16px;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 180px;
-      padding: 14px;
+    .status-message {
+      margin-top: 14px;
       font-size: 14px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-      margin-top: 16px;
-      resize: vertical;
+      color: #06C755;
+      min-height: 20px;
     }
 
-    .success {
-      color: #06C755;
-      font-weight: bold;
-      margin-top: 12px;
+    .error-message {
+      color: #d93025;
     }
   </style>
 </head>
@@ -182,23 +176,13 @@
     </div>
 
     <button onclick="backToTimePage()" class="sub-button">戻る</button>
-    <button onclick="showReservationMessagePage()">この内容で予約する</button>
-  </div>
-
-  <!-- 7: 送信用メッセージ -->
-  <div class="card hidden" id="page-message">
-    <h1>予約内容を送ってください</h1>
-    <p>下の内容をコピーして、LINEで送信してください。</p>
-
-    <textarea id="reservation-message" readonly></textarea>
-
-    <button onclick="copyReservationMessage()">予約内容をコピー</button>
-    <button onclick="backToFinalConfirm()" class="sub-button">戻る</button>
-
-    <div class="success" id="copy-success"></div>
+    <button onclick="sendReservationToLine()">LINEで送る</button>
+    <div class="status-message" id="status-message"></div>
   </div>
 
   <script>
+    const LIFF_ID = "YOUR_LIFF_ID_HERE";
+
     let selectedMinutes = null;
     let selectedPrice = null;
     let selectedDate = null;
@@ -220,6 +204,19 @@
       "17:00"
     ];
 
+    async function initializeLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+      } catch (error) {
+        console.error("LIFF initialization failed", error);
+      }
+    }
+
     function hideAllPages() {
       document.getElementById("page-select").classList.add("hidden");
       document.getElementById("page-confirm-lesson").classList.add("hidden");
@@ -227,7 +224,12 @@
       document.getElementById("page-date").classList.add("hidden");
       document.getElementById("page-time").classList.add("hidden");
       document.getElementById("page-final-confirm").classList.add("hidden");
-      document.getElementById("page-message").classList.add("hidden");
+    }
+
+    function setStatus(message, isError = false) {
+      const status = document.getElementById("status-message");
+      status.textContent = message;
+      status.className = isError ? "status-message error-message" : "status-message";
     }
 
     function selectLesson(minutes) {
@@ -327,6 +329,7 @@
       document.getElementById("final-date").textContent = selectedDate;
       document.getElementById("final-time").textContent = selectedTime;
 
+      setStatus("");
       hideAllPages();
       document.getElementById("page-final-confirm").classList.remove("hidden");
     }
@@ -336,8 +339,11 @@
       document.getElementById("page-time").classList.remove("hidden");
     }
 
-    function showReservationMessagePage() {
-      const message =
+    async function sendReservationToLine() {
+      try {
+        setStatus("");
+
+        const messageText =
 `予約希望です
 
 レッスン: ${selectedMinutes}分
@@ -347,25 +353,30 @@
 
 よろしくお願いします。`;
 
-      document.getElementById("reservation-message").value = message;
-      document.getElementById("copy-success").textContent = "";
+        if (!liff.isApiAvailable("shareTargetPicker")) {
+          setStatus("この環境ではLINE送信画面を開けません。LINEアプリ内でお試しください。", true);
+          return;
+        }
 
-      hideAllPages();
-      document.getElementById("page-message").classList.remove("hidden");
+        const result = await liff.shareTargetPicker([
+          {
+            type: "text",
+            text: messageText
+          }
+        ]);
+
+        if (result) {
+          setStatus("送信画面を開きました。送信先を選んで送ってください。");
+        } else {
+          setStatus("送信がキャンセルされました。", true);
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus("送信画面を開けませんでした。設定またはLIFF IDを確認してください。", true);
+      }
     }
 
-    function backToFinalConfirm() {
-      hideAllPages();
-      document.getElementById("page-final-confirm").classList.remove("hidden");
-    }
-
-    function copyReservationMessage() {
-      const textarea = document.getElementById("reservation-message");
-      textarea.select();
-      textarea.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      document.getElementById("copy-success").textContent = "コピーしました！LINEに貼り付けて送ってください。";
-    }
+    initializeLiff();
   </script>
 </body>
 </html>
