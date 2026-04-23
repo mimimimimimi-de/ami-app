@@ -30,6 +30,7 @@
     p {
       color: #555;
       margin-bottom: 20px;
+      line-height: 1.6;
     }
 
     button {
@@ -55,12 +56,26 @@
     .lesson-info {
       font-size: 22px;
       font-weight: bold;
-      margin: 20px 0;
+      margin: 20px 0 10px;
       color: #06C755;
+    }
+
+    .price-info {
+      font-size: 28px;
+      font-weight: bold;
+      color: #222;
+      margin: 16px 0;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #777;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
+  <!-- 1ページ目：レッスン選択 -->
   <div class="card" id="page-select">
     <h1>レッスンを選んでください</h1>
     <p>ご希望のレッスン時間を選んでください。</p>
@@ -69,33 +84,72 @@
     <button onclick="selectLesson(50)">50分レッスン</button>
   </div>
 
+  <!-- 2ページ目：選択内容確認 -->
   <div class="card hidden" id="page-confirm">
     <h1>選択内容の確認</h1>
     <p>選択したレッスンは以下です。</p>
 
     <div class="lesson-info" id="selected-lesson"></div>
 
-    <button onclick="goBack()" class="sub-button">戻る</button>
-    <button onclick="goNext()">次へ</button>
+    <button onclick="backToSelect()" class="sub-button">戻る</button>
+    <button onclick="showPrice()">次へ</button>
+  </div>
+
+  <!-- 3ページ目：料金表示 -->
+  <div class="card hidden" id="page-price">
+    <h1>料金の確認</h1>
+    <p>選択したレッスンの料金です。</p>
+
+    <div class="lesson-info" id="price-lesson"></div>
+    <div class="price-info" id="selected-price"></div>
+    <div class="note">※ 今は仮の料金を表示しています</div>
+
+    <button onclick="backToConfirm()" class="sub-button">戻る</button>
+    <button onclick="goNext()">この内容で進む</button>
   </div>
 
   <script>
     let selectedMinutes = null;
+    let selectedPrice = null;
+
+    // 仮の料金
+    const prices = {
+      25: "$10",
+      50: "$18"
+    };
 
     function selectLesson(minutes) {
       selectedMinutes = minutes;
+      selectedPrice = prices[minutes];
+
       document.getElementById("selected-lesson").textContent = minutes + "分レッスン";
+
       document.getElementById("page-select").classList.add("hidden");
       document.getElementById("page-confirm").classList.remove("hidden");
     }
 
-    function goBack() {
+    function backToSelect() {
       document.getElementById("page-confirm").classList.add("hidden");
       document.getElementById("page-select").classList.remove("hidden");
     }
 
+    function showPrice() {
+      document.getElementById("price-lesson").textContent = selectedMinutes + "分レッスン";
+      document.getElementById("selected-price").textContent = selectedPrice;
+
+      document.getElementById("page-confirm").classList.add("hidden");
+      document.getElementById("page-price").classList.remove("hidden");
+    }
+
+    function backToConfirm() {
+      document.getElementById("page-price").classList.add("hidden");
+      document.getElementById("page-confirm").classList.remove("hidden");
+    }
+
     function goNext() {
-      alert(selectedMinutes + "分レッスンの次の画面に進みます。");
+      alert(
+        selectedMinutes + "分レッスン / " + selectedPrice + " で次の画面に進みます。"
+      );
     }
   </script>
 </body>
