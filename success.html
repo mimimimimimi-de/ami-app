@@ -30,8 +30,11 @@
       margin-top: 16px;
       color: #06C755;
       font-weight: bold;
+      white-space: pre-line;
     }
   </style>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
   <div class="card">
@@ -42,7 +45,7 @@
   </div>
 
   <script>
-    // ★ここが超重要（最新版のGAS URL）
+    const LIFF_ID = "2009890655-jIJpN1Ya";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
     const date = localStorage.getItem("selectedDate");
@@ -53,19 +56,51 @@
     const priceLabel = lessonType == 50 ? "$18" : "$10";
 
     async function saveReservation() {
+      const statusEl = document.getElementById("status");
+
       if (!date || !time || !lessonType) {
-        document.getElementById("status").textContent = "予約情報が見つかりませんでした。先生にご連絡ください。";
+        statusEl.textContent = "予約情報が見つかりませんでした。\n先生にご連絡ください。";
         return;
       }
 
+      let lineUserId = "";
+      let displayName = "LINEユーザー";
+
+      try {
+        statusEl.textContent = "LINE情報を確認しています...";
+
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        lineUserId = profile.userId || "";
+        displayName = profile.displayName || "LINEユーザー";
+
+      } catch (error) {
+        console.error("LIFF error:", error);
+        lineUserId = "";
+        displayName = "LINEユーザー";
+      }
+
       const reservationData = {
-        lesson: lessonLabel,   // ← GASと一致させてる
+        name: displayName,
+        lineUserId: lineUserId,
         date: date,
         time: time,
-        price: priceLabel
+        lesson: lessonLabel,
+        lessonName: lessonLabel,
+        price: priceLabel,
+        email: "",
+        status: "予約確定"
       };
 
       try {
+        statusEl.textContent = "予約内容を保存しています...";
+
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
@@ -75,10 +110,15 @@
           body: JSON.stringify(reservationData)
         });
 
-        document.getElementById("status").textContent = "予約を保存しました。";
+        statusEl.textContent = "予約を保存しました。\nLINEに予約完了メッセージを送信しました。";
+
+        localStorage.removeItem("selectedDate");
+        localStorage.removeItem("selectedTime");
+        localStorage.removeItem("lessonType");
+
       } catch (error) {
         console.error(error);
-        document.getElementById("status").textContent = "保存に失敗しました。先生にご連絡ください。";
+        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
       }
     }
 
