@@ -11,7 +11,6 @@
       padding: 40px;
       background: #f7f7f7;
     }
-
     .card {
       background: white;
       max-width: 420px;
@@ -20,16 +19,13 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-
     h1 {
       color: #06C755;
     }
-
     p {
       color: #555;
       line-height: 1.7;
     }
-
     .status {
       margin-top: 16px;
       color: #06C755;
@@ -56,21 +52,29 @@
     const priceLabel = lessonType == 50 ? "$18" : "$10";
 
     async function saveReservation() {
+      if (!date || !time || !lessonType) {
+        document.getElementById("status").textContent = "予約情報が見つかりませんでした。先生にご連絡ください。";
+        return;
+      }
+
+      const reservationData = {
+        name: "LINEユーザー",
+        date: date,
+        time: time,
+        lesson: lessonLabel,
+        price: priceLabel,
+        email: "",
+        status: "予約確定"
+      };
+
       try {
         await fetch(GAS_URL, {
           method: "POST",
+          mode: "no-cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain"
           },
-          body: JSON.stringify({
-            name: "LINEユーザー",
-            date: date,
-            time: time,
-            lesson: lessonLabel,
-            price: priceLabel,
-            email: "",
-            status: "予約確定"
-          })
+          body: JSON.stringify(reservationData)
         });
 
         document.getElementById("status").textContent = "予約を保存しました。";
