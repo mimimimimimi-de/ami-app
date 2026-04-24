@@ -42,7 +42,8 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKmQCdsQa7Yjwxdgsh7BUur6BjhK211-j_4Es0UWy7-fV5h0mLOVsOXbRTTjup1WeQEA/exec";
+    // ★ここが超重要（最新版のGAS URL）
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
     const date = localStorage.getItem("selectedDate");
     const time = localStorage.getItem("selectedTime");
@@ -53,20 +54,15 @@
 
     async function saveReservation() {
       if (!date || !time || !lessonType) {
-        document.getElementById("status").textContent =
-          "予約情報が見つかりませんでした。先生にご連絡ください。";
+        document.getElementById("status").textContent = "予約情報が見つかりませんでした。先生にご連絡ください。";
         return;
       }
 
       const reservationData = {
-        name: "LINEユーザー",
+        lesson: lessonLabel,   // ← GASと一致させてる
         date: date,
         time: time,
-        lesson: lessonLabel,
-        lessonName: lessonLabel,
-        price: priceLabel,
-        email: "",
-        status: "予約確定"
+        price: priceLabel
       };
 
       try {
@@ -79,17 +75,10 @@
           body: JSON.stringify(reservationData)
         });
 
-        document.getElementById("status").textContent =
-          "予約を保存しました。";
-
-        localStorage.removeItem("selectedDate");
-        localStorage.removeItem("selectedTime");
-        localStorage.removeItem("lessonType");
-
+        document.getElementById("status").textContent = "予約を保存しました。";
       } catch (error) {
         console.error(error);
-        document.getElementById("status").textContent =
-          "保存に失敗しました。先生にご連絡ください。";
+        document.getElementById("status").textContent = "保存に失敗しました。先生にご連絡ください。";
       }
     }
 
