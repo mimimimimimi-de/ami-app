@@ -12,17 +12,13 @@ module.exports = async (req, res) => {
 
     let unitAmount = 0;
     let lessonLabel = "";
-    let priceLabel = "";
 
-    // 🟢 本番価格
     if (lessonType == 25) {
-      unitAmount = 1000; // $10.00
+      unitAmount = 1000; // $10
       lessonLabel = "25分レッスン";
-      priceLabel = "$10";
     } else if (lessonType == 50) {
-      unitAmount = 1800; // $18.00
+      unitAmount = 1800; // $18
       lessonLabel = "50分レッスン";
-      priceLabel = "$18";
     } else {
       return res.status(400).json({ error: "Invalid lesson type" });
     }
