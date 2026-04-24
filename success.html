@@ -53,7 +53,8 @@
 
     async function saveReservation() {
       if (!date || !time || !lessonType) {
-        document.getElementById("status").textContent = "予約情報が見つかりませんでした。先生にご連絡ください。";
+        document.getElementById("status").textContent =
+          "予約情報が見つかりませんでした。先生にご連絡ください。";
         return;
       }
 
@@ -62,6 +63,7 @@
         date: date,
         time: time,
         lesson: lessonLabel,
+        lessonName: lessonLabel,
         price: priceLabel,
         email: "",
         status: "予約確定"
@@ -77,10 +79,17 @@
           body: JSON.stringify(reservationData)
         });
 
-        document.getElementById("status").textContent = "予約を保存しました。";
+        document.getElementById("status").textContent =
+          "予約を保存しました。";
+
+        localStorage.removeItem("selectedDate");
+        localStorage.removeItem("selectedTime");
+        localStorage.removeItem("lessonType");
+
       } catch (error) {
         console.error(error);
-        document.getElementById("status").textContent = "保存に失敗しました。先生にご連絡ください。";
+        document.getElementById("status").textContent =
+          "保存に失敗しました。先生にご連絡ください。";
       }
     }
 
