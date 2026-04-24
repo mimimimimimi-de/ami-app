@@ -11,6 +11,7 @@
       padding: 40px;
       background: #f7f7f7;
     }
+
     .card {
       background: white;
       max-width: 420px;
@@ -19,8 +20,20 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
+
     h1 {
       color: #06C755;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .status {
+      margin-top: 16px;
+      color: #06C755;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -28,36 +41,46 @@
   <div class="card">
     <h1>決済が完了しました</h1>
     <p>ご予約ありがとうございます。</p>
-    <p>決済成功後の予約確定処理は、次のステップで追加します。</p>
+    <p>予約内容を保存しています。</p>
+    <div class="status" id="status">保存中...</div>
   </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKmQCdsQa7Yjwxdgsh7BUur6BjhK211-j_4Es0UWy7-fV5h0mLOVsOXbRTTjup1WeQEA/exec";
+
+    const date = localStorage.getItem("selectedDate");
+    const time = localStorage.getItem("selectedTime");
+    const lessonType = localStorage.getItem("lessonType");
+
+    const lessonLabel = lessonType == 50 ? "50分レッスン" : "25分レッスン";
+    const priceLabel = lessonType == 50 ? "$18" : "$10";
+
+    async function saveReservation() {
+      try {
+        await fetch(GAS_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: "LINEユーザー",
+            date: date,
+            time: time,
+            lesson: lessonLabel,
+            price: priceLabel,
+            email: "",
+            status: "予約確定"
+          })
+        });
+
+        document.getElementById("status").textContent = "予約を保存しました。";
+      } catch (error) {
+        console.error(error);
+        document.getElementById("status").textContent = "保存に失敗しました。先生にご連絡ください。";
+      }
+    }
+
+    saveReservation();
+  </script>
 </body>
 </html>
-<script>
-const urlParams = new URLSearchParams(window.location.search);
-
-const date = localStorage.getItem("selectedDate");
-const time = localStorage.getItem("selectedTime");
-const lesson = localStorage.getItem("lessonType");
-
-let lessonLabel = lesson == 50 ? "50分レッスン" : "25分レッスン";
-let priceLabel = lesson == 50 ? "$18" : "$10";
-
-fetch("https://script.google.com/macros/s/AKfycbxGcTGhgTTfa3ImilpdlkL0B8qUZFf_5XpLWItGRw8hQHWVBVoGtgdMosS3UZ_G4Kk_zg/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: "LINEユーザー",
-    date: date,
-    time: time,
-    lesson: lessonLabel,
-    price: priceLabel,
-    email: "",
-    status: "予約確定"
-  })
-})
-.then(res => res.text())
-.then(data => console.log("保存成功:", data))
-.catch(err => console.error("保存エラー:", err));
-</script>
