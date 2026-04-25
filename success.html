@@ -5,35 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>決済完了</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 40px;
-      background: #f7f7f7;
-    }
-    .card {
-      background: white;
-      max-width: 420px;
-      margin: 40px auto;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    h1 {
-      color: #06C755;
-    }
-    p {
-      color: #555;
-      line-height: 1.7;
-    }
-    .status {
-      margin-top: 16px;
-      color: #06C755;
-      font-weight: bold;
-      white-space: pre-line;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 40px; background: #f7f7f7; }
+    .card { background: white; max-width: 420px; margin: 40px auto; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    h1 { color: #06C755; }
+    p { color: #555; line-height: 1.7; }
+    .status { margin-top: 16px; color: #06C755; font-weight: bold; white-space: pre-line; }
   </style>
-
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
@@ -63,7 +40,7 @@
         return;
       }
 
-      let lineUserId = "";
+      let customerLineUserId = "";
       let displayName = "LINEユーザー";
 
       try {
@@ -77,18 +54,15 @@
         }
 
         const profile = await liff.getProfile();
-        lineUserId = profile.userId || "";
+        customerLineUserId = profile.userId || "";
         displayName = profile.displayName || "LINEユーザー";
-
       } catch (error) {
-        console.error("LIFF error:", error);
-        lineUserId = "";
-        displayName = "LINEユーザー";
+        console.error(error);
       }
 
       const reservationData = {
         name: displayName,
-        lineUserId: lineUserId,
+        customerLineUserId: customerLineUserId,
         date: date,
         time: time,
         lesson: lessonLabel,
@@ -115,7 +89,6 @@
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
         localStorage.removeItem("lessonType");
-
       } catch (error) {
         console.error(error);
         statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
