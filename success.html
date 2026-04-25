@@ -56,8 +56,11 @@
         const profile = await liff.getProfile();
         customerLineUserId = profile.userId || "";
         displayName = profile.displayName || "LINEユーザー";
+
       } catch (error) {
-        console.error(error);
+        console.error("LIFF error:", error);
+        customerLineUserId = "";
+        displayName = "LINEユーザー";
       }
 
       const reservationData = {
@@ -89,6 +92,7 @@
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
         localStorage.removeItem("lessonType");
+
       } catch (error) {
         console.error(error);
         statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
