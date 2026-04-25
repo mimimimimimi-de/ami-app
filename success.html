@@ -4,15 +4,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>決済完了</title>
+
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 40px; background: #f7f7f7; }
-    .card { background: white; max-width: 420px; margin: 40px auto; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    h1 { color: #06C755; }
-    p { color: #555; line-height: 1.7; }
-    .status { margin-top: 16px; color: #06C755; font-weight: bold; white-space: pre-line; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #f7f7f7;
+    }
+
+    .card {
+      background: white;
+      max-width: 420px;
+      margin: 40px auto;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      color: #06C755;
+    }
+
+    p {
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .status {
+      margin-top: 16px;
+      color: #06C755;
+      font-weight: bold;
+      white-space: pre-line;
+    }
+
+    .error {
+      color: #d93025;
+    }
   </style>
+
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
+
 <body>
   <div class="card">
     <h1>決済が完了しました</h1>
@@ -25,6 +58,8 @@
     const LIFF_ID = "2009890655-jIJpN1Ya";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+    const statusEl = document.getElementById("status");
+
     const date = localStorage.getItem("selectedDate");
     const time = localStorage.getItem("selectedTime");
     const lessonType = localStorage.getItem("lessonType");
@@ -33,15 +68,13 @@
     const priceLabel = lessonType == 50 ? "$18" : "$10";
 
     async function saveReservation() {
-      const statusEl = document.getElementById("status");
-
       if (!date || !time || !lessonType) {
+        statusEl.classList.add("error");
         statusEl.textContent = "予約情報が見つかりませんでした。\n先生にご連絡ください。";
         return;
       }
 
-      let customerLineUserId = "";
-      let displayName = "LINEユーザー";
+      let profile;
 
       try {
         statusEl.textContent = "LINE情報を確認しています...";
@@ -49,23 +82,34 @@
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
-          liff.login();
+          localStorage.setItem("pendingReservation", "true");
+          liff.login({
+            redirectUri: window.location.href
+          });
           return;
         }
 
-        const profile = await liff.getProfile();
-        customerLineUserId = profile.userId || "";
-        displayName = profile.displayName || "LINEユーザー";
+        profile = await liff.getProfile();
+
+        if (!profile || !profile.userId) {
+          throw new Error("LINE userIdを取得できませんでした。");
+        }
+
+        console.log("LINE profile:", profile);
+        console.log("customerLineUserId:", profile.userId);
 
       } catch (error) {
         console.error("LIFF error:", error);
-        customerLineUserId = "";
-        displayName = "LINEユーザー";
+        statusEl.classList.add("error");
+        statusEl.textContent =
+          "LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。";
+        return;
       }
 
       const reservationData = {
-        name: displayName,
-        customerLineUserId: customerLineUserId,
+        name: profile.displayName || "LINEユーザー",
+        customerLineUserId: profile.userId,
+        userId: profile.userId,
         date: date,
         time: time,
         lesson: lessonLabel,
@@ -87,15 +131,20 @@
           body: JSON.stringify(reservationData)
         });
 
-        statusEl.textContent = "予約を保存しました。\nLINEに予約完了メッセージを送信しました。";
+        statusEl.classList.remove("error");
+        statusEl.textContent =
+          "予約を保存しました。\nLINEに予約完了メッセージを送信しました。";
 
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
         localStorage.removeItem("lessonType");
+        localStorage.removeItem("pendingReservation");
 
       } catch (error) {
-        console.error(error);
-        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
+        console.error("GAS error:", error);
+        statusEl.classList.add("error");
+        statusEl.textContent =
+          "保存に失敗しました。\n先生にご連絡ください。";
       }
     }
 
