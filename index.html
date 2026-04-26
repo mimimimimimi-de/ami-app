@@ -122,7 +122,7 @@
 
     <div class="card hidden" id="page-time">
       <h2>時間を選んでください</h2>
-      <p>12時間前を過ぎた時間と、予約済みの時間は選べません。</p>
+      <p>15分単位で選べます。レッスン後に10分の休憩時間を確保しています。</p>
       <select id="time-select"></select>
       <p id="time-note"></p>
       <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
@@ -148,8 +148,6 @@
 
   <script>
     const LIFF_ID = "2009874208-p2dHU5i2";
-
-    // 最新のGAS URL
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
     let selectedMinutes = null;
@@ -161,6 +159,12 @@
       25: "$10",
       50: "$18"
     };
+
+    function getBlockMinutes(minutesOrLesson) {
+      const text = String(minutesOrLesson);
+      if (text.includes("50")) return 60;
+      return 35;
+    }
 
     async function initializeLiff() {
       try {
@@ -198,6 +202,17 @@
     function normalizeTime(time) {
       const [hour, minute] = String(time).trim().split(":");
       return `${String(hour).padStart(2, "0")}:${String(minute || "00").padStart(2, "0")}`;
+    }
+
+    function timeToMinutes(time) {
+      const [h, m] = normalizeTime(time).split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function minutesToTime(totalMinutes) {
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
     }
 
     async function fetchReserved() {
@@ -242,7 +257,6 @@
       let added = 0;
       let offset = 0;
 
-      // 日曜を除いて、予約可能日の候補を7日分出す
       while (added < 7 && offset < 14) {
         const d = new Date();
         d.setDate(today.getDate() + offset);
@@ -260,43 +274,69 @@
       }
     }
 
-    function getAvailableSlotsByDay(dateString) {
+    function getWindowsByDay(dateString) {
       const date = new Date(`${dateString}T00:00:00+09:00`);
       const day = date.getDay();
-      const slots = [];
 
-      // 日曜：休み
-      if (day === 0) {
-        return [];
-      }
+      if (day === 0) return [];
 
-      // 平日：7:00〜11:00、14:00〜22:00
       if (day >= 1 && day <= 5) {
-        for (let h = 7; h <= 11; h++) {
-          slots.push(`${String(h).padStart(2, "0")}:00`);
-        }
-
-        for (let h = 14; h <= 22; h++) {
-          slots.push(`${String(h).padStart(2, "0")}:00`);
-        }
-
-        return slots;
+        return [
+          { start: "07:00", end: "11:00" },
+          { start: "14:00", end: "22:00" }
+        ];
       }
 
-      // 土曜：8:00〜12:00、13:00〜19:00
       if (day === 6) {
-        for (let h = 8; h <= 12; h++) {
-          slots.push(`${String(h).padStart(2, "0")}:00`);
-        }
-
-        for (let h = 13; h <= 19; h++) {
-          slots.push(`${String(h).padStart(2, "0")}:00`);
-        }
-
-        return slots;
+        return [
+          { start: "08:00", end: "12:00" },
+          { start: "13:00", end: "19:00" }
+        ];
       }
 
       return [];
+    }
+
+    function generateBaseSlots(dateString) {
+      const windows = getWindowsByDay(dateString);
+      const blockMinutes = getBlockMinutes(selectedMinutes);
+      const slots = [];
+
+      windows.forEach(window => {
+        const startMin = timeToMinutes(window.start);
+        const endMin = timeToMinutes(window.end);
+
+        for (let t = startMin; t + blockMinutes <= endMin; t += 15) {
+          slots.push(minutesToTime(t));
+        }
+      });
+
+      return slots;
+    }
+
+    function isOverlapping(startA, endA, startB, endB) {
+      return startA < endB && endA > startB;
+    }
+
+    function isSlotOverlappingReserved(dateString, slotTime, reserved) {
+      const slotStart = timeToMinutes(slotTime);
+      const slotEnd = slotStart + getBlockMinutes(selectedMinutes);
+
+      return reserved.some(r => {
+        if (String(r.date).trim() !== dateString) return false;
+
+        const reservedStart = timeToMinutes(r.time);
+        const reservedEnd = reservedStart + getBlockMinutes(r.lesson || "25分レッスン");
+
+        return isOverlapping(slotStart, slotEnd, reservedStart, reservedEnd);
+      });
+    }
+
+    function isWithin12Hours(date, time) {
+      const lessonDateTime = new Date(`${date}T${normalizeTime(time)}:00+09:00`);
+      const now = new Date();
+      const diffHours = (lessonDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+      return diffHours < 12;
     }
 
     async function generateTimeOptions(dateString) {
@@ -305,9 +345,8 @@
       select.innerHTML = "";
       note.textContent = "";
 
-      const now = new Date();
       const reserved = await fetchReserved();
-      const baseTimeSlots = getAvailableSlotsByDay(dateString);
+      const baseTimeSlots = generateBaseSlots(dateString);
       const availableSlots = [];
 
       if (baseTimeSlots.length === 0) {
@@ -320,16 +359,10 @@
       }
 
       baseTimeSlots.forEach(time => {
-        const [hour, minute] = time.split(":").map(Number);
-        const lessonDateTime = new Date(`${dateString}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00+09:00`);
-        const diffMs = lessonDateTime.getTime() - now.getTime();
-        const diffHours = diffMs / (1000 * 60 * 60);
+        const tooSoon = isWithin12Hours(dateString, time);
+        const overlaps = isSlotOverlappingReserved(dateString, time, reserved);
 
-        const alreadyReserved = reserved.some(r => {
-          return String(r.date).trim() === dateString && normalizeTime(r.time) === normalizeTime(time);
-        });
-
-        if (diffHours >= 12 && !alreadyReserved) {
+        if (!tooSoon && !overlaps) {
           availableSlots.push(time);
         }
       });
@@ -359,18 +392,9 @@
       goToPage("page-time");
     }
 
-    async function isReserved(date, time) {
+    async function isReservedOrOverlapping(date, time) {
       const reserved = await fetchReserved();
-      return reserved.some(r => {
-        return String(r.date).trim() === date && normalizeTime(r.time) === normalizeTime(time);
-      });
-    }
-
-    function isWithin12Hours(date, time) {
-      const lessonDateTime = new Date(`${date}T${normalizeTime(time)}:00+09:00`);
-      const now = new Date();
-      const diffHours = (lessonDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-      return diffHours < 12;
+      return isSlotOverlappingReserved(date, time, reserved);
     }
 
     async function showConfirmPage() {
@@ -388,8 +412,9 @@
         return;
       }
 
-      if (await isReserved(selectedDate, selectedTime)) {
-        alert("この時間はすでに予約されています。別の時間を選んでください。");
+      if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
+        alert("この時間はすでに予約と重なっています。別の時間を選んでください。");
+        goToPage("page-time");
         return;
       }
 
@@ -411,8 +436,8 @@
           return;
         }
 
-        if (await isReserved(selectedDate, selectedTime)) {
-          alert("この時間はすでに予約されています。別の時間を選んでください。");
+        if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
+          alert("この時間はすでに予約と重なっています。別の時間を選んでください。");
           goToPage("page-time");
           return;
         }
