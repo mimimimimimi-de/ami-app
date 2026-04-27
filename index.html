@@ -23,12 +23,7 @@
       margin-top: 20px;
     }
     h1, h2 { text-align: center; }
-    p {
-      font-size: 14px;
-      line-height: 1.7;
-      color: #666;
-      text-align: center;
-    }
+    p { font-size: 14px; line-height: 1.7; color: #666; text-align: center; }
     .hidden { display: none; }
     .lesson-button, .main-button, .sub-button {
       width: 100%;
@@ -39,14 +34,8 @@
       cursor: pointer;
       margin-top: 12px;
     }
-    .lesson-button, .main-button {
-      background: #06C755;
-      color: #fff;
-    }
-    .sub-button {
-      background: #999;
-      color: #fff;
-    }
+    .lesson-button, .main-button { background: #06C755; color: #fff; }
+    .sub-button { background: #999; color: #fff; }
     .lesson-name {
       font-size: 22px;
       font-weight: bold;
@@ -78,11 +67,7 @@
       text-align: left;
       margin: 16px 0;
     }
-    .info-row {
-      margin-bottom: 10px;
-      font-size: 15px;
-      line-height: 1.6;
-    }
+    .info-row { margin-bottom: 10px; font-size: 15px; line-height: 1.6; }
     .status {
       margin-top: 14px;
       text-align: center;
@@ -122,7 +107,7 @@
 
     <div class="card hidden" id="page-time">
       <h2>時間を選んでください</h2>
-      <p>15分単位で選べます。レッスン後に10分の休憩時間を確保しています。</p>
+      <p>15分単位で選べます。Googleカレンダー予定と重なる時間は表示されません。</p>
       <select id="time-select"></select>
       <p id="time-note"></p>
       <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
@@ -140,7 +125,6 @@
 
       <button class="sub-button" onclick="goToPage('page-time')">戻る</button>
       <button class="main-button" onclick="goToCheckout()">決済に進む</button>
-
       <div class="status" id="status-message"></div>
     </div>
 
@@ -179,11 +163,9 @@
     }
 
     function hideAllPages() {
-      document.getElementById("page-top").classList.add("hidden");
-      document.getElementById("page-price").classList.add("hidden");
-      document.getElementById("page-date").classList.add("hidden");
-      document.getElementById("page-time").classList.add("hidden");
-      document.getElementById("page-confirm").classList.add("hidden");
+      ["page-top", "page-price", "page-date", "page-time", "page-confirm"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+      });
     }
 
     function goToPage(pageId) {
@@ -216,7 +198,7 @@
     }
 
     async function fetchReserved() {
-      const res = await fetch(GAS_URL);
+      const res = await fetch(GAS_URL + "?t=" + Date.now());
       return await res.json();
     }
 
@@ -241,12 +223,7 @@
     }
 
     function getDayLabel(dateObj) {
-      const labels = ["日", "月", "火", "水", "木", "金", "土"];
-      return labels[dateObj.getDay()];
-    }
-
-    function isSunday(dateObj) {
-      return dateObj.getDay() === 0;
+      return ["日", "月", "火", "水", "木", "金", "土"][dateObj.getDay()];
     }
 
     function generateDateOptions() {
@@ -261,7 +238,7 @@
         const d = new Date();
         d.setDate(today.getDate() + offset);
 
-        if (!isSunday(d)) {
+        if (d.getDay() !== 0) {
           const value = formatDateForValue(d);
           const option = document.createElement("option");
           option.value = value;
@@ -314,29 +291,48 @@
       return slots;
     }
 
-    function isOverlapping(startA, endA, startB, endB) {
-      return startA < endB && endA > startB;
-    }
-
-    function isSlotOverlappingReserved(dateString, slotTime, reserved) {
-      const slotStart = timeToMinutes(slotTime);
-      const slotEnd = slotStart + getBlockMinutes(selectedMinutes);
-
-      return reserved.some(r => {
-        if (String(r.date).trim() !== dateString) return false;
-
-        const reservedStart = timeToMinutes(r.time);
-        const reservedEnd = reservedStart + getBlockMinutes(r.lesson || "25分レッスン");
-
-        return isOverlapping(slotStart, slotEnd, reservedStart, reservedEnd);
-      });
-    }
-
     function isWithin12Hours(date, time) {
       const lessonDateTime = new Date(`${date}T${normalizeTime(time)}:00+09:00`);
       const now = new Date();
       const diffHours = (lessonDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
       return diffHours < 12;
+    }
+
+    function isOverlapping(startA, endA, startB, endB) {
+      return startA < endB && endA > startB;
+    }
+
+    function isSameDateInJapan(dateObj, dateString) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}` === dateString;
+    }
+
+    function isSlotOverlappingReserved(dateString, slotTime, busyItems) {
+      const slotStart = new Date(`${dateString}T${normalizeTime(slotTime)}:00+09:00`);
+      const slotEnd = new Date(slotStart.getTime() + getBlockMinutes(selectedMinutes) * 60 * 1000);
+
+      return busyItems.some(item => {
+        // Googleカレンダー予定形式
+        if (item.start && item.end) {
+          const busyStart = new Date(item.start);
+          const busyEnd = new Date(item.end);
+          return isOverlapping(slotStart, slotEnd, busyStart, busyEnd);
+        }
+
+        // スプレッドシート予約形式
+        if (item.date && item.time) {
+          if (String(item.date).trim() !== dateString) return false;
+
+          const busyStart = new Date(`${dateString}T${normalizeTime(item.time)}:00+09:00`);
+          const busyEnd = new Date(busyStart.getTime() + getBlockMinutes(item.lesson || "25分レッスン") * 60 * 1000);
+
+          return isOverlapping(slotStart, slotEnd, busyStart, busyEnd);
+        }
+
+        return false;
+      });
     }
 
     async function generateTimeOptions(dateString) {
@@ -345,7 +341,7 @@
       select.innerHTML = "";
       note.textContent = "";
 
-      const reserved = await fetchReserved();
+      const busyItems = await fetchReserved();
       const baseTimeSlots = generateBaseSlots(dateString);
       const availableSlots = [];
 
@@ -360,7 +356,7 @@
 
       baseTimeSlots.forEach(time => {
         const tooSoon = isWithin12Hours(dateString, time);
-        const overlaps = isSlotOverlappingReserved(dateString, time, reserved);
+        const overlaps = isSlotOverlappingReserved(dateString, time, busyItems);
 
         if (!tooSoon && !overlaps) {
           availableSlots.push(time);
@@ -393,8 +389,8 @@
     }
 
     async function isReservedOrOverlapping(date, time) {
-      const reserved = await fetchReserved();
-      return isSlotOverlappingReserved(date, time, reserved);
+      const busyItems = await fetchReserved();
+      return isSlotOverlappingReserved(date, time, busyItems);
     }
 
     async function showConfirmPage() {
@@ -413,7 +409,7 @@
       }
 
       if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
-        alert("この時間はすでに予約と重なっています。別の時間を選んでください。");
+        alert("この時間はすでに予定と重なっています。別の時間を選んでください。");
         goToPage("page-time");
         return;
       }
@@ -437,7 +433,7 @@
         }
 
         if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
-          alert("この時間はすでに予約と重なっています。別の時間を選んでください。");
+          alert("この時間はすでに予定と重なっています。別の時間を選んでください。");
           goToPage("page-time");
           return;
         }
@@ -448,9 +444,7 @@
 
         const response = await fetch("/api/create-checkout-session", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             lessonType: selectedMinutes,
             selectedDate,
