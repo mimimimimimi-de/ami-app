@@ -1,5 +1,5 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -26,152 +26,467 @@
     h1, h2 { text-align: center; }
     p { font-size: 14px; line-height: 1.7; color: #666; text-align: center; }
     .hidden { display: none; }
+    .lesson-button, .main-button, .sub-button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .lesson-button, .main-button { background: #06C755; color: #fff; }
+    .sub-button { background: #999; color: #fff; }
+    .lesson-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #06C755;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .price {
+      font-size: 30px;
+      font-weight: bold;
+      color: #06C755;
+      text-align: center;
+      margin: 16px 0 8px;
+    }
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      background: #fff;
+      margin-top: 10px;
+    }
+    .info-box {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: left;
+      margin: 16px 0;
+    }
+    .info-row { margin-bottom: 10px; font-size: 15px; line-height: 1.6; }
+    .status {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      min-height: 20px;
+      color: #06C755;
+      white-space: pre-line;
+    }
+    .error { color: #d93025; }
 
-```
-.lesson-button, .main-button, .sub-button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 12px;
-}
-.lesson-button, .main-button { background: #06C755; color: #fff; }
-.sub-button { background: #999; color: #fff; }
-
-.lesson-name {
-  font-size: 22px;
-  font-weight: bold;
-  color: #06C755;
-  text-align: center;
-  margin-top: 8px;
-}
-.price {
-  font-size: 30px;
-  font-weight: bold;
-  color: #06C755;
-  text-align: center;
-  margin: 16px 0 8px;
-}
-
-select {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  background: #fff;
-  margin-top: 10px;
-}
-
-.info-box {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 14px;
-  padding: 14px;
-  text-align: left;
-  margin: 16px 0;
-}
-
-.info-row { margin-bottom: 10px; font-size: 15px; line-height: 1.6; }
-
-.status {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 14px;
-  min-height: 20px;
-  color: #06C755;
-  white-space: pre-line;
-}
-
-.error { color: #d93025; }
-
-/* 🔥追加：キャンセルポリシー */
-.policy-box {
-  margin: 16px 0;
-  padding: 14px;
-  background: #fff8f0;
-  border: 1px solid #f3c98b;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.6;
-}
-.policy-box h3 {
-  margin: 0 0 6px;
-  font-size: 14px;
-  color: #8a5a00;
-}
-.policy-box p {
-  margin: 4px 0;
-}
-```
-
+    .policy-box {
+      background: #fff8f0;
+      border: 1px solid #f3c98b;
+      border-radius: 14px;
+      padding: 14px;
+      margin: 16px 0;
+      text-align: left;
+    }
+    .policy-box h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #8a5a00;
+    }
+    .policy-box p {
+      margin: 6px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #666;
+      text-align: left;
+    }
   </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="container">
 
-  <div class="card" id="page-top">
-    <h1>レッスンを選んでください</h1>
-    <p>ご希望のレッスン時間を選んでください。</p>
-    <button class="lesson-button" onclick="selectLesson(25)">25分レッスン</button>
-    <button class="lesson-button" onclick="selectLesson(50)">50分レッスン</button>
-  </div>
+    <div class="card" id="page-top">
+      <h1>レッスンを選んでください</h1>
+      <p>ご希望のレッスン時間を選んでください。</p>
+      <button class="lesson-button" onclick="selectLesson(25)">25分レッスン</button>
+      <button class="lesson-button" onclick="selectLesson(50)">50分レッスン</button>
+    </div>
 
-  <div class="card hidden" id="page-price">
-    <h2>料金の確認</h2>
-    <div class="lesson-name" id="lesson-name-price"></div>
-    <div class="price" id="lesson-price"></div>
-    <button class="sub-button" onclick="goToPage('page-top')">戻る</button>
-    <button class="main-button" onclick="showDatePage()">次へ</button>
-  </div>
+    <div class="card hidden" id="page-price">
+      <h2>料金の確認</h2>
+      <div class="lesson-name" id="lesson-name-price"></div>
+      <div class="price" id="lesson-price"></div>
+      <button class="sub-button" onclick="goToPage('page-top')">戻る</button>
+      <button class="main-button" onclick="showDatePage()">次へ</button>
+    </div>
 
-  <div class="card hidden" id="page-date">
-    <h2>日付を選んでください</h2>
-    <p>日曜日はお休みです。予約は12時間前まで可能です。</p>
-    <select id="date-select"></select>
-    <button class="sub-button" onclick="goToPage('page-price')">戻る</button>
-    <button class="main-button" onclick="showTimePage()">次へ</button>
-  </div>
+    <div class="card hidden" id="page-date">
+      <h2>日付を選んでください</h2>
+      <p>日曜日はお休みです。予約は12時間前まで可能です。</p>
+      <select id="date-select"></select>
+      <button class="sub-button" onclick="goToPage('page-price')">戻る</button>
+      <button class="main-button" onclick="showTimePage()">次へ</button>
+    </div>
 
-  <div class="card hidden" id="page-time">
-    <h2>時間を選んでください</h2>
-    <p>15分単位で選べます。</p>
-    <select id="time-select"></select>
-    <p id="time-note"></p>
-    <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
-    <button class="main-button" onclick="showConfirmPage()">次へ</button>
-  </div>
+    <div class="card hidden" id="page-time">
+      <h2>時間を選んでください</h2>
+      <p>15分単位で選べます。Googleカレンダー予定と重なる時間は表示されません。</p>
+      <select id="time-select"></select>
+      <p id="time-note"></p>
+      <button class="sub-button" onclick="goToPage('page-date')">戻る</button>
+      <button class="main-button" onclick="showConfirmPage()">次へ</button>
+    </div>
 
-  <!-- 🔥ここにポリシー追加 -->
+    <div class="card hidden" id="page-confirm">
+      <h2>予約内容の最終確認</h2>
+      <div class="info-box">
+        <div class="info-row"><strong>レッスン:</strong> <span id="confirm-lesson"></span></div>
+        <div class="info-row"><strong>料金:</strong> <span id="confirm-price"></span></div>
+        <div class="info-row"><strong>日付:</strong> <span id="confirm-date"></span></div>
+        <div class="info-row"><strong>時間:</strong> <span id="confirm-time"></span></div>
+      </div>
 
-  <div class="card hidden" id="page-confirm">
-    <h2>予約内容の最終確認</h2>
+      <div class="policy-box">
+        <h3>キャンセルについて</h3>
+        <p>レッスン開始12時間前までのキャンセルは、決済手数料を差し引いた金額を返金いたします。</p>
+        <p>12時間前を過ぎた場合は返金できません。</p>
+        <p>ご予約前に必ずご確認ください。</p>
+      </div>
 
-```
-<div class="info-box">
-  <div class="info-row"><strong>レッスン:</strong> <span id="confirm-lesson"></span></div>
-  <div class="info-row"><strong>料金:</strong> <span id="confirm-price"></span></div>
-  <div class="info-row"><strong>日付:</strong> <span id="confirm-date"></span></div>
-  <div class="info-row"><strong>時間:</strong> <span id="confirm-time"></span></div>
-</div>
-
-<div class="policy-box">
-  <h3>キャンセルについて</h3>
-  <p>レッスン開始12時間前までのキャンセルは、決済手数料を差し引いた金額を返金いたします。</p>
-  <p>12時間前を過ぎた場合は返金できません。</p>
-  <p>ご予約前に必ずご確認ください。</p>
-</div>
-
-<button class="sub-button" onclick="goToPage('page-time')">戻る</button>
-<button class="main-button" onclick="goToCheckout()">決済に進む</button>
-<div class="status" id="status-message"></div>
-```
+      <button class="sub-button" onclick="goToPage('page-time')">戻る</button>
+      <button class="main-button" onclick="goToCheckout()">決済に進む</button>
+      <div class="status" id="status-message"></div>
+    </div>
 
   </div>
 
-</div>
+  <script>
+    const LIFF_ID = "2009874208-p2dHU5i2";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+    let selectedMinutes = null;
+    let selectedPrice = null;
+    let selectedDate = null;
+    let selectedTime = null;
+
+    const prices = {
+      25: "$10",
+      50: "$18"
+    };
+
+    function getBlockMinutes(minutesOrLesson) {
+      const text = String(minutesOrLesson);
+      if (text.includes("50")) return 60;
+      return 35;
+    }
+
+    async function initializeLiff() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+      } catch (error) {
+        console.error("LIFF init error:", error);
+      }
+    }
+
+    function hideAllPages() {
+      ["page-top", "page-price", "page-date", "page-time", "page-confirm"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+      });
+    }
+
+    function goToPage(pageId) {
+      hideAllPages();
+      document.getElementById(pageId).classList.remove("hidden");
+      setStatus("");
+    }
+
+    function setStatus(message, isError = false) {
+      const el = document.getElementById("status-message");
+      if (!el) return;
+      el.textContent = message;
+      el.className = isError ? "status error" : "status";
+    }
+
+    function normalizeTime(time) {
+      const [hour, minute] = String(time).trim().split(":");
+      return `${String(hour).padStart(2, "0")}:${String(minute || "00").padStart(2, "0")}`;
+    }
+
+    function timeToMinutes(time) {
+      const [h, m] = normalizeTime(time).split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function minutesToTime(totalMinutes) {
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    }
+
+    async function fetchReserved() {
+      const res = await fetch(GAS_URL + "?t=" + Date.now());
+      return await res.json();
+    }
+
+    function selectLesson(minutes) {
+      selectedMinutes = minutes;
+      selectedPrice = prices[minutes];
+      document.getElementById("lesson-name-price").textContent = `${minutes}分レッスン`;
+      document.getElementById("lesson-price").textContent = selectedPrice;
+      goToPage("page-price");
+    }
+
+    function showDatePage() {
+      generateDateOptions();
+      goToPage("page-date");
+    }
+
+    function formatDateForValue(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDayLabel(dateObj) {
+      return ["日", "月", "火", "水", "木", "金", "土"][dateObj.getDay()];
+    }
+
+    function generateDateOptions() {
+      const select = document.getElementById("date-select");
+      select.innerHTML = "";
+
+      const today = new Date();
+      let added = 0;
+      let offset = 0;
+
+      while (added < 7 && offset < 14) {
+        const d = new Date();
+        d.setDate(today.getDate() + offset);
+
+        if (d.getDay() !== 0) {
+          const value = formatDateForValue(d);
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = `${value}（${getDayLabel(d)}）`;
+          select.appendChild(option);
+          added++;
+        }
+
+        offset++;
+      }
+    }
+
+    function getWindowsByDay(dateString) {
+      const date = new Date(`${dateString}T00:00:00+09:00`);
+      const day = date.getDay();
+
+      if (day === 0) return [];
+
+      if (day >= 1 && day <= 5) {
+        return [
+          { start: "07:00", end: "11:00" },
+          { start: "14:00", end: "22:00" }
+        ];
+      }
+
+      if (day === 6) {
+        return [
+          { start: "08:00", end: "12:00" },
+          { start: "13:00", end: "19:00" }
+        ];
+      }
+
+      return [];
+    }
+
+    function generateBaseSlots(dateString) {
+      const windows = getWindowsByDay(dateString);
+      const blockMinutes = getBlockMinutes(selectedMinutes);
+      const slots = [];
+
+      windows.forEach(window => {
+        const startMin = timeToMinutes(window.start);
+        const endMin = timeToMinutes(window.end);
+
+        for (let t = startMin; t + blockMinutes <= endMin; t += 15) {
+          slots.push(minutesToTime(t));
+        }
+      });
+
+      return slots;
+    }
+
+    function isWithin12Hours(date, time) {
+      const lessonDateTime = new Date(`${date}T${normalizeTime(time)}:00+09:00`);
+      const now = new Date();
+      const diffHours = (lessonDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+      return diffHours < 12;
+    }
+
+    function isOverlapping(startA, endA, startB, endB) {
+      return startA < endB && endA > startB;
+    }
+
+    function isSlotOverlappingReserved(dateString, slotTime, busyItems) {
+      const slotStart = new Date(`${dateString}T${normalizeTime(slotTime)}:00+09:00`);
+      const slotEnd = new Date(slotStart.getTime() + getBlockMinutes(selectedMinutes) * 60 * 1000);
+
+      return busyItems.some(item => {
+        if (item.start && item.end) {
+          const busyStart = new Date(item.start);
+          const busyEnd = new Date(item.end);
+          return isOverlapping(slotStart, slotEnd, busyStart, busyEnd);
+        }
+
+        if (item.date && item.time) {
+          if (String(item.date).trim() !== dateString) return false;
+
+          const busyStart = new Date(`${dateString}T${normalizeTime(item.time)}:00+09:00`);
+          const busyEnd = new Date(busyStart.getTime() + getBlockMinutes(item.lesson || "25分レッスン") * 60 * 1000);
+
+          return isOverlapping(slotStart, slotEnd, busyStart, busyEnd);
+        }
+
+        return false;
+      });
+    }
+
+    async function generateTimeOptions(dateString) {
+      const select = document.getElementById("time-select");
+      const note = document.getElementById("time-note");
+      select.innerHTML = "";
+      note.textContent = "";
+
+      const busyItems = await fetchReserved();
+      const baseTimeSlots = generateBaseSlots(dateString);
+      const availableSlots = [];
+
+      if (baseTimeSlots.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "この日はお休みです";
+        select.appendChild(option);
+        note.textContent = "この日はレッスンを受け付けていません。";
+        return;
+      }
+
+      baseTimeSlots.forEach(time => {
+        const tooSoon = isWithin12Hours(dateString, time);
+        const overlaps = isSlotOverlappingReserved(dateString, time, busyItems);
+
+        if (!tooSoon && !overlaps) {
+          availableSlots.push(time);
+        }
+      });
+
+      if (availableSlots.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "選べる時間がありません";
+        select.appendChild(option);
+        note.textContent = "この日は予約可能な時間がありません。別の日付を選んでください。";
+        return;
+      }
+
+      availableSlots.forEach(time => {
+        const option = document.createElement("option");
+        option.value = time;
+        option.textContent = time;
+        select.appendChild(option);
+      });
+
+      note.textContent = `${dateString} の予約可能時間です。`;
+    }
+
+    async function showTimePage() {
+      selectedDate = document.getElementById("date-select").value;
+      await generateTimeOptions(selectedDate);
+      goToPage("page-time");
+    }
+
+    async function isReservedOrOverlapping(date, time) {
+      const busyItems = await fetchReserved();
+      return isSlotOverlappingReserved(date, time, busyItems);
+    }
+
+    async function showConfirmPage() {
+      selectedDate = document.getElementById("date-select").value;
+      selectedTime = document.getElementById("time-select").value;
+
+      if (!selectedTime) {
+        alert("選べる時間がありません。別の日付を選んでください。");
+        return;
+      }
+
+      if (isWithin12Hours(selectedDate, selectedTime)) {
+        alert("この時間は12時間前を過ぎているため予約できません。");
+        goToPage("page-time");
+        return;
+      }
+
+      if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
+        alert("この時間はすでに予定と重なっています。別の時間を選んでください。");
+        goToPage("page-time");
+        return;
+      }
+
+      document.getElementById("confirm-lesson").textContent = `${selectedMinutes}分レッスン`;
+      document.getElementById("confirm-price").textContent = selectedPrice;
+      document.getElementById("confirm-date").textContent = selectedDate;
+      document.getElementById("confirm-time").textContent = selectedTime;
+
+      goToPage("page-confirm");
+    }
+
+    async function goToCheckout() {
+      try {
+        setStatus("");
+
+        if (isWithin12Hours(selectedDate, selectedTime)) {
+          alert("この時間は12時間前を過ぎているため予約できません。");
+          goToPage("page-time");
+          return;
+        }
+
+        if (await isReservedOrOverlapping(selectedDate, selectedTime)) {
+          alert("この時間はすでに予定と重なっています。別の時間を選んでください。");
+          goToPage("page-time");
+          return;
+        }
+
+        localStorage.setItem("selectedDate", selectedDate);
+        localStorage.setItem("selectedTime", selectedTime);
+        localStorage.setItem("lessonType", selectedMinutes);
+
+        const response = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonType: selectedMinutes,
+            selectedDate,
+            selectedTime,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setStatus("決済ページを開けませんでした。", true);
+          return;
+        }
+
+        window.location.href = data.url;
+      } catch (error) {
+        console.error(error);
+        setStatus("エラーが発生しました。", true);
+      }
+    }
+
+    initializeLiff();
+  </script>
 </body>
 </html>
