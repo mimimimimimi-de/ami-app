@@ -9,9 +9,7 @@ module.exports = async function handler(req, res) {
     const { lessonType, selectedDate, selectedTime } = req.body;
 
     if (!lessonType || !selectedDate || !selectedTime) {
-      return res.status(400).json({
-        error: "Missing required fields"
-      });
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     const lessonMinutes = Number(lessonType);
@@ -21,30 +19,20 @@ module.exports = async function handler(req, res) {
     if (lessonMinutes === 25) {
       priceData = {
         currency: "usd",
-        product_data: {
-          name: "25分レッスン"
-        },
+        product_data: { name: "25分レッスン" },
         unit_amount: 1000
       };
     } else if (lessonMinutes === 50) {
       priceData = {
         currency: "usd",
-        product_data: {
-          name: "50分レッスン"
-        },
+        product_data: { name: "50分レッスン" },
         unit_amount: 1800
       };
     } else {
-      return res.status(400).json({
-        error: "Invalid lesson type"
-      });
+      return res.status(400).json({ error: "Invalid lesson type" });
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+    const baseUrl = "https://ami-app-eta.vercel.app";
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -64,13 +52,9 @@ module.exports = async function handler(req, res) {
       cancel_url: `${baseUrl}/cancel.html`
     });
 
-    return res.status(200).json({
-      url: session.url
-    });
+    return res.status(200).json({ url: session.url });
   } catch (error) {
     console.error("Stripe Checkout Error:", error);
-    return res.status(500).json({
-      error: "Failed to create checkout session"
-    });
+    return res.status(500).json({ error: "Failed to create checkout session" });
   }
 };
