@@ -67,6 +67,30 @@
     const lessonLabel = lessonType == 50 ? "50分レッスン" : "25分レッスン";
     const priceLabel = lessonType == 50 ? "$18" : "$10";
 
+    async function getPaymentIntentId() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+
+      if (!sessionId) {
+        return "";
+      }
+
+      try {
+        const response = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("get-checkout-session error:", data);
+          return "";
+        }
+
+        return data.payment_intent || "";
+      } catch (error) {
+        console.error("PaymentIntent取得エラー:", error);
+        return "";
+      }
+    }
+
     async function saveReservation() {
       if (!date || !time || !lessonType) {
         statusEl.classList.add("error");
@@ -75,6 +99,7 @@
       }
 
       let profile;
+      let paymentIntentId = "";
 
       try {
         statusEl.textContent = "LINE情報を確認しています...";
@@ -82,7 +107,6 @@
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
-          localStorage.setItem("pendingReservation", "true");
           liff.login({
             redirectUri: window.location.href
           });
@@ -95,15 +119,20 @@
           throw new Error("LINE userIdを取得できませんでした。");
         }
 
-        console.log("LINE profile:", profile);
-        console.log("customerLineUserId:", profile.userId);
-
       } catch (error) {
         console.error("LIFF error:", error);
         statusEl.classList.add("error");
         statusEl.textContent =
           "LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。";
         return;
+      }
+
+      try {
+        statusEl.textContent = "決済情報を確認しています...";
+        paymentIntentId = await getPaymentIntentId();
+      } catch (error) {
+        console.error("PaymentIntent error:", error);
+        paymentIntentId = "";
       }
 
       const reservationData = {
@@ -116,7 +145,8 @@
         lessonName: lessonLabel,
         price: priceLabel,
         email: "",
-        status: "予約確定"
+        status: "予約確定",
+        paymentIntentId: paymentIntentId
       };
 
       try {
