@@ -279,7 +279,11 @@
       } catch (error) {
         console.error(error);
         document.getElementById("lesson-price").textContent = "料金を取得できませんでした";
-        alert("料金を取得できませんでした。先生にご連絡ください。");
+        alert(
+  "料金を取得できませんでした。\n\n" +
+  "取得したuserId:\n" + userId + "\n\n" +
+  "このIDをusersシートA列に入れてください。"
+);
       }
     }
 
