@@ -466,10 +466,11 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            lessonType: selectedMinutes,
-            selectedDate,
-            selectedTime,
-          }),
+  lessonType,
+  selectedDate,
+  selectedTime,
+  userId
+}),
         });
 
         const data = await response.json();
