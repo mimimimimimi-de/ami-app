@@ -238,31 +238,14 @@
     }
 
     async function fetchUserPrice(minutes) {
-  if (!userId) {
-    throw new Error("userId is missing");
-  }
-
-  const res = await fetch(
-    "/api/get-user-price"
-    + "?userId=" + encodeURIComponent(userId)
-    + "&lessonType=" + encodeURIComponent(minutes)
-  );
-
-  const data = await res.json();
-
-  if (!data.ok || !data.price) {
-    throw new Error("Price not found");
-  }
-
-  return Number(data.price);
-}
+      if (!userId) {
+        throw new Error("userId is missing");
+      }
 
       const res = await fetch(
-        GAS_URL
-        + "?action=getUserPrice"
-        + "&userId=" + encodeURIComponent(userId)
+        "/api/get-user-price"
+        + "?userId=" + encodeURIComponent(userId)
         + "&lessonType=" + encodeURIComponent(minutes)
-        + "&t=" + Date.now()
       );
 
       const data = await res.json();
