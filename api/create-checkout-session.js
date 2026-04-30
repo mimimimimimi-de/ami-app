@@ -16,10 +16,6 @@ module.exports = async function handler(req, res) {
 
     const lessonMinutes = Number(lessonType);
 
-    if (![25, 50].includes(lessonMinutes)) {
-      return res.status(400).json({ error: "Invalid lesson type" });
-    }
-
     const priceRes = await fetch(
       `${GAS_WEB_APP_URL}?action=getUserPrice&userId=${encodeURIComponent(userId)}&lessonType=${lessonMinutes}`
     );
@@ -32,22 +28,18 @@ module.exports = async function handler(req, res) {
 
     const unitAmount = Number(priceJson.price) * 100;
 
-    const priceData = {
-      currency: "usd",
-      product_data: {
-        name: `${lessonMinutes}分レッスン`
-      },
-      unit_amount: unitAmount
-    };
-
-    const baseUrl = "https://ami-app-eta.vercel.app";
-
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [
         {
-          price_data: priceData,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `${lessonMinutes}分レッスン`
+            },
+            unit_amount: unitAmount
+          },
           quantity: 1
         }
       ],
@@ -58,14 +50,14 @@ module.exports = async function handler(req, res) {
         userId,
         price: String(priceJson.price)
       },
-      success_url: `${baseUrl}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/cancel.html`
+      success_url: "https://ami-app-eta.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://ami-app-eta.vercel.app/cancel.html"
     });
 
     return res.status(200).json({ url: session.url });
 
   } catch (error) {
-    console.error("Stripe Checkout Error:", error);
+    console.error(error);
     return res.status(500).json({ error: "Failed to create checkout session" });
   }
 };
