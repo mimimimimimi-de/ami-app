@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -78,7 +77,6 @@
       white-space: pre-line;
     }
     .error { color: #d93025; }
-
     .policy-box {
       background: #fff8f0;
       border: 1px solid #f3c98b;
@@ -109,6 +107,7 @@
       <p>ご希望のレッスン時間を選んでください。</p>
       <button class="lesson-button" onclick="selectLesson(25)">25分レッスン</button>
       <button class="lesson-button" onclick="selectLesson(50)">50分レッスン</button>
+      <div class="status" id="top-status"></div>
     </div>
 
     <div class="card hidden" id="page-price">
@@ -163,15 +162,11 @@
     const LIFF_ID = "2009874208-p2dHU5i2";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+    let userId = null;
     let selectedMinutes = null;
     let selectedPrice = null;
     let selectedDate = null;
     let selectedTime = null;
-
-    const prices = {
-      25: "$10",
-      50: "$18"
-    };
 
     function getBlockMinutes(minutesOrLesson) {
       const text = String(minutesOrLesson);
@@ -182,12 +177,23 @@
     async function initializeLiff() {
       try {
         await liff.init({ liffId: LIFF_ID });
+
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
+
+        const profile = await liff.getProfile();
+        userId = profile.userId;
+        console.log("userId:", userId);
+
       } catch (error) {
         console.error("LIFF init error:", error);
+        const topStatus = document.getElementById("top-status");
+        if (topStatus) {
+          topStatus.textContent = "LINEログイン情報の取得に失敗しました。もう一度開き直してください。";
+          topStatus.className = "status error";
+        }
       }
     }
 
@@ -231,15 +237,61 @@
       return await res.json();
     }
 
-    function selectLesson(minutes) {
-      selectedMinutes = minutes;
-      selectedPrice = prices[minutes];
-      document.getElementById("lesson-name-price").textContent = `${minutes}分レッスン`;
-      document.getElementById("lesson-price").textContent = selectedPrice;
-      goToPage("page-price");
+    async function fetchUserPrice(minutes) {
+      if (!userId) {
+        throw new Error("userId is missing");
+      }
+
+      const res = await fetch(
+        GAS_URL
+        + "?action=getUserPrice"
+        + "&userId=" + encodeURIComponent(userId)
+        + "&lessonType=" + encodeURIComponent(minutes)
+        + "&t=" + Date.now()
+      );
+
+      const data = await res.json();
+
+      if (!data.ok || !data.price) {
+        throw new Error("Price not found");
+      }
+
+      return Number(data.price);
+    }
+
+    async function selectLesson(minutes) {
+      try {
+        selectedMinutes = minutes;
+        selectedPrice = null;
+
+        document.getElementById("lesson-name-price").textContent = `${minutes}分レッスン`;
+        document.getElementById("lesson-price").textContent = "料金を確認中...";
+
+        goToPage("page-price");
+
+        if (!userId) {
+          await initializeLiff();
+        }
+
+        const price = await fetchUserPrice(minutes);
+        selectedPrice = price;
+
+        document.getElementById("lesson-price").textContent = `$${price}`;
+
+      } catch (error) {
+        console.error(error);
+        document.getElementById("lesson-price").textContent = "料金を取得できませんでした";
+        alert("料金を取得できませんでした。先生にご連絡ください。");
+      }
     }
 
     function showDatePage() {
+      if (!selectedPrice) {
+        alert("料金を取得できていません。もう一度レッスンを選び直してください。");
+        goToPage("page-top");
+        return;
+      }
+
       generateDateOptions();
       goToPage("page-date");
     }
@@ -260,7 +312,6 @@
       select.innerHTML = "";
 
       const today = new Date();
-      let added = 0;
       let offset = 0;
 
       while (offset <= 31) {
@@ -271,9 +322,16 @@
           const value = formatDateForValue(d);
           const option = document.createElement("option");
           option.value = value;
-          option.textContent = `${value}（${getDayLabel(d)}）`;
+
+          if (offset === 0) {
+            option.textContent = `今日 ${value}（${getDayLabel(d)}）`;
+          } else if (offset === 1) {
+            option.textContent = `明日 ${value}（${getDayLabel(d)}）`;
+          } else {
+            option.textContent = `${value}（${getDayLabel(d)}）`;
+          }
+
           select.appendChild(option);
-          
         }
 
         offset++;
@@ -435,7 +493,7 @@
       }
 
       document.getElementById("confirm-lesson").textContent = `${selectedMinutes}分レッスン`;
-      document.getElementById("confirm-price").textContent = selectedPrice;
+      document.getElementById("confirm-price").textContent = `$${selectedPrice}`;
       document.getElementById("confirm-date").textContent = selectedDate;
       document.getElementById("confirm-time").textContent = selectedTime;
 
@@ -445,6 +503,20 @@
     async function goToCheckout() {
       try {
         setStatus("");
+
+        if (!userId) {
+          await initializeLiff();
+        }
+
+        if (!userId) {
+          setStatus("LINEユーザー情報を取得できませんでした。もう一度開き直してください。", true);
+          return;
+        }
+
+        if (!selectedPrice) {
+          setStatus("料金を取得できませんでした。もう一度レッスンを選び直してください。", true);
+          return;
+        }
 
         if (isWithin12Hours(selectedDate, selectedTime)) {
           alert("この時間は12時間前を過ぎているため予約できません。");
@@ -461,22 +533,25 @@
         localStorage.setItem("selectedDate", selectedDate);
         localStorage.setItem("selectedTime", selectedTime);
         localStorage.setItem("lessonType", selectedMinutes);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("price", selectedPrice);
 
         const response = await fetch("/api/create-checkout-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-  lessonType,
-  selectedDate,
-  selectedTime,
-  userId
-}),
+            lessonType: selectedMinutes,
+            selectedDate,
+            selectedTime,
+            userId
+          }),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-          setStatus("決済ページを開けませんでした。", true);
+          console.error(data);
+          setStatus("決済ページを開けませんでした。料金設定を確認してください。", true);
           return;
         }
 
