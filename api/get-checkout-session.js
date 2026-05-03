@@ -11,8 +11,14 @@ module.exports = async function handler(req, res) {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     return res.status(200).json({
-      payment_intent: session.payment_intent
+      payment_intent: session.payment_intent,
+      price: session.metadata?.price || "",
+      lessonType: session.metadata?.lessonType || "",
+      selectedDate: session.metadata?.selectedDate || "",
+      selectedTime: session.metadata?.selectedTime || "",
+      userId: session.metadata?.userId || ""
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to get session" });
