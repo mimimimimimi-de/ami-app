@@ -60,19 +60,17 @@
 
     const statusEl = document.getElementById("status");
 
-    const date = localStorage.getItem("selectedDate");
-    const time = localStorage.getItem("selectedTime");
-    const lessonType = localStorage.getItem("lessonType");
+    const localDate = localStorage.getItem("selectedDate");
+    const localTime = localStorage.getItem("selectedTime");
+    const localLessonType = localStorage.getItem("lessonType");
+    const localPrice = localStorage.getItem("price");
 
-    const lessonLabel = lessonType == 50 ? "50分レッスン" : "25分レッスン";
-    const priceLabel = lessonType == 50 ? "$18" : "$10";
-
-    async function getPaymentIntentId() {
+    async function getCheckoutData() {
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get("session_id");
 
       if (!sessionId) {
-        return "";
+        return {};
       }
 
       try {
@@ -81,25 +79,62 @@
 
         if (!response.ok) {
           console.error("get-checkout-session error:", data);
-          return "";
+          return {};
         }
 
-        return data.payment_intent || "";
+        return data;
       } catch (error) {
-        console.error("PaymentIntent取得エラー:", error);
-        return "";
+        console.error("Checkout情報取得エラー:", error);
+        return {};
       }
     }
 
     async function saveReservation() {
+      let profile;
+      let checkoutData = {};
+      let paymentIntentId = "";
+      let date = localDate;
+      let time = localTime;
+      let lessonType = localLessonType;
+      let priceLabel = "";
+
+      try {
+        statusEl.textContent = "決済情報を確認しています...";
+        checkoutData = await getCheckoutData();
+
+        paymentIntentId = checkoutData.payment_intent || "";
+
+        if (checkoutData.selectedDate) {
+          date = checkoutData.selectedDate;
+        }
+
+        if (checkoutData.selectedTime) {
+          time = checkoutData.selectedTime;
+        }
+
+        if (checkoutData.lessonType) {
+          lessonType = checkoutData.lessonType;
+        }
+
+        if (checkoutData.price) {
+          priceLabel = "$" + checkoutData.price;
+        } else if (localPrice) {
+          priceLabel = "$" + localPrice;
+        } else {
+          priceLabel = "";
+        }
+
+      } catch (error) {
+        console.error("Checkout data error:", error);
+      }
+
       if (!date || !time || !lessonType) {
         statusEl.classList.add("error");
         statusEl.textContent = "予約情報が見つかりませんでした。\n先生にご連絡ください。";
         return;
       }
 
-      let profile;
-      let paymentIntentId = "";
+      const lessonLabel = Number(lessonType) === 50 ? "50分レッスン" : "25分レッスン";
 
       try {
         statusEl.textContent = "LINE情報を確認しています...";
@@ -125,14 +160,6 @@
         statusEl.textContent =
           "LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。";
         return;
-      }
-
-      try {
-        statusEl.textContent = "決済情報を確認しています...";
-        paymentIntentId = await getPaymentIntentId();
-      } catch (error) {
-        console.error("PaymentIntent error:", error);
-        paymentIntentId = "";
       }
 
       const reservationData = {
@@ -168,6 +195,8 @@
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
         localStorage.removeItem("lessonType");
+        localStorage.removeItem("price");
+        localStorage.removeItem("userId");
         localStorage.removeItem("pendingReservation");
 
       } catch (error) {
