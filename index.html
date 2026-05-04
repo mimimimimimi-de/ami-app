@@ -40,7 +40,7 @@ button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;fo
 <div class="card hidden" id="price">
 <h2>料金</h2>
 <div id="lesson"></div>
-<div class="price" id="priceText"></div>
+<div class="price" id="priceText">-</div>
 <button class="sub" onclick="go('top')">戻る</button>
 <button class="main" onclick="openCalendar()">次へ</button>
 </div>
@@ -71,7 +71,8 @@ button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;fo
 const LIFF_ID="2009890655-9G9Ve0wB";
 const GAS_URL="https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
-let userId, selectedMinutes, selectedPrice;
+let userId=null;
+let selectedMinutes, selectedPrice;
 let selectedDate, selectedTime;
 let weekOffset=0;
 
@@ -80,25 +81,51 @@ document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
+// 🔥 userIdを確実に取得
 async function init(){
+try{
 await liff.init({liffId:LIFF_ID});
-if(!liff.isLoggedIn())liff.login();
+if(!liff.isLoggedIn()){
+liff.login();
+return;
+}
 const p=await liff.getProfile();
 userId=p.userId;
+}catch(e){
+console.error(e);
+}
 }
 
+// 🔥 修正済み（料金取得中表示）
 async function selectLesson(m){
 selectedMinutes=m;
 go("price");
 
+document.getElementById("lesson").textContent=m+"分";
+document.getElementById("priceText").textContent="料金を取得中...";
+
+// userId待つ
+if(!userId){
+await init();
+}
+
+try{
 const res=await fetch(`/api/get-user-price?userId=${userId}&lessonType=${m}`);
 const data=await res.json();
 
-if(!data.ok){alert("料金未設定");return;}
+if(!data.ok){
+document.getElementById("priceText").textContent="料金未設定";
+alert("料金が設定されていません。\n先生に連絡してください");
+return;
+}
 
 selectedPrice=data.price;
-document.getElementById("lesson").textContent=m+"分";
 document.getElementById("priceText").textContent="$"+data.price;
+
+}catch(e){
+console.error(e);
+document.getElementById("priceText").textContent="取得失敗";
+}
 }
 
 function format(d){
@@ -120,17 +147,12 @@ go("calendarPage");
 function prevWeek(){weekOffset-=7;generate();}
 function nextWeek(){weekOffset+=7;generate();}
 
-function toMin(t){
-const [h,m]=t.split(":").map(Number);
-return h*60+m;
-}
-
 function overlap(start,end,busy){
 return busy.some(b=>{
-if(b.start && b.end){
+if(b.start&&b.end){
 return !(end<=new Date(b.start)||start>=new Date(b.end));
 }
-if(b.date && b.time){
+if(b.date&&b.time){
 if(b.date!==start.toISOString().slice(0,10))return false;
 let bs=new Date(b.date+"T"+b.time);
 let be=new Date(bs.getTime()+60*60000);
@@ -191,8 +213,10 @@ document.getElementById("calendar").innerHTML=html;
 function pick(d,t){
 selectedDate=d;
 selectedTime=t;
+
 document.getElementById("confirm").textContent=
 `${d} ${t} / ${selectedMinutes}分 / $${selectedPrice}`;
+
 go("confirmPage");
 }
 
@@ -217,7 +241,8 @@ const data=await res.json();
 window.location.href=data.url;
 }
 
-init();
+// 🔥 初期化
+window.onload = init;
 </script>
 </body>
 </html>
