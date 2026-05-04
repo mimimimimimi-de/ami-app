@@ -72,6 +72,7 @@ const LIFF_ID="2009890655-9G9Ve0wB";
 const GAS_URL="https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let userId=null;
+let displayName="未設定";
 let selectedMinutes, selectedPrice;
 let selectedDate, selectedTime;
 let weekOffset=0;
@@ -81,22 +82,29 @@ document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-// 🔥 userIdを確実に取得
+// 🔥 userId + 名前取得
 async function init(){
 try{
 await liff.init({liffId:LIFF_ID});
+
 if(!liff.isLoggedIn()){
 liff.login();
 return;
 }
+
 const p=await liff.getProfile();
 userId=p.userId;
+displayName=p.displayName || "未設定";
+
+console.log("userId:",userId);
+console.log("name:",displayName);
+
 }catch(e){
 console.error(e);
 }
 }
 
-// 🔥 修正済み（料金取得中表示）
+// 🔥 修正済み selectLesson
 async function selectLesson(m){
 selectedMinutes=m;
 go("price");
@@ -104,18 +112,24 @@ go("price");
 document.getElementById("lesson").textContent=m+"分";
 document.getElementById("priceText").textContent="料金を取得中...";
 
-// userId待つ
 if(!userId){
 await init();
 }
 
 try{
-const res=await fetch(`/api/get-user-price?userId=${userId}&lessonType=${m}`);
+const res=await fetch(
+`/api/get-user-price?userId=${encodeURIComponent(userId)}&lessonType=${m}&name=${encodeURIComponent(displayName)}`
+);
+
 const data=await res.json();
 
 if(!data.ok){
 document.getElementById("priceText").textContent="料金未設定";
-alert("料金が設定されていません。\n先生に連絡してください");
+
+alert(
+"料金が設定されていません。\n\nこのIDをusersシートに登録してください👇\n\n"+userId
+);
+
 return;
 }
 
@@ -147,16 +161,19 @@ go("calendarPage");
 function prevWeek(){weekOffset-=7;generate();}
 function nextWeek(){weekOffset+=7;generate();}
 
+// 🔥 完全重複判定
 function overlap(start,end,busy){
 return busy.some(b=>{
-if(b.start&&b.end){
-return !(end<=new Date(b.start)||start>=new Date(b.end));
+if(b.start && b.end){
+let bs=new Date(b.start);
+let be=new Date(b.end);
+return !(end<=bs || start>=be);
 }
-if(b.date&&b.time){
+if(b.date && b.time){
 if(b.date!==start.toISOString().slice(0,10))return false;
 let bs=new Date(b.date+"T"+b.time);
 let be=new Date(bs.getTime()+60*60000);
-return !(end<=bs||start>=be);
+return !(end<=bs || start>=be);
 }
 return false;
 });
@@ -191,7 +208,8 @@ days.forEach(d=>{
 let date=format(d);
 
 let start=new Date(date+"T"+t);
-let end=new Date(start.getTime()+(selectedMinutes==50?60:35)*60000);
+let duration = selectedMinutes==50 ? 60 : 35;
+let end=new Date(start.getTime()+duration*60000);
 
 let tooSoon=start-new Date()<12*60*60*1000;
 let isBusy=overlap(start,end,busy);
@@ -241,7 +259,6 @@ const data=await res.json();
 window.location.href=data.url;
 }
 
-// 🔥 初期化
 window.onload = init;
 </script>
 </body>
