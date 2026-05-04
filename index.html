@@ -7,256 +7,572 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-body { font-family:sans-serif; background:#f5f6f7; padding:20px; font-size:16px;}
-.container { max-width:460px; margin:auto;}
-.card { background:#fff; padding:20px; border-radius:18px; margin-top:20px;}
-.hidden{display:none;}
-button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;font-size:16px;}
-.main{background:#06C755;color:#fff;}
-.sub{background:#eee;}
-.price{font-size:30px;text-align:center;color:#06C755;}
+* { box-sizing: border-box; }
 
-#calendar{overflow-x:auto;}
-.calendar-table{width:100%;min-width:700px;border-collapse:collapse;}
-.calendar-table th,.calendar-table td{border:1px solid #eee;padding:10px;text-align:center;}
-.calendar-table th{background:#f9f9f9;}
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  background: #f5f6f7;
+  color: #222;
+  font-size: 16px;
+}
 
-.available{color:#06C755;font-size:20px;cursor:pointer;}
-.unavailable{color:#ccc;}
+.container {
+  max-width: 460px;
+  margin: 0 auto;
+}
 
-.nav{display:flex;gap:10px;margin-top:10px;}
+.card {
+  background: #fff;
+  padding: 24px 18px;
+  border-radius: 20px;
+  margin-top: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.hidden { display: none; }
+
+h2 {
+  font-size: 22px;
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #666;
+  text-align: center;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.main {
+  background: #06C755;
+  color: #fff;
+}
+
+.sub {
+  background: #e5e5e5;
+  color: #333;
+}
+
+.price {
+  font-size: 34px;
+  font-weight: 800;
+  color: #06C755;
+  text-align: center;
+  margin: 16px 0;
+}
+
+#lesson {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #06C755;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.nav button {
+  margin-top: 0;
+}
+
+#calendar {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+
+.calendar-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: center;
+}
+
+.calendar-table th {
+  background: #f8faf9;
+  color: #333;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e8e8e8;
+  white-space: nowrap;
+}
+
+.calendar-table td {
+  font-size: 15px;
+  padding: 11px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f4f4f4;
+  white-space: nowrap;
+}
+
+.calendar-table td:first-child,
+.calendar-table th:first-child {
+  position: sticky;
+  left: 0;
+  background: #f8faf9;
+  z-index: 2;
+  font-weight: 700;
+  color: #555;
+}
+
+.available {
+  color: #06C755;
+  font-size: 20px !important;
+  font-weight: 800;
+  cursor: pointer;
+  background: #f1fff6;
+}
+
+.unavailable {
+  color: #bbb;
+  font-size: 18px !important;
+  background: #fafafa;
+}
+
+.info-box {
+  background: #f7fdf9;
+  border: 1px solid #d7f3df;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.policy-box {
+  margin-top: 16px;
+  background: #fff8f0;
+  border: 1px solid #f3c98b;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #666;
+  text-align: left;
+}
+
+.status {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 15px;
+  color: #06C755;
+  white-space: pre-line;
+}
+
+.error {
+  color: #d93025;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<div class="card" id="top">
-<h2>レッスン選択</h2>
-<button class="main" onclick="selectLesson(25)">25分</button>
-<button class="main" onclick="selectLesson(50)">50分</button>
-</div>
+  <div class="card" id="top">
+    <h2>レッスンを選んでください</h2>
+    <p>ご希望のレッスン時間を選んでください。</p>
+    <button class="main" onclick="selectLesson(25)">25分レッスン</button>
+    <button class="main" onclick="selectLesson(50)">50分レッスン</button>
+    <div class="status" id="topStatus"></div>
+  </div>
 
-<div class="card hidden" id="price">
-<h2>料金</h2>
-<div id="lesson"></div>
-<div class="price" id="priceText">-</div>
-<button class="sub" onclick="go('top')">戻る</button>
-<button class="main" onclick="openCalendar()">次へ</button>
-</div>
+  <div class="card hidden" id="price">
+    <h2>料金の確認</h2>
+    <div id="lesson"></div>
+    <div class="price" id="priceText">-</div>
+    <button class="sub" onclick="go('top')">戻る</button>
+    <button class="main" onclick="openCalendar()">次へ</button>
+  </div>
 
-<div class="card hidden" id="calendarPage">
-<h2>日時選択</h2>
+  <div class="card hidden" id="calendarPage">
+    <h2>日時を選んでください</h2>
+    <p>○を押すと日時を選択できます。</p>
 
-<div class="nav">
-<button class="sub" onclick="prevWeek()">←</button>
-<button class="sub" onclick="nextWeek()">→</button>
-</div>
+    <div class="nav">
+      <button class="sub" onclick="prevWeek()">← 前の週</button>
+      <button class="sub" onclick="nextWeek()">次の週 →</button>
+    </div>
 
-<div id="calendar"></div>
+    <div id="calendar">読み込み中...</div>
 
-<button class="sub" onclick="go('price')">戻る</button>
-</div>
+    <button class="sub" onclick="go('price')">戻る</button>
+  </div>
 
-<div class="card hidden" id="confirmPage">
-<h2>確認</h2>
-<p id="confirm"></p>
-<button class="sub" onclick="go('calendarPage')">戻る</button>
-<button class="main" onclick="checkout()">決済</button>
-</div>
+  <div class="card hidden" id="confirmPage">
+    <h2>予約内容の最終確認</h2>
+    <div id="confirm"></div>
+    <button class="sub" onclick="go('calendarPage')">戻る</button>
+    <button class="main" onclick="checkout()">決済に進む</button>
+    <div class="status" id="statusMessage"></div>
+  </div>
 
 </div>
 
 <script>
-const LIFF_ID="2009890655-9G9Ve0wB";
-const GAS_URL="https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+const LIFF_ID = "2009890655-9G9Ve0wB";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
-let userId=null;
-let displayName="未設定";
-let selectedMinutes, selectedPrice;
-let selectedDate, selectedTime;
-let weekOffset=0;
+let userId = null;
+let displayName = "未設定";
+let selectedMinutes = null;
+let selectedPrice = null;
+let selectedDate = null;
+let selectedTime = null;
+let weekOffset = 0;
 
-function go(id){
-document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
+function go(id) {
+  document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
 
-// 🔥 userId + 名前取得
-async function init(){
-try{
-await liff.init({liffId:LIFF_ID});
+async function init() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
 
-if(!liff.isLoggedIn()){
-liff.login();
-return;
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+    displayName = profile.displayName || "未設定";
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("topStatus").textContent =
+      "LINE情報を取得できませんでした。もう一度開き直してください。";
+    document.getElementById("topStatus").className = "status error";
+  }
 }
 
-const p=await liff.getProfile();
-userId=p.userId;
-displayName=p.displayName || "未設定";
+async function selectLesson(minutes) {
+  selectedMinutes = minutes;
+  selectedPrice = null;
 
-console.log("userId:",userId);
-console.log("name:",displayName);
+  go("price");
 
-}catch(e){
-console.error(e);
-}
-}
+  document.getElementById("lesson").textContent = minutes + "分レッスン";
+  document.getElementById("priceText").textContent = "料金を取得中...";
 
-// 🔥 修正済み selectLesson
-async function selectLesson(m){
-selectedMinutes=m;
-go("price");
+  if (!userId) {
+    await init();
+  }
 
-document.getElementById("lesson").textContent=m+"分";
-document.getElementById("priceText").textContent="料金を取得中...";
+  try {
+    const res = await fetch(
+      "/api/get-user-price" +
+      "?userId=" + encodeURIComponent(userId) +
+      "&lessonType=" + encodeURIComponent(minutes) +
+      "&name=" + encodeURIComponent(displayName)
+    );
 
-if(!userId){
-await init();
-}
+    const data = await res.json();
 
-try{
-const res=await fetch(
-`/api/get-user-price?userId=${encodeURIComponent(userId)}&lessonType=${m}&name=${encodeURIComponent(displayName)}`
-);
+    if (!data.ok || !data.price) {
+      document.getElementById("priceText").textContent = "料金未設定";
 
-const data=await res.json();
+      alert(
+        "料金がまだ設定されていません。\n\n" +
+        "先生が料金を設定したあと、予約できるようになります。\n\n" +
+        "ID:\n" + userId
+      );
 
-if(!data.ok){
-document.getElementById("priceText").textContent="料金未設定";
+      return;
+    }
 
-alert(
-"料金が設定されていません。\n\nこのIDをusersシートに登録してください👇\n\n"+userId
-);
+    selectedPrice = Number(data.price);
+    document.getElementById("priceText").textContent = "$" + selectedPrice;
 
-return;
-}
-
-selectedPrice=data.price;
-document.getElementById("priceText").textContent="$"+data.price;
-
-}catch(e){
-console.error(e);
-document.getElementById("priceText").textContent="取得失敗";
-}
+  } catch (e) {
+    console.error(e);
+    document.getElementById("priceText").textContent = "取得失敗";
+  }
 }
 
-function format(d){
-return d.toISOString().slice(0,10);
+function openCalendar() {
+  if (!selectedPrice) {
+    alert("料金が設定されていません。先生にご連絡ください。");
+    return;
+  }
+
+  weekOffset = 0;
+  go("calendarPage");
+  generateCalendar();
 }
 
-function addDays(base,days){
-let d=new Date(base);
-d.setDate(d.getDate()+days);
-return d;
+function prevWeek() {
+  if (weekOffset <= 0) {
+    alert("今日より前の週は選べません。");
+    return;
+  }
+
+  weekOffset -= 7;
+  generateCalendar();
 }
 
-function openCalendar(){
-weekOffset=0;
-generate();
-go("calendarPage");
+function nextWeek() {
+  if (weekOffset >= 28) {
+    alert("予約できるのは1か月先までです。");
+    return;
+  }
+
+  weekOffset += 7;
+  generateCalendar();
 }
 
-function prevWeek(){weekOffset-=7;generate();}
-function nextWeek(){weekOffset+=7;generate();}
-
-// 🔥 完全重複判定
-function overlap(start,end,busy){
-return busy.some(b=>{
-if(b.start && b.end){
-let bs=new Date(b.start);
-let be=new Date(b.end);
-return !(end<=bs || start>=be);
-}
-if(b.date && b.time){
-if(b.date!==start.toISOString().slice(0,10))return false;
-let bs=new Date(b.date+"T"+b.time);
-let be=new Date(bs.getTime()+60*60000);
-return !(end<=bs || start>=be);
-}
-return false;
-});
+function formatFull(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
-async function generate(){
-const busy=await fetch(GAS_URL).then(r=>r.json());
-
-const today=new Date();
-let days=[];
-
-for(let i=0;i<7;i++){
-let d=addDays(today,weekOffset+i);
-if(d.getDay()!=0)days.push(d);
+function formatShort(date) {
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
-let times=[];
-for(let h=7;h<=22;h++){
-["00","15","30","45"].forEach(m=>{
-times.push(`${String(h).padStart(2,"0")}:${m}`);
-});
+function getDayLabel(date) {
+  return ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
 }
 
-let html="<table class='calendar-table'><tr><th></th>";
-days.forEach(d=>html+=`<th>${format(d)}</th>`);
-html+="</tr>";
-
-times.forEach(t=>{
-html+=`<tr><td>${t}</td>`;
-
-days.forEach(d=>{
-let date=format(d);
-
-let start=new Date(date+"T"+t);
-let duration = selectedMinutes==50 ? 60 : 35;
-let end=new Date(start.getTime()+duration*60000);
-
-let tooSoon=start-new Date()<12*60*60*1000;
-let isBusy=overlap(start,end,busy);
-
-if(!tooSoon && !isBusy){
-html+=`<td class="available" onclick="pick('${date}','${t}')">○</td>`;
-}else{
-html+=`<td class="unavailable">×</td>`;
-}
-});
-
-html+="</tr>";
-});
-
-html+="</table>";
-document.getElementById("calendar").innerHTML=html;
+function addDays(base, days) {
+  const d = new Date(base);
+  d.setDate(d.getDate() + days);
+  return d;
 }
 
-function pick(d,t){
-selectedDate=d;
-selectedTime=t;
-
-document.getElementById("confirm").textContent=
-`${d} ${t} / ${selectedMinutes}分 / $${selectedPrice}`;
-
-go("confirmPage");
+function normalizeTime(time) {
+  const [h, m] = String(time).split(":");
+  return `${String(h).padStart(2, "0")}:${String(m || "00").padStart(2, "0")}`;
 }
 
-async function checkout(){
-localStorage.setItem("selectedDate",selectedDate);
-localStorage.setItem("selectedTime",selectedTime);
-localStorage.setItem("lessonType",selectedMinutes);
-localStorage.setItem("price",selectedPrice);
+function getBlockMinutes(value) {
+  return Number(value) === 50 || String(value).includes("50") ? 60 : 35;
+}
 
-const res=await fetch("/api/create-checkout-session",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-lessonType:selectedMinutes,
-selectedDate,
-selectedTime,
-userId
-})
-});
+function isWithin12Hours(date, time) {
+  const start = new Date(`${date}T${normalizeTime(time)}:00+09:00`);
+  const now = new Date();
+  return start.getTime() - now.getTime() < 12 * 60 * 60 * 1000;
+}
 
-const data=await res.json();
-window.location.href=data.url;
+function isOverlap(start, end, busyItems) {
+  return busyItems.some(item => {
+    if (item.start && item.end) {
+      const busyStart = new Date(item.start);
+      const busyEnd = new Date(item.end);
+      return start < busyEnd && end > busyStart;
+    }
+
+    if (item.date && item.time) {
+      const itemDate = String(item.date).trim();
+      if (itemDate !== formatFull(start)) return false;
+
+      const busyStart = new Date(`${itemDate}T${normalizeTime(item.time)}:00+09:00`);
+      const busyEnd = new Date(busyStart.getTime() + getBlockMinutes(item.lesson || "25分レッスン") * 60000);
+
+      return start < busyEnd && end > busyStart;
+    }
+
+    return false;
+  });
+}
+
+function getTimeWindows(date) {
+  const day = date.getDay();
+
+  if (day === 0) return [];
+
+  if (day >= 1 && day <= 5) {
+    return [
+      { start: "07:00", end: "11:00" },
+      { start: "14:00", end: "22:00" }
+    ];
+  }
+
+  if (day === 6) {
+    return [
+      { start: "08:00", end: "12:00" },
+      { start: "13:00", end: "19:00" }
+    ];
+  }
+
+  return [];
+}
+
+function timeToMinutes(time) {
+  const [h, m] = normalizeTime(time).split(":").map(Number);
+  return h * 60 + m;
+}
+
+function minutesToTime(total) {
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+async function generateCalendar() {
+  const calendar = document.getElementById("calendar");
+  calendar.innerHTML = "読み込み中...";
+
+  const busyItems = await fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json());
+
+  const today = new Date();
+  const days = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(today, weekOffset + i);
+
+    if (d.getDay() !== 0) {
+      days.push(d);
+    }
+  }
+
+  const timeSet = new Set();
+
+  days.forEach(day => {
+    const windows = getTimeWindows(day);
+    const blockMinutes = getBlockMinutes(selectedMinutes);
+
+    windows.forEach(w => {
+      const startMin = timeToMinutes(w.start);
+      const endMin = timeToMinutes(w.end);
+
+      for (let t = startMin; t + blockMinutes <= endMin; t += 15) {
+        timeSet.add(minutesToTime(t));
+      }
+    });
+  });
+
+  const times = Array.from(timeSet).sort();
+
+  let html = "<table class='calendar-table'><tr><th>時間</th>";
+
+  days.forEach(day => {
+    html += `<th>${formatShort(day)}<br>(${getDayLabel(day)})</th>`;
+  });
+
+  html += "</tr>";
+
+  times.forEach(time => {
+    html += `<tr><td>${time}</td>`;
+
+    days.forEach(day => {
+      const date = formatFull(day);
+      const windows = getTimeWindows(day);
+      const blockMinutes = getBlockMinutes(selectedMinutes);
+
+      const inWindow = windows.some(w => {
+        const t = timeToMinutes(time);
+        return t >= timeToMinutes(w.start) && t + blockMinutes <= timeToMinutes(w.end);
+      });
+
+      const start = new Date(`${date}T${time}:00+09:00`);
+      const end = new Date(start.getTime() + blockMinutes * 60000);
+
+      const tooSoon = isWithin12Hours(date, time);
+      const busy = isOverlap(start, end, busyItems);
+
+      if (inWindow && !tooSoon && !busy) {
+        html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
+      } else {
+        html += `<td class="unavailable">×</td>`;
+      }
+    });
+
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  calendar.innerHTML = html;
+}
+
+function pickSlot(date, time) {
+  selectedDate = date;
+  selectedTime = time;
+
+  const displayDate = date.split("-")[1].replace(/^0/, "") + "/" + date.split("-")[2].replace(/^0/, "");
+
+  document.getElementById("confirm").innerHTML = `
+    <div class="info-box">
+      <strong>レッスン：</strong>${selectedMinutes}分レッスン<br>
+      <strong>料金：</strong>$${selectedPrice}<br>
+      <strong>日付：</strong>${displayDate}<br>
+      <strong>時間：</strong>${time}
+    </div>
+
+    <div class="policy-box">
+      <strong>キャンセルについて</strong><br>
+      ・レッスン開始12時間前まで：返金あり<br>
+      ・決済手数料分は返金されません<br>
+      ・12時間前を過ぎた場合：返金なし<br><br>
+      内容をご確認のうえ、決済へお進みください。
+    </div>
+  `;
+
+  go("confirmPage");
+}
+
+async function checkout() {
+  try {
+    document.getElementById("statusMessage").textContent = "決済ページを準備しています...";
+
+    localStorage.setItem("selectedDate", selectedDate);
+    localStorage.setItem("selectedTime", selectedTime);
+    localStorage.setItem("lessonType", selectedMinutes);
+    localStorage.setItem("price", selectedPrice);
+    localStorage.setItem("userId", userId);
+
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lessonType: selectedMinutes,
+        selectedDate,
+        selectedTime,
+        userId
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById("statusMessage").className = "status error";
+      document.getElementById("statusMessage").textContent =
+        "決済ページを開けませんでした。先生にご連絡ください。";
+      return;
+    }
+
+    window.location.href = data.url;
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("statusMessage").className = "status error";
+    document.getElementById("statusMessage").textContent =
+      "エラーが発生しました。先生にご連絡ください。";
+  }
 }
 
 window.onload = init;
