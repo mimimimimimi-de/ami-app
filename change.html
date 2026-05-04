@@ -30,6 +30,8 @@ body {
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
+.hidden { display: none; }
+
 h2 {
   text-align: center;
   color: #06C755;
@@ -86,6 +88,11 @@ button {
 .sub {
   background: #e5e5e5;
   color: #333;
+}
+
+.main {
+  background: #06C755;
+  color: white;
 }
 
 #calendar {
@@ -164,6 +171,12 @@ button {
   text-align: center;
 }
 
+.done-icon {
+  font-size: 44px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 .error {
   color: #d93025;
 }
@@ -172,7 +185,8 @@ button {
 
 <body>
 <div class="container">
-  <div class="card">
+
+  <div class="card" id="changeCard">
     <h2>予約変更</h2>
     <p>○を押すと、変更確認が表示されます。</p>
 
@@ -194,6 +208,21 @@ button {
 
     <div class="status" id="status"></div>
   </div>
+
+  <div class="card hidden" id="doneCard">
+    <div class="done-icon">✅</div>
+    <h2>予約を変更しました</h2>
+
+    <div class="info-box" id="doneInfo"></div>
+
+    <p>
+      LINEに新しい予約内容を送信しました。<br>
+      このページは閉じて大丈夫です。
+    </p>
+
+    <button class="main" onclick="window.close()">閉じる</button>
+  </div>
+
 </div>
 
 <script>
@@ -271,7 +300,6 @@ function renderCalendar() {
   }
 
   const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
-
   const timeSet = new Set();
 
   visibleDates.forEach(d => {
@@ -363,8 +391,12 @@ async function executeChange(date, time) {
 
     await fetch(url, { mode: "no-cors" });
 
-    status.textContent =
-      "✅ 変更処理を受け付けました。\n新しい日時：" + formatShort(date) + " " + time + "\nLINEに戻って内容をご確認ください。";
+    document.getElementById("doneInfo").innerHTML =
+      "<strong>新しい日時：</strong>" + formatShort(date) + " " + time + "<br>" +
+      "<strong>変更内容：</strong>予約日時を変更しました。";
+
+    document.getElementById("changeCard").classList.add("hidden");
+    document.getElementById("doneCard").classList.remove("hidden");
 
   } catch (e) {
     console.error(e);
