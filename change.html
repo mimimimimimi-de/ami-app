@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>予約変更</title>
+
+<style>
+body { font-family:sans-serif; padding:16px; background:#f5f6f7;}
+.card { background:#fff; padding:20px; border-radius:16px; max-width:460px; margin:auto;}
+h2 { text-align:center; color:#06C755;}
+.slot-btn {
+  width:44px; height:36px;
+  border-radius:10px;
+  background:#f1fff6;
+  color:#06C755;
+  border:1px solid #ccefd8;
+}
+.unavailable { color:#bbb; }
+</style>
+</head>
+
+<body>
+<div class="card">
+<h2>予約変更</h2>
+
+<div id="info">読み込み中...</div>
+<div id="calendar">読み込み中...</div>
+<div id="status"></div>
+
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+let reservationId = "";
+let data = null;
+
+function formatShort(d){
+  const p = d.split("-");
+  return Number(p[1])+"/"+Number(p[2]);
+}
+
+async function load(){
+  const params = new URLSearchParams(location.search);
+  reservationId = params.get("id");
+
+  const res = await fetch(GAS_URL + "?action=changeData&id=" + reservationId);
+  data = await res.json();
+
+  document.getElementById("info").innerHTML =
+    "現在：" + data.reservation.date + " " + data.reservation.time;
+
+  render();
+}
+
+function render(){
+  let html = "<table border='1'>";
+
+  data.dates.forEach(d=>{
+    html += "<tr>";
+    d.times.forEach(t=>{
+      html += `<td><button class="slot-btn" data-date="${d.date}" data-time="${t}">○</button></td>`;
+    });
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  document.getElementById("calendar").innerHTML = html;
+}
+
+document.addEventListener("click", e=>{
+  if(e.target.classList.contains("slot-btn")){
+    const d = e.target.dataset.date;
+    const t = e.target.dataset.time;
+
+    if(!confirm(formatShort(d)+" "+t+" に変更しますか？")) return;
+
+    change(d,t);
+  }
+});
+
+async function change(d,t){
+  document.getElementById("status").innerText="変更中...";
+
+  await fetch(
+    GAS_URL +
+    "?action=changeExecute&id="+reservationId+
+    "&date="+d+
+    "&time="+t
+  );
+
+  document.getElementById("status").innerText="変更完了！";
+}
+
+load();
+</script>
+</body>
+</html>
