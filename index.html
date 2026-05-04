@@ -7,188 +7,214 @@
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-body { font-family: sans-serif; background:#f7f7f7; padding:20px; }
-.container { max-width:420px; margin:auto; }
-.card { background:#fff; padding:20px; border-radius:16px; margin-top:20px; }
-.hidden { display:none; }
-button { width:100%; padding:14px; margin-top:10px; border:none; border-radius:10px; }
-.main { background:#06C755; color:#fff; }
-.sub { background:#999; color:#fff; }
+body { font-family:sans-serif; background:#f5f6f7; padding:20px; font-size:16px;}
+.container { max-width:460px; margin:auto;}
+.card { background:#fff; padding:20px; border-radius:18px; margin-top:20px;}
+.hidden{display:none;}
+button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;font-size:16px;}
+.main{background:#06C755;color:#fff;}
+.sub{background:#eee;}
+.price{font-size:30px;text-align:center;color:#06C755;}
 
-#calendar { overflow-x:auto; }
+#calendar{overflow-x:auto;}
+.calendar-table{width:100%;min-width:700px;border-collapse:collapse;}
+.calendar-table th,.calendar-table td{border:1px solid #eee;padding:10px;text-align:center;}
+.calendar-table th{background:#f9f9f9;}
 
-.calendar-table {
-  width:100%;
-  border-collapse:collapse;
-  text-align:center;
-}
+.available{color:#06C755;font-size:20px;cursor:pointer;}
+.unavailable{color:#ccc;}
 
-.calendar-table th, .calendar-table td {
-  border:1px solid #eee;
-  padding:6px;
-  font-size:12px;
-}
-
-.available { color:#06C755; font-weight:bold; cursor:pointer; }
-.unavailable { color:#ccc; }
-
-.price { font-size:28px; color:#06C755; text-align:center; }
+.nav{display:flex;gap:10px;margin-top:10px;}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<div class="card" id="page-top">
+<div class="card" id="top">
 <h2>レッスン選択</h2>
 <button class="main" onclick="selectLesson(25)">25分</button>
 <button class="main" onclick="selectLesson(50)">50分</button>
 </div>
 
-<div class="card hidden" id="page-price">
+<div class="card hidden" id="price">
 <h2>料金</h2>
-<div id="lesson-name"></div>
-<div class="price" id="lesson-price"></div>
-<button class="sub" onclick="go('page-top')">戻る</button>
-<button class="main" onclick="showCalendar()">次へ</button>
+<div id="lesson"></div>
+<div class="price" id="priceText"></div>
+<button class="sub" onclick="go('top')">戻る</button>
+<button class="main" onclick="openCalendar()">次へ</button>
 </div>
 
-<div class="card hidden" id="page-calendar">
+<div class="card hidden" id="calendarPage">
 <h2>日時選択</h2>
-<div id="calendar"></div>
-<button class="sub" onclick="go('page-price')">戻る</button>
+
+<div class="nav">
+<button class="sub" onclick="prevWeek()">←</button>
+<button class="sub" onclick="nextWeek()">→</button>
 </div>
 
-<div class="card hidden" id="page-confirm">
+<div id="calendar"></div>
+
+<button class="sub" onclick="go('price')">戻る</button>
+</div>
+
+<div class="card hidden" id="confirmPage">
 <h2>確認</h2>
 <p id="confirm"></p>
-<button class="sub" onclick="go('page-calendar')">戻る</button>
+<button class="sub" onclick="go('calendarPage')">戻る</button>
 <button class="main" onclick="checkout()">決済</button>
 </div>
 
 </div>
 
 <script>
-const LIFF_ID = "2009890655-9G9Ve0wB";
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+const LIFF_ID="2009890655-9G9Ve0wB";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
-let userId, selectedMinutes, selectedPrice, selectedDate, selectedTime;
+let userId, selectedMinutes, selectedPrice;
+let selectedDate, selectedTime;
+let weekOffset=0;
 
 function go(id){
-  document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
 }
 
 async function init(){
-  await liff.init({ liffId: LIFF_ID });
-  if(!liff.isLoggedIn()) liff.login();
-  const p = await liff.getProfile();
-  userId = p.userId;
+await liff.init({liffId:LIFF_ID});
+if(!liff.isLoggedIn())liff.login();
+const p=await liff.getProfile();
+userId=p.userId;
 }
 
 async function selectLesson(m){
-  selectedMinutes = m;
-  go("page-price");
+selectedMinutes=m;
+go("price");
 
-  const res = await fetch(`/api/get-user-price?userId=${userId}&lessonType=${m}`);
-  const data = await res.json();
+const res=await fetch(`/api/get-user-price?userId=${userId}&lessonType=${m}`);
+const data=await res.json();
 
-  if(!data.ok){
-    alert("料金未設定");
-    return;
-  }
+if(!data.ok){alert("料金未設定");return;}
 
-  selectedPrice = data.price;
-  document.getElementById("lesson-name").textContent = `${m}分`;
-  document.getElementById("lesson-price").textContent = "$"+data.price;
+selectedPrice=data.price;
+document.getElementById("lesson").textContent=m+"分";
+document.getElementById("priceText").textContent="$"+data.price;
 }
 
 function format(d){
-  return d.toISOString().slice(0,10);
+return d.toISOString().slice(0,10);
 }
+
+function addDays(base,days){
+let d=new Date(base);
+d.setDate(d.getDate()+days);
+return d;
+}
+
+function openCalendar(){
+weekOffset=0;
+generate();
+go("calendarPage");
+}
+
+function prevWeek(){weekOffset-=7;generate();}
+function nextWeek(){weekOffset+=7;generate();}
 
 function toMin(t){
-  const [h,m]=t.split(":").map(Number);
-  return h*60+m;
+const [h,m]=t.split(":").map(Number);
+return h*60+m;
 }
 
-function toTime(min){
-  return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0");
+function overlap(start,end,busy){
+return busy.some(b=>{
+if(b.start && b.end){
+return !(end<=new Date(b.start)||start>=new Date(b.end));
+}
+if(b.date && b.time){
+if(b.date!==start.toISOString().slice(0,10))return false;
+let bs=new Date(b.date+"T"+b.time);
+let be=new Date(bs.getTime()+60*60000);
+return !(end<=bs||start>=be);
+}
+return false;
+});
 }
 
-async function showCalendar(){
-  go("page-calendar");
+async function generate(){
+const busy=await fetch(GAS_URL).then(r=>r.json());
 
-  const busy = await fetch(GAS_URL).then(r=>r.json());
+const today=new Date();
+let days=[];
 
-  const today = new Date();
-  let days=[];
-  for(let i=0;i<7;i++){
-    let d=new Date(); d.setDate(today.getDate()+i);
-    if(d.getDay()!=0) days.push(format(d));
-  }
+for(let i=0;i<7;i++){
+let d=addDays(today,weekOffset+i);
+if(d.getDay()!=0)days.push(d);
+}
 
-  let times=[];
-  for(let h=7;h<=22;h++){
-    ["00","15","30","45"].forEach(m=>times.push(`${String(h).padStart(2,"0")}:${m}`));
-  }
+let times=[];
+for(let h=7;h<=22;h++){
+["00","15","30","45"].forEach(m=>{
+times.push(`${String(h).padStart(2,"0")}:${m}`);
+});
+}
 
-  let html="<table class='calendar-table'><tr><th></th>";
-  days.forEach(d=>html+=`<th>${d}</th>`);
-  html+="</tr>";
+let html="<table class='calendar-table'><tr><th></th>";
+days.forEach(d=>html+=`<th>${format(d)}</th>`);
+html+="</tr>";
 
-  times.forEach(t=>{
-    html+=`<tr><td>${t}</td>`;
-    days.forEach(d=>{
-      const tooSoon = new Date(d+"T"+t) - new Date() < 12*60*60*1000;
+times.forEach(t=>{
+html+=`<tr><td>${t}</td>`;
 
-      const overlap = busy.some(b=>{
-        if(b.date!=d) return false;
-        return b.time==t;
-      });
+days.forEach(d=>{
+let date=format(d);
 
-      if(!tooSoon && !overlap){
-        html+=`<td class="available" onclick="pick('${d}','${t}')">○</td>`;
-      }else{
-        html+=`<td class="unavailable">×</td>`;
-      }
-    });
-    html+="</tr>";
-  });
+let start=new Date(date+"T"+t);
+let end=new Date(start.getTime()+(selectedMinutes==50?60:35)*60000);
 
-  html+="</table>";
-  document.getElementById("calendar").innerHTML=html;
+let tooSoon=start-new Date()<12*60*60*1000;
+let isBusy=overlap(start,end,busy);
+
+if(!tooSoon && !isBusy){
+html+=`<td class="available" onclick="pick('${date}','${t}')">○</td>`;
+}else{
+html+=`<td class="unavailable">×</td>`;
+}
+});
+
+html+="</tr>";
+});
+
+html+="</table>";
+document.getElementById("calendar").innerHTML=html;
 }
 
 function pick(d,t){
-  selectedDate=d;
-  selectedTime=t;
-
-  document.getElementById("confirm").textContent =
-    `${d} ${t} / ${selectedMinutes}分 / $${selectedPrice}`;
-
-  go("page-confirm");
+selectedDate=d;
+selectedTime=t;
+document.getElementById("confirm").textContent=
+`${d} ${t} / ${selectedMinutes}分 / $${selectedPrice}`;
+go("confirmPage");
 }
 
 async function checkout(){
-  localStorage.setItem("selectedDate",selectedDate);
-  localStorage.setItem("selectedTime",selectedTime);
-  localStorage.setItem("lessonType",selectedMinutes);
-  localStorage.setItem("price",selectedPrice);
+localStorage.setItem("selectedDate",selectedDate);
+localStorage.setItem("selectedTime",selectedTime);
+localStorage.setItem("lessonType",selectedMinutes);
+localStorage.setItem("price",selectedPrice);
 
-  const res = await fetch("/api/create-checkout-session",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      lessonType:selectedMinutes,
-      selectedDate,
-      selectedTime,
-      userId
-    })
-  });
+const res=await fetch("/api/create-checkout-session",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+lessonType:selectedMinutes,
+selectedDate,
+selectedTime,
+userId
+})
+});
 
-  const data = await res.json();
-  window.location.href = data.url;
+const data=await res.json();
+window.location.href=data.url;
 }
 
 init();
