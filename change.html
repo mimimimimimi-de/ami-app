@@ -6,94 +6,383 @@
 <title>予約変更</title>
 
 <style>
-body { font-family:sans-serif; padding:16px; background:#f5f6f7;}
-.card { background:#fff; padding:20px; border-radius:16px; max-width:460px; margin:auto;}
-h2 { text-align:center; color:#06C755;}
-.slot-btn {
-  width:44px; height:36px;
-  border-radius:10px;
-  background:#f1fff6;
-  color:#06C755;
-  border:1px solid #ccefd8;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  background: #f5f6f7;
+  color: #222;
+  font-size: 16px;
 }
-.unavailable { color:#bbb; }
+
+.container {
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  padding: 24px 18px;
+  border-radius: 20px;
+  margin-top: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+h2 {
+  text-align: center;
+  color: #06C755;
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+
+p {
+  text-align: center;
+  color: #666;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.info-box {
+  background: #f7fdf9;
+  border: 1px solid #d7f3df;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 16px 0;
+}
+
+.warning-box {
+  background: #fff8f0;
+  border: 1px solid #f3c98b;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #666;
+  margin: 16px 0;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sub {
+  background: #e5e5e5;
+  color: #333;
+}
+
+#calendar {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  background: #fff;
+  min-height: 80px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.calendar-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: center;
+}
+
+.calendar-table th {
+  background: #f8faf9;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e8e8e8;
+  white-space: nowrap;
+}
+
+.calendar-table td {
+  font-size: 15px;
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f4f4f4;
+  white-space: nowrap;
+}
+
+.calendar-table td:first-child,
+.calendar-table th:first-child {
+  position: sticky;
+  left: 0;
+  background: #f8faf9;
+  z-index: 2;
+  font-weight: 700;
+}
+
+.slot-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f1fff6;
+  color: #06C755;
+  font-size: 20px;
+  font-weight: 800;
+  border: 1px solid #ccefd8;
+  margin: 0;
+  padding: 0;
+}
+
+.unavailable {
+  color: #bbb;
+  font-size: 18px;
+  background: #fafafa;
+}
+
+.status {
+  margin-top: 18px;
+  white-space: pre-line;
+  line-height: 1.7;
+  font-size: 15px;
+  font-weight: bold;
+  color: #06C755;
+  text-align: center;
+}
+
+.error {
+  color: #d93025;
+}
 </style>
 </head>
 
 <body>
-<div class="card">
-<h2>予約変更</h2>
+<div class="container">
+  <div class="card">
+    <h2>予約変更</h2>
+    <p>○を押すと、変更確認が表示されます。</p>
 
-<div id="info">読み込み中...</div>
-<div id="calendar">読み込み中...</div>
-<div id="status"></div>
+    <div class="info-box" id="reservationInfo">読み込み中...</div>
 
+    <div class="warning-box">
+      <strong>予約変更について</strong><br>
+      ・予約変更はレッスン開始12時間前まで可能です。<br>
+      ・12時間前を過ぎた予約は変更できません。<br>
+      ・変更後は新しいGoogle Meetリンクが発行されます。
+    </div>
+
+    <div class="nav">
+      <button class="sub" type="button" onclick="prevWeek()">← 前の週</button>
+      <button class="sub" type="button" onclick="nextWeek()">次の週 →</button>
+    </div>
+
+    <div id="calendar">読み込み中...</div>
+
+    <div class="status" id="status"></div>
+  </div>
 </div>
 
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let reservationId = "";
-let data = null;
+let optionsData = null;
+let weekOffset = 0;
+const pageSize = 7;
 
-function formatShort(d){
-  const p = d.split("-");
-  return Number(p[1])+"/"+Number(p[2]);
+function formatShort(dateStr) {
+  const parts = dateStr.split("-");
+  return Number(parts[1]) + "/" + Number(parts[2]);
 }
 
-async function load(){
-  const params = new URLSearchParams(location.search);
+function getDayLabel(dateStr) {
+  const d = new Date(dateStr + "T00:00:00+09:00");
+  return ["日", "月", "火", "水", "木", "金", "土"][d.getDay()];
+}
+
+function timeToMinutes(time) {
+  const parts = String(time).split(":").map(Number);
+  return parts[0] * 60 + parts[1];
+}
+
+async function loadChangeData() {
+  const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
 
-  const res = await fetch(GAS_URL + "?action=changeData&id=" + reservationId);
-  data = await res.json();
+  if (!reservationId) {
+    document.getElementById("reservationInfo").innerHTML =
+      "<span class='error'>予約IDが見つかりません。</span>";
+    document.getElementById("calendar").innerHTML = "";
+    return;
+  }
 
-  document.getElementById("info").innerHTML =
-    "現在：" + data.reservation.date + " " + data.reservation.time;
+  try {
+    const res = await fetch(
+      GAS_URL + "?action=changeData&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now()
+    );
 
-  render();
+    const data = await res.json();
+
+    if (!data.ok) {
+      document.getElementById("reservationInfo").innerHTML =
+        "<span class='error'>" + (data.message || "変更データを取得できませんでした。") + "</span>";
+      document.getElementById("calendar").innerHTML = "";
+      return;
+    }
+
+    optionsData = data;
+
+    document.getElementById("reservationInfo").innerHTML =
+      "<strong>現在のレッスン：</strong>" + data.reservation.lesson + "<br>" +
+      "<strong>現在の日時：</strong>" + data.reservation.date + " " + data.reservation.time;
+
+    renderCalendar();
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("reservationInfo").innerHTML =
+      "<span class='error'>読み込みに失敗しました。</span>";
+    document.getElementById("calendar").innerHTML = "";
+  }
 }
 
-function render(){
-  let html = "<table border='1'>";
+function renderCalendar() {
+  const calendar = document.getElementById("calendar");
 
-  data.dates.forEach(d=>{
-    html += "<tr>";
-    d.times.forEach(t=>{
-      html += `<td><button class="slot-btn" data-date="${d.date}" data-time="${t}">○</button></td>`;
-    });
-    html += "</tr>";
+  const allDates = optionsData.dates || [];
+
+  if (!allDates.length) {
+    calendar.innerHTML = "<p style='padding:20px;'>変更できる日時がありません。</p>";
+    return;
+  }
+
+  const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
+
+  const timeSet = new Set();
+
+  visibleDates.forEach(d => {
+    if (d.times && d.times.length > 0) {
+      d.times.forEach(t => timeSet.add(t));
+    }
   });
 
+  const times = Array.from(timeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+
+  let html = "<table class='calendar-table'><tr><th>時間</th>";
+
+  visibleDates.forEach(d => {
+    html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
+  });
+
+  html += "</tr>";
+
+  if (times.length === 0) {
+    html += "<tr><td colspan='" + (visibleDates.length + 1) + "'>この週に選べる時間がありません</td></tr>";
+  } else {
+    times.forEach(time => {
+      html += "<tr><td>" + time + "</td>";
+
+      visibleDates.forEach(d => {
+        const canSelect = d.times && d.times.includes(time);
+
+        if (canSelect) {
+          html += '<td><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
+        } else {
+          html += "<td class='unavailable'>×</td>";
+        }
+      });
+
+      html += "</tr>";
+    });
+  }
+
   html += "</table>";
-  document.getElementById("calendar").innerHTML = html;
+  calendar.innerHTML = html;
 }
 
-document.addEventListener("click", e=>{
-  if(e.target.classList.contains("slot-btn")){
-    const d = e.target.dataset.date;
-    const t = e.target.dataset.time;
-
-    if(!confirm(formatShort(d)+" "+t+" に変更しますか？")) return;
-
-    change(d,t);
+function prevWeek() {
+  if (weekOffset <= 0) {
+    alert("今日より前の週は選べません。");
+    return;
   }
+
+  weekOffset -= pageSize;
+  renderCalendar();
+}
+
+function nextWeek() {
+  if (!optionsData || !optionsData.dates) return;
+
+  if (weekOffset + pageSize >= optionsData.dates.length) {
+    alert("予約変更できるのは1か月先までです。");
+    return;
+  }
+
+  weekOffset += pageSize;
+  renderCalendar();
+}
+
+function handleSlotTap(date, time) {
+  const displayDate = formatShort(date);
+
+  const ok = confirm(displayDate + " " + time + " に変更してもよろしいですか？");
+
+  if (!ok) return;
+
+  executeChange(date, time);
+}
+
+async function executeChange(date, time) {
+  const status = document.getElementById("status");
+  status.className = "status";
+  status.textContent = "変更処理を行っています...";
+
+  try {
+    const url =
+      GAS_URL +
+      "?action=changeExecute" +
+      "&mode=raw" +
+      "&id=" + encodeURIComponent(reservationId) +
+      "&date=" + encodeURIComponent(date) +
+      "&time=" + encodeURIComponent(time) +
+      "&t=" + Date.now();
+
+    await fetch(url, { mode: "no-cors" });
+
+    status.textContent =
+      "✅ 変更処理を受け付けました。\n新しい日時：" + formatShort(date) + " " + time + "\nLINEに戻って内容をご確認ください。";
+
+  } catch (e) {
+    console.error(e);
+    status.className = "status error";
+    status.textContent = "変更に失敗しました。先生にご連絡ください。";
+  }
+}
+
+document.getElementById("calendar").addEventListener("click", function(e) {
+  const btn = e.target.closest(".slot-btn");
+  if (!btn) return;
+
+  const date = btn.dataset.date;
+  const time = btn.dataset.time;
+  handleSlotTap(date, time);
 });
 
-async function change(d,t){
-  document.getElementById("status").innerText="変更中...";
-
-  await fetch(
-    GAS_URL +
-    "?action=changeExecute&id="+reservationId+
-    "&date="+d+
-    "&time="+t
-  );
-
-  document.getElementById("status").innerText="変更完了！";
-}
-
-load();
+loadChangeData();
 </script>
 </body>
 </html>
