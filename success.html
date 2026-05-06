@@ -22,9 +22,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
-    h1 {
-      color: #06C755;
-    }
+    h1 { color: #06C755; }
 
     p {
       color: #555;
@@ -38,9 +36,25 @@
       white-space: pre-line;
     }
 
-    .error {
-      color: #d93025;
+    .error { color: #d93025; }
+
+    .cal-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #4285f4;
+      color: white;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      box-sizing: border-box;
+      margin-top: 16px;
+      transition: background 0.15s;
     }
+
+    .cal-btn:hover { background: #3367d6; }
   </style>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -52,21 +66,11 @@
     <p>ご予約ありがとうございます。</p>
     <p>予約内容を保存しています。</p>
     <div class="status" id="status">保存中...</div>
-<div id="calendarBtnArea" style="margin-top:16px;display:none;">
-  <a id="calendarLink" href="#" target="_blank" style="
-    display:block;
-    width:100%;
-    padding:14px;
-    background:#4285f4;
-    color:white;
-    border-radius:14px;
-    text-align:center;
-    font-size:15px;
-    font-weight:700;
-    text-decoration:none;
-    box-sizing:border-box;
-  ">📅 Googleカレンダーに追加する</a>
-</div>
+    <div id="calendarBtnArea" style="display:none;">
+      <a id="calendarLink" class="cal-btn" href="#" target="_blank">
+        📅 Googleカレンダーに追加する
+      </a>
+    </div>
   </div>
 
   <script>
@@ -84,23 +88,38 @@
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get("session_id");
 
-      if (!sessionId) {
-        return {};
-      }
+      if (!sessionId) return {};
 
       try {
         const response = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
         const data = await response.json();
-
-        if (!response.ok) {
-          console.error("get-checkout-session error:", data);
-          return {};
-        }
-
+        if (!response.ok) return {};
         return data;
       } catch (error) {
         console.error("Checkout情報取得エラー:", error);
         return {};
+      }
+    }
+
+    function toCalDate(d) {
+      return d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    }
+
+    function showCalendarBtn(date, time, lessonType) {
+      try {
+        const calStart = new Date(`${date}T${time}:00+09:00`);
+        const durationMin = Number(lessonType) === 50 ? 50 : 25;
+        const calEnd = new Date(calStart.getTime() + durationMin * 60000);
+
+        const calUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+          "&text=" + encodeURIComponent("日本語レッスン（Ami先生）") +
+          "&dates=" + toCalDate(calStart) + "/" + toCalDate(calEnd) +
+          "&details=" + encodeURIComponent("Ami先生との日本語レッスン");
+
+        document.getElementById("calendarLink").href = calUrl;
+        document.getElementById("calendarBtnArea").style.display = "block";
+      } catch (e) {
+        console.error("カレンダーリンク生成失敗:", e);
       }
     }
 
@@ -119,24 +138,14 @@
 
         paymentIntentId = checkoutData.payment_intent || "";
 
-        if (checkoutData.selectedDate) {
-          date = checkoutData.selectedDate;
-        }
-
-        if (checkoutData.selectedTime) {
-          time = checkoutData.selectedTime;
-        }
-
-        if (checkoutData.lessonType) {
-          lessonType = checkoutData.lessonType;
-        }
+        if (checkoutData.selectedDate) date = checkoutData.selectedDate;
+        if (checkoutData.selectedTime) time = checkoutData.selectedTime;
+        if (checkoutData.lessonType) lessonType = checkoutData.lessonType;
 
         if (checkoutData.price) {
           priceLabel = "$" + checkoutData.price;
         } else if (localPrice) {
           priceLabel = "$" + localPrice;
-        } else {
-          priceLabel = "";
         }
 
       } catch (error) {
@@ -157,9 +166,7 @@
         await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
-          liff.login({
-            redirectUri: window.location.href
-          });
+          liff.login({ redirectUri: window.location.href });
           return;
         }
 
@@ -197,15 +204,16 @@
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain"
-          },
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(reservationData)
         });
 
         statusEl.classList.remove("error");
         statusEl.textContent =
           "予約を保存しました。\nLINEに予約完了メッセージを送信しました。";
+
+        // Googleカレンダーボタン表示
+        showCalendarBtn(date, time, lessonType);
 
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
@@ -217,8 +225,7 @@
       } catch (error) {
         console.error("GAS error:", error);
         statusEl.classList.add("error");
-        statusEl.textContent =
-          "保存に失敗しました。\n先生にご連絡ください。";
+        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
       }
     }
 
