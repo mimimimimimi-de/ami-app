@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理画面 - Ami Lesson</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
@@ -33,7 +34,6 @@ body {
   min-height: 100vh;
 }
 
-/* ヘッダー */
 .header {
   background: #fff;
   border-bottom: 2px solid var(--green);
@@ -56,10 +56,6 @@ body {
   color: var(--green);
 }
 
-.header-title span {
-  font-size: 22px;
-}
-
 .refresh-btn {
   background: var(--green);
   color: #fff;
@@ -76,14 +72,43 @@ body {
 .refresh-btn:hover { background: var(--green-dark); }
 .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* コンテンツ */
 .content {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px 16px;
 }
 
-/* サマリーカード */
+/* タブ */
+.tab-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: var(--card-shadow);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  background: transparent;
+  color: var(--gray-text);
+  transition: all 0.15s;
+}
+
+.tab-btn.active {
+  background: var(--green);
+  color: #fff;
+}
+
+/* サマリー */
 .summary-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -99,18 +124,8 @@ body {
   text-align: center;
 }
 
-.summary-card .num {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.summary-card .label {
-  font-size: 12px;
-  color: var(--gray-text);
-}
-
+.summary-card .num { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.summary-card .label { font-size: 12px; color: var(--gray-text); }
 .summary-card.confirmed .num { color: var(--green); }
 .summary-card.cancelled .num { color: var(--red); }
 .summary-card.total .num { color: #444; }
@@ -137,16 +152,8 @@ body {
   color: #555;
 }
 
-.filter-btn.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: #fff;
-}
-
-.filter-btn:hover:not(.active) {
-  border-color: var(--green);
-  color: var(--green);
-}
+.filter-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+.filter-btn:hover:not(.active) { border-color: var(--green); color: var(--green); }
 
 .search-input {
   margin-left: auto;
@@ -163,11 +170,7 @@ body {
 .search-input:focus { border-color: var(--green); }
 
 /* 予約カード */
-.reservation-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.reservation-list { display: flex; flex-direction: column; gap: 10px; }
 
 .res-card {
   background: #fff;
@@ -182,18 +185,8 @@ body {
 .res-card.cancelled { border-left-color: var(--gray-border); opacity: 0.7; }
 .res-card.upcoming { border-left-color: var(--yellow); }
 
-.res-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.res-name {
-  font-size: 15px;
-  font-weight: 700;
-  flex: 1;
-}
+.res-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.res-name { font-size: 15px; font-weight: 700; flex: 1; }
 
 .badge {
   display: inline-block;
@@ -216,22 +209,9 @@ body {
   color: #444;
 }
 
-.res-body .item {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.res-body .key {
-  color: var(--gray-text);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.res-body .val {
-  font-weight: 500;
-  word-break: break-all;
-}
+.res-body .item { display: flex; align-items: baseline; gap: 6px; }
+.res-body .key { color: var(--gray-text); font-size: 12px; white-space: nowrap; }
+.res-body .val { font-weight: 500; word-break: break-all; }
 
 .res-footer {
   margin-top: 10px;
@@ -264,25 +244,70 @@ body {
 .link-btn.cancel { border-color: var(--red); color: var(--red); background: var(--red-light); }
 .link-btn.cancel:hover { background: var(--red); color: #fff; }
 
-/* 空・エラー */
-.empty {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--gray-text);
+/* 生徒カード */
+.user-list { display: flex; flex-direction: column; gap: 12px; }
+
+.user-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid var(--green);
 }
 
+.user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.user-name { font-size: 15px; font-weight: 700; flex: 1; }
+
+.price-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.price-box {
+  flex: 1;
+  background: var(--green-light);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.price-box .price-label { font-size: 11px; color: var(--gray-text); margin-bottom: 4px; }
+.price-box .price-val { font-size: 18px; font-weight: 700; color: var(--green-dark); }
+.price-box.unset .price-val { color: var(--gray-text); font-size: 13px; }
+
+.ticket-list { display: flex; flex-direction: column; gap: 6px; }
+
+.ticket-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7fdf9;
+  border: 1px solid #d7f3df;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.ticket-row.expired { opacity: 0.5; background: #f5f5f5; border-color: var(--gray-border); }
+
+.ticket-lesson { color: #444; font-weight: 500; }
+.ticket-remaining { font-weight: 700; font-size: 16px; color: var(--green); }
+.ticket-remaining.low { color: var(--yellow); }
+.ticket-remaining.zero { color: var(--gray-text); }
+.ticket-expiry { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+
+.no-ticket { font-size: 13px; color: var(--gray-text); text-align: center; padding: 8px; }
+
+/* 空・エラー */
+.empty { text-align: center; padding: 48px 20px; color: var(--gray-text); }
 .empty .icon { font-size: 40px; margin-bottom: 10px; }
 
-.loading {
-  text-align: center;
-  padding: 48px;
-  color: var(--gray-text);
-}
+.loading { text-align: center; padding: 48px; color: var(--gray-text); }
 
 .spinner {
   display: inline-block;
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   border: 3px solid var(--gray-border);
   border-top-color: var(--green);
   border-radius: 50%;
@@ -292,7 +317,6 @@ body {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* エラー */
 .error-banner {
   background: var(--red-light);
   border: 1px solid #f3b6b6;
@@ -304,9 +328,8 @@ body {
   display: none;
 }
 
-/* レスポンシブ */
 @media (max-width: 500px) {
-  .summary-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .summary-row { gap: 8px; }
   .summary-card .num { font-size: 24px; }
   .res-body { grid-template-columns: 1fr; }
   .search-input { width: 100%; margin-left: 0; }
@@ -318,108 +341,115 @@ body {
 <body>
 
 <div class="header">
-  <div class="header-title">
-    <span>🗓️</span> Ami Lesson 管理画面
-  </div>
-  <button class="refresh-btn" id="refreshBtn" onclick="loadReservations()">↻ 更新</button>
+  <div class="header-title">🗓️ Ami Lesson 管理画面</div>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">↻ 更新</button>
 </div>
 
 <div class="content">
 
   <div class="error-banner" id="errorBanner"></div>
 
-  <!-- サマリー -->
-  <div class="summary-row">
-    <div class="summary-card confirmed">
-      <div class="num" id="countConfirmed">-</div>
-      <div class="label">予約確定</div>
+  <!-- タブ -->
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('reservations', this)">📋 予約一覧</button>
+    <button class="tab-btn" onclick="switchTab('users', this)">👥 生徒一覧</button>
+  </div>
+
+  <!-- ===== 予約タブ ===== -->
+  <div id="reservationsTab">
+    <div class="summary-row">
+      <div class="summary-card confirmed"><div class="num" id="countConfirmed">-</div><div class="label">予約確定</div></div>
+      <div class="summary-card total"><div class="num" id="countUpcoming">-</div><div class="label">今後のレッスン</div></div>
+      <div class="summary-card cancelled"><div class="num" id="countCancelled">-</div><div class="label">キャンセル</div></div>
     </div>
-    <div class="summary-card total">
-      <div class="num" id="countUpcoming">-</div>
-      <div class="label">今後のレッスン</div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('all', this)">すべて</button>
+      <button class="filter-btn" onclick="setFilter('confirmed', this)">予約確定</button>
+      <button class="filter-btn" onclick="setFilter('upcoming', this)">今後のみ</button>
+      <button class="filter-btn" onclick="setFilter('cancelled', this)">キャンセル</button>
+      <input class="search-input" id="searchInput" type="text" placeholder="🔍 名前で検索..." oninput="renderReservations()">
     </div>
-    <div class="summary-card cancelled">
-      <div class="num" id="countCancelled">-</div>
-      <div class="label">キャンセル</div>
+
+    <div id="reservationList" class="reservation-list">
+      <div class="loading"><div class="spinner"></div><div>読み込み中...</div></div>
     </div>
   </div>
 
-  <!-- フィルター -->
-  <div class="filter-row">
-    <button class="filter-btn active" onclick="setFilter('all', this)">すべて</button>
-    <button class="filter-btn" onclick="setFilter('confirmed', this)">予約確定</button>
-    <button class="filter-btn" onclick="setFilter('upcoming', this)">今後のみ</button>
-    <button class="filter-btn" onclick="setFilter('cancelled', this)">キャンセル</button>
-    <input class="search-input" id="searchInput" type="text" placeholder="🔍 名前で検索..." oninput="renderList()">
-  </div>
-
-  <!-- 予約一覧 -->
-  <div id="reservationList" class="reservation-list">
-    <div class="loading">
-      <div class="spinner"></div>
-      <div>読み込み中...</div>
+  <!-- ===== 生徒タブ ===== -->
+  <div id="usersTab" style="display:none">
+    <div class="filter-row">
+      <input class="search-input" id="userSearchInput" type="text" placeholder="🔍 名前で検索..." oninput="renderUsers()" style="margin-left:0;width:100%;">
+    </div>
+    <div id="userList" class="user-list">
+      <div class="loading"><div class="spinner"></div><div>読み込み中...</div></div>
     </div>
   </div>
 
 </div>
 
 <script>
-// ===== 設定 =====
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let allReservations = [];
+let allUsers = [];
 let currentFilter = "all";
+let currentTab = "reservations";
+
+// ===== タブ切替 =====
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("reservationsTab").style.display = tab === "reservations" ? "block" : "none";
+  document.getElementById("usersTab").style.display = tab === "users" ? "block" : "none";
+}
 
 // ===== データ取得 =====
-async function loadReservations() {
+async function loadAll() {
   const btn = document.getElementById("refreshBtn");
   btn.disabled = true;
   btn.textContent = "読み込み中...";
-
-  document.getElementById("reservationList").innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <div>読み込み中...</div>
-    </div>`;
   document.getElementById("errorBanner").style.display = "none";
 
+  document.getElementById("reservationList").innerHTML = `<div class="loading"><div class="spinner"></div><div>読み込み中...</div></div>`;
+  document.getElementById("userList").innerHTML = `<div class="loading"><div class="spinner"></div><div>読み込み中...</div></div>`;
+
   try {
-    const res = await fetch(
-      GAS_URL + "?action=getReservations&t=" + Date.now()
-    );
-    const data = await res.json();
+    const [resRes, userRes] = await Promise.all([
+      fetch(GAS_URL + "?action=getReservations&t=" + Date.now()),
+      fetch(GAS_URL + "?action=getUsers&t=" + Date.now())
+    ]);
 
-    if (!data.ok) throw new Error(data.message || "取得失敗");
+    const resData = await resRes.json();
+    const userData = await userRes.json();
 
-    allReservations = data.reservations || [];
+    if (!resData.ok) throw new Error(resData.message || "予約取得失敗");
+
+    allReservations = resData.reservations || [];
+    allUsers = userData.ok ? (userData.users || []) : [];
+
     updateSummary();
-    renderList();
+    renderReservations();
+    renderUsers();
 
   } catch (e) {
     console.error(e);
     const banner = document.getElementById("errorBanner");
-    banner.textContent = "⚠️ データを取得できませんでした。GAS側に getReservations を追加してください。";
+    banner.textContent = "⚠️ データを取得できませんでした。";
     banner.style.display = "block";
-    document.getElementById("reservationList").innerHTML = `
-      <div class="empty">
-        <div class="icon">📭</div>
-        <div>データがありません</div>
-      </div>`;
   } finally {
     btn.disabled = false;
     btn.textContent = "↻ 更新";
   }
 }
 
-// ===== サマリー更新 =====
+// ===== サマリー =====
 function updateSummary() {
   const now = new Date();
   const confirmed = allReservations.filter(r => r.status === "予約確定");
   const cancelled = allReservations.filter(r => r.status === "キャンセル");
-  const upcoming = confirmed.filter(r => {
-    const dt = new Date(`${r.date}T${r.time}:00+09:00`);
-    return dt > now;
-  });
+  const upcoming = confirmed.filter(r => new Date(`${r.date}T${r.time}:00+09:00`) > now);
 
   document.getElementById("countConfirmed").textContent = confirmed.length;
   document.getElementById("countCancelled").textContent = cancelled.length;
@@ -431,28 +461,25 @@ function setFilter(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
-  renderList();
+  renderReservations();
 }
 
-// ===== リスト描画 =====
-function renderList() {
+// ===== 予約リスト =====
+function renderReservations() {
   const now = new Date();
   const search = document.getElementById("searchInput").value.trim().toLowerCase();
 
   let list = allReservations.filter(r => {
     if (search && !r.name.toLowerCase().includes(search)) return false;
-
     if (currentFilter === "confirmed") return r.status === "予約確定";
     if (currentFilter === "cancelled") return r.status === "キャンセル";
     if (currentFilter === "upcoming") {
       if (r.status !== "予約確定") return false;
-      const dt = new Date(`${r.date}T${r.time}:00+09:00`);
-      return dt > now;
+      return new Date(`${r.date}T${r.time}:00+09:00`) > now;
     }
     return true;
   });
 
-  // 日付降順ソート
   list.sort((a, b) => {
     const da = new Date(`${a.date}T${a.time}:00+09:00`);
     const db = new Date(`${b.date}T${b.time}:00+09:00`);
@@ -462,23 +489,17 @@ function renderList() {
   const container = document.getElementById("reservationList");
 
   if (!list.length) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="icon">📭</div>
-        <div>該当する予約がありません</div>
-      </div>`;
+    container.innerHTML = `<div class="empty"><div class="icon">📭</div><div>該当する予約がありません</div></div>`;
     return;
   }
 
-  container.innerHTML = list.map(r => renderCard(r, now)).join("");
+  container.innerHTML = list.map(r => renderResCard(r, now)).join("");
 }
 
-// ===== カード1枚の描画 =====
-function renderCard(r, now) {
+function renderResCard(r, now) {
   const lessonDt = new Date(`${r.date}T${r.time}:00+09:00`);
   const isCancelled = r.status === "キャンセル";
   const isUpcoming = !isCancelled && lessonDt > now;
-  const isPast = !isCancelled && lessonDt <= now;
 
   const cardClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "";
   const badgeClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "confirmed";
@@ -486,6 +507,9 @@ function renderCard(r, now) {
 
   const changeUrl = `https://ami-app-eta.vercel.app/change.html?id=${encodeURIComponent(r.reservationId)}`;
   const cancelUrl = `https://ami-app-eta.vercel.app/cancel.html?id=${encodeURIComponent(r.reservationId)}`;
+
+  const isTicket = String(r.paymentIntentId || "").startsWith("ticket:");
+  const priceText = isTicket ? "回数券" : "$" + escHtml(String(r.price));
 
   const footerBtns = isCancelled ? "" : `
     ${r.meetUrl ? `<a class="link-btn meet" href="${r.meetUrl}" target="_blank">📹 Meet</a>` : ""}
@@ -502,25 +526,77 @@ function renderCard(r, now) {
         <span class="badge ${badgeClass}">${badgeText}</span>
       </div>
       <div class="res-body">
-        <div class="item">
-          <span class="key">日時：</span>
-          <span class="val">${escHtml(r.date)} ${escHtml(r.time)}</span>
-        </div>
-        <div class="item">
-          <span class="key">レッスン：</span>
-          <span class="val">${escHtml(r.lesson)}</span>
-        </div>
-        <div class="item">
-          <span class="key">料金：</span>
-          <span class="val">$${escHtml(String(r.price))}</span>
-        </div>
-        <div class="item">
-          <span class="key">ステータス：</span>
-          <span class="val">${escHtml(r.status)}</span>
-        </div>
+        <div class="item"><span class="key">日時：</span><span class="val">${escHtml(r.date)} ${escHtml(r.time)}</span></div>
+        <div class="item"><span class="key">レッスン：</span><span class="val">${escHtml(r.lesson)}</span></div>
+        <div class="item"><span class="key">料金：</span><span class="val">${priceText}</span></div>
+        <div class="item"><span class="key">ステータス：</span><span class="val">${escHtml(r.status)}</span></div>
         ${refundLabel}
       </div>
       ${footerBtns ? `<div class="res-footer">${footerBtns}</div>` : ""}
+    </div>`;
+}
+
+// ===== 生徒リスト =====
+function renderUsers() {
+  const search = document.getElementById("userSearchInput").value.trim().toLowerCase();
+
+  let list = allUsers.filter(u => {
+    if (search && !u.name.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const container = document.getElementById("userList");
+
+  if (!list.length) {
+    container.innerHTML = `<div class="empty"><div class="icon">👥</div><div>生徒が見つかりません</div></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(u => renderUserCard(u)).join("");
+}
+
+function renderUserCard(u) {
+  const now = new Date();
+
+  const price25 = u.price25 ? `$${u.price25}` : null;
+  const price50 = u.price50 ? `$${u.price50}` : null;
+
+  const ticketsHtml = u.tickets && u.tickets.length > 0
+    ? u.tickets.map(t => {
+        const expiry = new Date(t.expiry + "T23:59:59+09:00");
+        const isExpired = expiry < now || t.remaining <= 0;
+        const isLow = !isExpired && t.remaining <= 2;
+        const expiryParts = t.expiry.split("-");
+        const expiryStr = `${Number(expiryParts[1])}/${Number(expiryParts[2])}まで`;
+        const remClass = isExpired ? "zero" : isLow ? "low" : "";
+
+        return `
+          <div class="ticket-row ${isExpired ? 'expired' : ''}">
+            <div>
+              <div class="ticket-lesson">${escHtml(t.lesson)}</div>
+              <div class="ticket-expiry">${expiryStr}</div>
+            </div>
+            <div class="ticket-remaining ${remClass}">${isExpired ? '期限切れ' : t.remaining + '回'}</div>
+          </div>`;
+      }).join("")
+    : `<div class="no-ticket">回数券なし</div>`;
+
+  return `
+    <div class="user-card">
+      <div class="user-header">
+        <div class="user-name">👤 ${escHtml(u.name)}</div>
+      </div>
+      <div class="price-row">
+        <div class="price-box ${!price25 ? 'unset' : ''}">
+          <div class="price-label">25分</div>
+          <div class="price-val">${price25 || '未設定'}</div>
+        </div>
+        <div class="price-box ${!price50 ? 'unset' : ''}">
+          <div class="price-label">50分</div>
+          <div class="price-val">${price50 || '未設定'}</div>
+        </div>
+      </div>
+      <div class="ticket-list">${ticketsHtml}</div>
     </div>`;
 }
 
@@ -531,8 +607,7 @@ function escHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
-// 初回読み込み
-loadReservations();
+loadAll();
 </script>
 </body>
 </html>
