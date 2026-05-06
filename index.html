@@ -214,6 +214,15 @@ button:disabled {
 
 .status { margin-top: 14px; text-align: center; font-size: 15px; color: #06C755; white-space: pre-line; }
 .error { color: #d93025; }
+
+.en-sub {
+  display: block;
+  font-size: 0.72em;
+  color: #999;
+  font-weight: 400;
+  margin-top: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
 </style>
 </head>
 
@@ -221,15 +230,15 @@ button:disabled {
 <div class="container">
 
   <div class="card" id="top">
-    <h2>レッスンを選んでください</h2>
+    <h2>レッスンを選んでください<span class="en-sub">Select your lesson type</span></h2>
     <p id="loginStatus">LINE情報を確認しています...</p>
-    <button class="main" id="btn25" onclick="selectLesson(25)" disabled>25分レッスン</button>
-    <button class="main" id="btn50" onclick="selectLesson(50)" disabled>50分レッスン</button>
+    <button class="main" id="btn25" onclick="selectLesson(25)" disabled>25分レッスン<span class="en-sub" style="color:rgba(255,255,255,0.8);">25-min Lesson</span></button>
+    <button class="main" id="btn50" onclick="selectLesson(50)" disabled>50分レッスン<span class="en-sub" style="color:rgba(255,255,255,0.8);">50-min Lesson</span></button>
     <div class="status" id="topStatus"></div>
   </div>
 
   <div class="card hidden" id="price">
-    <h2>料金の確認</h2>
+    <h2>料金の確認<span class="en-sub">Confirm Lesson Fee</span></h2>
     <div id="lesson"></div>
     <div class="price" id="priceText">-</div>
     <button class="sub" onclick="go('top')">戻る</button>
@@ -237,8 +246,8 @@ button:disabled {
   </div>
 
   <div class="card hidden" id="calendarPage">
-    <h2>日時を選んでください</h2>
-    <p>○を押すと日時を選択できます。</p>
+    <h2>日時を選んでください<span class="en-sub">Select Date & Time</span></h2>
+    <p>○を押すと日時を選択できます。<br><span class="en-sub">Tap ○ to select your preferred time slot.</span></p>
     <div class="nav">
       <button class="sub" onclick="prevWeek()">← 前の週</button>
       <button class="sub" onclick="nextWeek()">次の週 →</button>
@@ -248,7 +257,7 @@ button:disabled {
   </div>
 
   <div class="card hidden" id="confirmPage">
-    <h2>予約内容の最終確認</h2>
+    <h2>予約内容の最終確認<span class="en-sub">Confirm Your Booking</span></h2>
     <div id="confirm"></div>
     <div class="payment-section" id="paymentSection" style="display:none">
       <div class="section-title">💳 支払い方法を選んでください</div>
