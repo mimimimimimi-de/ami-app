@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>購入完了</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+  background: #f5f6f7;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 24px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.icon {
+  font-size: 60px;
+  margin-bottom: 16px;
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #06C755;
+  margin-bottom: 10px;
+}
+
+.ticket-info {
+  background: #e8faf0;
+  border: 1px solid rgba(6,199,85,0.3);
+  border-radius: 16px;
+  padding: 18px;
+  margin: 18px 0;
+  text-align: left;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.ticket-info .row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ticket-info .key { color: #666; }
+.ticket-info .val { font-weight: 700; color: #1a1a1a; }
+
+p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  margin-top: 10px;
+  transition: all 0.15s;
+}
+
+.btn-green {
+  background: #06C755;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(6,199,85,0.3);
+}
+
+.btn-green:hover { background: #04a344; }
+
+.btn-gray {
+  background: #e5e5e5;
+  color: #333;
+}
+
+.status {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #06C755;
+  min-height: 20px;
+}
+
+.status.error { color: #d93025; }
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+  <div class="icon">🎉</div>
+  <h1>購入完了！</h1>
+
+  <div class="ticket-info" id="ticketInfo">
+    <div class="row"><span class="key">レッスン</span><span class="val" id="infoLesson">--</span></div>
+    <div class="row"><span class="key">回数</span><span class="val" id="infoCount">--</span></div>
+    <div class="row"><span class="key">有効期限</span><span class="val" id="infoExpiry">3ヶ月</span></div>
+  </div>
+
+  <p>回数券の購入ありがとうございます！<br>予約時に「回数券を使う」を選んでご利用ください。</p>
+
+  <div class="status" id="status">予約情報を保存しています...</div>
+
+  <a class="btn btn-green" href="https://ami-app-eta.vercel.app/" id="bookBtn" style="display:none">
+    📅 さっそく予約する
+  </a>
+  <a class="btn btn-gray" href="https://liff.line.me/2009890655-O8QZVlRf" id="myBookingBtn" style="display:none">
+    マイ予約を確認する
+  </a>
+</div>
+
+<script>
+const LIFF_ID = "2009890655-LQDDtX3w";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+function setStatus(msg, isError = false) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "status" + (isError ? " error" : "");
+}
+
+async function saveTicket() {
+  // localStorageから情報取得
+  const lesson = localStorage.getItem("ticketLesson");
+  const count = localStorage.getItem("ticketCount");
+  const userId = localStorage.getItem("ticketUserId");
+  const name = localStorage.getItem("ticketName");
+
+  // 表示更新
+  const lessonLabel = lesson === "50" ? "50分レッスン" : "25分レッスン";
+  document.getElementById("infoLesson").textContent = lessonLabel;
+  document.getElementById("infoCount").textContent = count + "回";
+
+  // 有効期限計算（3ヶ月後）
+  const expiry = new Date();
+  expiry.setMonth(expiry.getMonth() + 3);
+  document.getElementById("infoExpiry").textContent =
+    `${expiry.getFullYear()}/${expiry.getMonth()+1}/${expiry.getDate()}まで`;
+
+  if (!userId || !lesson || !count) {
+    setStatus("購入情報が見つかりませんでした。先生にご連絡ください。", true);
+    return;
+  }
+
+  try {
+    // StripeセッションからpaymentIntentId取得
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    let paymentIntentId = "";
+
+    if (sessionId) {
+      const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
+      const data = await res.json();
+      paymentIntentId = data.payment_intent || "";
+    }
+
+    // GASにticket保存
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        action: "purchaseTicket",
+        userId,
+        name,
+        lesson: lessonLabel,
+        count: Number(count),
+        paymentIntentId
+      })
+    });
+
+    // LINE通知
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (liff.isLoggedIn()) {
+        // 通知はGAS側で対応（今は省略）
+      }
+    } catch (e) {}
+
+    // localStorage削除
+    localStorage.removeItem("ticketLesson");
+    localStorage.removeItem("ticketCount");
+    localStorage.removeItem("ticketUserId");
+    localStorage.removeItem("ticketName");
+
+    setStatus("✅ 回数券を保存しました！");
+    document.getElementById("bookBtn").style.display = "block";
+    document.getElementById("myBookingBtn").style.display = "block";
+
+  } catch (e) {
+    console.error(e);
+    setStatus("保存に失敗しました。先生にご連絡ください。", true);
+  }
+}
+
+saveTicket();
+</script>
+</body>
+</html>
