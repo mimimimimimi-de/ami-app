@@ -438,13 +438,13 @@ async function generateCalendar() {
   const calendar = document.getElementById("calendar");
   calendar.innerHTML = "読み込み中...";
 
-  // 予約済みスロットと臨時営業日を並行取得
   const [busyItems, tempData] = await Promise.all([
     fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
     fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json())
   ]);
 
   const temporaryDates = (tempData.ok && tempData.dates) ? tempData.dates : [];
+  const temporaryWindows = (tempData.ok && tempData.windows) ? tempData.windows : {};
 
   const today = new Date();
   const days = [];
@@ -452,7 +452,6 @@ async function generateCalendar() {
   for (let i = 0; i < 7; i++) {
     const d = addDays(today, weekOffset + i);
     const dateStr = formatFull(d);
-    // 日曜でも臨時営業日なら表示
     if (d.getDay() !== 0 || temporaryDates.includes(dateStr)) {
       days.push(d);
     }
@@ -464,9 +463,9 @@ async function generateCalendar() {
     const dateStr = formatFull(day);
     const isSunday = day.getDay() === 0;
     const isTemporary = temporaryDates.includes(dateStr);
-    // 日曜の臨時営業は全時間帯を候補に（GAS側で実際の時間を管理）
-    const windows = (isSunday && isTemporary)
-      ? [{ start: "00:00", end: "23:45" }]
+    // 日曜の臨時営業はGASから取得した実際の時間帯を使う
+    const windows = (isSunday && isTemporary && temporaryWindows[dateStr])
+      ? temporaryWindows[dateStr]
       : getTimeWindows(day);
     const blockMinutes = getBlockMinutes(selectedMinutes);
     windows.forEach(w => {
@@ -496,8 +495,8 @@ async function generateCalendar() {
       const date = formatFull(day);
       const isSunday = day.getDay() === 0;
       const isTemporary = temporaryDates.includes(date);
-      const windows = (isSunday && isTemporary)
-        ? [{ start: "00:00", end: "23:45" }]
+      const windows = (isSunday && isTemporary && temporaryWindows[date])
+        ? temporaryWindows[date]
         : getTimeWindows(day);
       const blockMinutes = getBlockMinutes(selectedMinutes);
 
