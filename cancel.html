@@ -46,6 +46,7 @@ h2 {
 
 .red { color: #d93025; }
 .green { color: #06C755; }
+.orange { color: #e67e22; }
 
 .lead {
   color: #555;
@@ -64,6 +65,11 @@ h2 {
   line-height: 1.9;
 }
 
+.lesson-card.ticket {
+  background: #fff8ec;
+  border-color: #f3c98b;
+}
+
 .warning-box {
   background: #fff8e8;
   border: 1px solid #f2c56b;
@@ -73,6 +79,34 @@ h2 {
   font-size: 15px;
   line-height: 1.9;
   color: #5f4200;
+}
+
+/* 回数券の場合のメッセージ */
+.ticket-notice {
+  background: #fff8ec;
+  border: 1px solid #f3c98b;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 18px 0;
+  text-align: center;
+}
+
+.ticket-notice .notice-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.ticket-notice .notice-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #5f4200;
+  margin-bottom: 8px;
+}
+
+.ticket-notice .notice-text {
+  font-size: 14px;
+  color: #7a5500;
+  line-height: 1.8;
 }
 
 button {
@@ -142,17 +176,34 @@ button {
       読み込み中...
     </div>
 
-    <div class="warning-box">
-      <strong>返金ルール</strong><br>
-      ・レッスン開始12時間前まで：キャンセル・返金対象です。<br>
-      ・決済手数料分は返金されません。<br>
-      ・12時間前を過ぎた場合：キャンセル・返金はできません。<br>
-      ・欠席を希望する場合は、LINEで先生にご連絡ください。
+    <!-- 通常予約の場合 -->
+    <div id="normalSection">
+      <div class="warning-box">
+        <strong>返金ルール</strong><br>
+        ・レッスン開始12時間前まで：キャンセル・返金対象です。<br>
+        ・決済手数料分は返金されません。<br>
+        ・12時間前を過ぎた場合：キャンセル・返金はできません。<br>
+        ・欠席を希望する場合は、LINEで先生にご連絡ください。
+      </div>
+
+      <button class="cancel" type="button" id="cancelBtn">
+        キャンセルを確定する
+      </button>
     </div>
 
-    <button class="cancel" type="button" id="cancelBtn">
-      キャンセルを確定する
-    </button>
+    <!-- 回数券予約の場合 -->
+    <div id="ticketSection" class="hidden">
+      <div class="ticket-notice">
+        <div class="notice-icon">🎟️</div>
+        <div class="notice-title">回数券でのご予約です</div>
+        <div class="notice-text">
+          回数券でご予約のレッスンは<br>
+          <strong>キャンセル・返金ができません。</strong><br><br>
+          欠席を希望する場合は、<br>
+          LINEで先生に直接ご連絡ください。
+        </div>
+      </div>
+    </div>
 
     <button class="back" type="button" onclick="window.close()">
       閉じる
@@ -200,10 +251,18 @@ async function loadCancelData() {
 
     reservationData = data.reservation;
 
-    document.getElementById("reservationInfo").innerHTML =
+    const lessonCard = document.getElementById("reservationInfo");
+    lessonCard.innerHTML =
       "<strong>レッスン：</strong>" + reservationData.lesson + "<br>" +
       "<strong>日時：</strong>" + reservationData.date + " " + reservationData.time + "<br>" +
-      "<strong>料金：</strong>" + reservationData.price;
+      "<strong>料金：</strong>" + (data.isTicket ? "回数券" : reservationData.price);
+
+    // 回数券かどうかで表示を切り替え
+    if (data.isTicket) {
+      lessonCard.classList.add("ticket");
+      document.getElementById("normalSection").classList.add("hidden");
+      document.getElementById("ticketSection").classList.remove("hidden");
+    }
 
   } catch (e) {
     console.error(e);
