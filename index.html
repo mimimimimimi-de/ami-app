@@ -446,6 +446,9 @@ async function generateCalendar() {
   const temporaryDates = (tempData.ok && tempData.dates) ? tempData.dates : [];
   const temporaryWindows = (tempData.ok && tempData.windows) ? tempData.windows : {};
 
+  console.log("temporaryDates:", temporaryDates);
+  console.log("temporaryWindows:", JSON.stringify(temporaryWindows));
+
   const today = new Date();
   const days = [];
 
@@ -464,8 +467,8 @@ async function generateCalendar() {
     const isSunday = day.getDay() === 0;
     const isTemporary = temporaryDates.includes(dateStr);
     // 日曜の臨時営業はGASから取得した実際の時間帯を使う
-    const windows = (isSunday && isTemporary && temporaryWindows[dateStr])
-      ? temporaryWindows[dateStr]
+    const windows = (isSunday && isTemporary)
+      ? (temporaryWindows[dateStr] || [])
       : getTimeWindows(day);
     const blockMinutes = getBlockMinutes(selectedMinutes);
     windows.forEach(w => {
@@ -495,8 +498,8 @@ async function generateCalendar() {
       const date = formatFull(day);
       const isSunday = day.getDay() === 0;
       const isTemporary = temporaryDates.includes(date);
-      const windows = (isSunday && isTemporary && temporaryWindows[date])
-        ? temporaryWindows[date]
+      const windows = (isSunday && isTemporary)
+        ? (temporaryWindows[date] || [])
         : getTimeWindows(day);
       const blockMinutes = getBlockMinutes(selectedMinutes);
 
