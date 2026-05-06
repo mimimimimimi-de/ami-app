@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回数券を購入</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #06C755;
+  --green2: #04a344;
+  --green-light: #e8faf0;
+  --green-glow: rgba(6,199,85,0.2);
+  --bg: #f5f6f7;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --text2: #777;
+  --border: #e8e8e8;
+  --red: #d93025;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.header {
+  background: #fff;
+  border-bottom: 2px solid var(--green);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--green);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.header h1 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.content {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* 説明バナー */
+.info-banner {
+  background: linear-gradient(135deg, #06C755, #04a344);
+  border-radius: 20px;
+  padding: 20px;
+  color: #fff;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-banner::after {
+  content: '🎟️';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.info-banner h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.info-banner p {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* カード */
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 22px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* レッスンタイプ選択 */
+.lesson-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.lesson-btn {
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.lesson-btn .min {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  line-height: 1;
+}
+
+.lesson-btn .min span {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.lesson-btn .unit-price {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+.lesson-btn.active {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+.lesson-btn.active .min {
+  color: var(--green2);
+}
+
+/* 回数入力 */
+.count-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.count-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.count-btn:hover { border-color: var(--green); color: var(--green); }
+.count-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.count-input {
+  flex: 1;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  outline: none;
+  color: var(--text);
+  transition: border 0.15s;
+}
+
+.count-input:focus { border-color: var(--green); }
+
+.count-note {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* 合計金額 */
+.total-card {
+  background: var(--green-light);
+  border: 2px solid rgba(6,199,85,0.3);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.total-label {
+  font-size: 13px;
+  color: var(--green2);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.total-price {
+  font-size: 40px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--green2);
+  line-height: 1;
+}
+
+.total-price span {
+  font-size: 20px;
+}
+
+.total-detail {
+  font-size: 12px;
+  color: var(--green2);
+  margin-top: 6px;
+  opacity: 0.8;
+}
+
+/* 注意事項 */
+.policy-card {
+  background: #fff8f0;
+  border: 1px solid #f3c98b;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #5f4200;
+  line-height: 1.8;
+}
+
+.policy-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* 購入ボタン */
+.buy-btn {
+  width: 100%;
+  padding: 17px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 8px 24px var(--green-glow);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.buy-btn:hover { background: var(--green2); transform: translateY(-1px); }
+.buy-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.status {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  min-height: 20px;
+}
+
+.status.error { color: var(--red); }
+
+/* ローディング */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading-overlay.show { display: flex; }
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:#666;">決済ページを準備中...</div>
+</div>
+
+<div class="header">
+  <div class="header-icon">🎟️</div>
+  <h1>回数券を購入</h1>
+</div>
+
+<div class="content">
+
+  <div class="info-banner">
+    <h2>まとめて買ってお得に！</h2>
+    <p>有効期限3ヶ月・返金不可<br>予約時に自動で残り回数が減ります</p>
+  </div>
+
+  <!-- レッスン選択 -->
+  <div class="card">
+    <div class="card-title">① レッスンの種類</div>
+    <div class="lesson-toggle">
+      <button class="lesson-btn active" id="btn25" onclick="selectLesson(25)">
+        <div class="min">25<span>分</span></div>
+        <div class="unit-price" id="price25">料金確認中...</div>
+      </button>
+      <button class="lesson-btn" id="btn50" onclick="selectLesson(50)">
+        <div class="min">50<span>分</span></div>
+        <div class="unit-price" id="price50">料金確認中...</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 回数入力 -->
+  <div class="card">
+    <div class="card-title">② 回数を選ぶ（最低2回）</div>
+    <div class="count-row">
+      <button class="count-btn" id="minusBtn" onclick="changeCount(-1)">－</button>
+      <input class="count-input" type="number" id="countInput" value="8" min="2" max="99" oninput="onCountInput()">
+      <button class="count-btn" onclick="changeCount(1)">＋</button>
+    </div>
+    <div class="count-note">2回以上から購入できます</div>
+  </div>
+
+  <!-- 合計 -->
+  <div class="total-card">
+    <div class="total-label">合計金額</div>
+    <div class="total-price" id="totalPrice"><span>$</span>--</div>
+    <div class="total-detail" id="totalDetail">レッスンを選択してください</div>
+  </div>
+
+  <!-- 注意事項 -->
+  <div class="policy-card">
+    <strong>📋 ご購入前にご確認ください</strong>
+    ・有効期限：購入日から3ヶ月<br>
+    ・期限切れ・途中解約による返金はできません<br>
+    ・予約時に残り回数が自動で1回減ります<br>
+    ・回数券がある場合、予約時に使用方法を選べます
+  </div>
+
+  <!-- 購入ボタン -->
+  <button class="buy-btn" id="buyBtn" onclick="checkout()" disabled>
+    🎟️ 購入して決済へ進む
+  </button>
+
+  <div class="status" id="status"></div>
+
+</div>
+
+<script>
+const LIFF_ID = "2009890655-LQDDtX3w";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+let userId = null;
+let displayName = null;
+let selectedLesson = 25;
+let prices = { 25: null, 50: null };
+
+function setStatus(msg, isError = false) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "status" + (isError ? " error" : "");
+}
+
+function selectLesson(min) {
+  selectedLesson = min;
+  document.getElementById("btn25").classList.toggle("active", min === 25);
+  document.getElementById("btn50").classList.toggle("active", min === 50);
+  updateTotal();
+}
+
+function getCount() {
+  return parseInt(document.getElementById("countInput").value) || 0;
+}
+
+function changeCount(delta) {
+  const input = document.getElementById("countInput");
+  const newVal = Math.max(2, Math.min(99, getCount() + delta));
+  input.value = newVal;
+  updateTotal();
+}
+
+function onCountInput() {
+  updateTotal();
+}
+
+function updateTotal() {
+  const count = getCount();
+  const price = prices[selectedLesson];
+  const buyBtn = document.getElementById("buyBtn");
+  const minusBtn = document.getElementById("minusBtn");
+
+  minusBtn.disabled = count <= 2;
+
+  if (!price || count < 2) {
+    document.getElementById("totalPrice").innerHTML = "<span>$</span>--";
+    document.getElementById("totalDetail").textContent = count < 2 ? "2回以上を入力してください" : "料金を取得中...";
+    buyBtn.disabled = true;
+    return;
+  }
+
+  const total = price * count;
+  document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`;
+  document.getElementById("totalDetail").textContent =
+    `$${price} × ${count}回 / 有効期限3ヶ月`;
+  buyBtn.disabled = false;
+}
+
+async function fetchPrices() {
+  try {
+    const [res25, res50] = await Promise.all([
+      fetch(`/api/get-user-price?userId=${encodeURIComponent(userId)}&lessonType=25&name=${encodeURIComponent(displayName)}`),
+      fetch(`/api/get-user-price?userId=${encodeURIComponent(userId)}&lessonType=50&name=${encodeURIComponent(displayName)}`)
+    ]);
+
+    const [data25, data50] = await Promise.all([res25.json(), res50.json()]);
+
+    if (data25.ok && data25.price) {
+      prices[25] = Number(data25.price);
+      document.getElementById("price25").textContent = `$${prices[25]}/回`;
+    } else {
+      document.getElementById("price25").textContent = "料金未設定";
+    }
+
+    if (data50.ok && data50.price) {
+      prices[50] = Number(data50.price);
+      document.getElementById("price50").textContent = `$${prices[50]}/回`;
+    } else {
+      document.getElementById("price50").textContent = "料金未設定";
+    }
+
+    updateTotal();
+
+  } catch (e) {
+    console.error(e);
+    setStatus("料金の取得に失敗しました。", true);
+  }
+}
+
+async function checkout() {
+  const count = getCount();
+  const price = prices[selectedLesson];
+
+  if (!price || count < 2) {
+    setStatus("レッスンと回数を正しく選択してください。", true);
+    return;
+  }
+
+  document.getElementById("loadingOverlay").classList.add("show");
+
+  try {
+    localStorage.setItem("ticketLesson", String(selectedLesson));
+    localStorage.setItem("ticketCount", String(count));
+    localStorage.setItem("ticketUserId", userId);
+    localStorage.setItem("ticketName", displayName);
+
+    const res = await fetch("/api/create-ticket-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        lessonType: selectedLesson,
+        count
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "エラーが発生しました");
+
+    window.location.href = data.url;
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("loadingOverlay").classList.remove("show");
+    setStatus("決済ページを開けませんでした。先生にご連絡ください。", true);
+  }
+}
+
+async function init() {
+  setStatus("LINE情報を確認しています...");
+
+  try {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: window.location.href });
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+    displayName = profile.displayName || "ユーザー";
+
+    setStatus("");
+    await fetchPrices();
+
+  } catch (e) {
+    console.error(e);
+    setStatus("LINEアプリ内で開き直してください。", true);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
