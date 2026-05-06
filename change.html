@@ -17,10 +17,7 @@ body {
   font-size: 16px;
 }
 
-.container {
-  max-width: 460px;
-  margin: 0 auto;
-}
+.container { max-width: 460px; margin: 0 auto; }
 
 .card {
   background: #fff;
@@ -32,18 +29,15 @@ body {
 
 .hidden { display: none; }
 
-h2 {
-  text-align: center;
-  color: #06C755;
-  font-size: 22px;
-  margin: 0 0 10px;
-}
+h2 { text-align: center; color: #06C755; font-size: 22px; margin: 0 0 10px; }
+p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; }
 
-p {
-  text-align: center;
-  color: #666;
-  line-height: 1.7;
-  font-size: 15px;
+.en-sub {
+  display: block;
+  font-size: 0.72em;
+  color: #999;
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 .info-box {
@@ -67,11 +61,7 @@ p {
   margin: 16px 0;
 }
 
-.nav {
-  display: flex;
-  gap: 10px;
-  margin: 12px 0;
-}
+.nav { display: flex; gap: 10px; margin: 12px 0; }
 
 button {
   width: 100%;
@@ -85,15 +75,8 @@ button {
   touch-action: manipulation;
 }
 
-.sub {
-  background: #e5e5e5;
-  color: #333;
-}
-
-.main {
-  background: #06C755;
-  color: white;
-}
+.sub { background: #e5e5e5; color: #333; }
+.main { background: #06C755; color: white; }
 
 #calendar {
   overflow-x: auto;
@@ -155,11 +138,7 @@ button {
   padding: 0;
 }
 
-.unavailable {
-  color: #bbb;
-  font-size: 18px;
-  background: #fafafa;
-}
+.unavailable { color: #bbb; font-size: 18px; background: #fafafa; }
 
 .status {
   margin-top: 18px;
@@ -171,15 +150,8 @@ button {
   text-align: center;
 }
 
-.done-icon {
-  font-size: 44px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.error {
-  color: #d93025;
-}
+.done-icon { font-size: 44px; text-align: center; margin-bottom: 10px; }
+.error { color: #d93025; }
 </style>
 </head>
 
@@ -187,40 +159,44 @@ button {
 <div class="container">
 
   <div class="card" id="changeCard">
-    <h2>予約変更</h2>
-    <p>○を押すと、変更確認が表示されます。</p>
+    <h2>予約変更<span class="en-sub">Change Reservation</span></h2>
+    <p>○を押すと、変更確認が表示されます。<span class="en-sub">Tap ○ to select a new time slot.</span></p>
 
-    <div class="info-box" id="reservationInfo">読み込み中...</div>
+    <div class="info-box" id="reservationInfo">読み込み中... / Loading...</div>
 
     <div class="warning-box">
-      <strong>予約変更について</strong><br>
+      <strong>予約変更について / About Changes</strong><br>
       ・予約変更はレッスン開始12時間前まで可能です。<br>
+      <span class="en-sub">・Changes are available up to 12 hours before the lesson.</span>
       ・12時間前を過ぎた予約は変更できません。<br>
-      ・変更後は新しいGoogle Meetリンクが発行されます。
+      <span class="en-sub">・Changes are not allowed within 12 hours of the lesson.</span>
+      ・変更後は新しいGoogle Meetリンクが発行されます。<br>
+      <span class="en-sub">・A new Google Meet link will be issued after the change.</span>
     </div>
 
     <div class="nav">
-      <button class="sub" type="button" onclick="prevWeek()">← 前の週</button>
-      <button class="sub" type="button" onclick="nextWeek()">次の週 →</button>
+      <button class="sub" type="button" onclick="prevWeek()">← 前の週 / Prev</button>
+      <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
     </div>
 
-    <div id="calendar">読み込み中...</div>
+    <div id="calendar">読み込み中... / Loading...</div>
 
     <div class="status" id="status"></div>
   </div>
 
   <div class="card hidden" id="doneCard">
     <div class="done-icon">✅</div>
-    <h2>予約を変更しました</h2>
+    <h2>予約を変更しました<span class="en-sub">Reservation Changed</span></h2>
 
     <div class="info-box" id="doneInfo"></div>
 
     <p>
       LINEに新しい予約内容を送信しました。<br>
-      このページは閉じて大丈夫です。
+      このページは閉じて大丈夫です。<br>
+      <span class="en-sub">New booking details have been sent via LINE.<br>You can close this page.</span>
     </p>
 
-    <button class="main" onclick="window.close()">閉じる</button>
+    <button class="main" onclick="window.close()">閉じる / Close</button>
   </div>
 
 </div>
@@ -253,22 +229,17 @@ async function loadChangeData() {
   reservationId = params.get("id");
 
   if (!reservationId) {
-    document.getElementById("reservationInfo").innerHTML =
-      "<span class='error'>予約IDが見つかりません。</span>";
+    document.getElementById("reservationInfo").innerHTML = "<span class='error'>予約IDが見つかりません。 / Reservation ID not found.</span>";
     document.getElementById("calendar").innerHTML = "";
     return;
   }
 
   try {
-    const res = await fetch(
-      GAS_URL + "?action=changeData&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now()
-    );
-
+    const res = await fetch(GAS_URL + "?action=changeData&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now());
     const data = await res.json();
 
     if (!data.ok) {
-      document.getElementById("reservationInfo").innerHTML =
-        "<span class='error'>" + (data.message || "変更データを取得できませんでした。") + "</span>";
+      document.getElementById("reservationInfo").innerHTML = "<span class='error'>" + (data.message || "変更データを取得できませんでした。") + "</span>";
       document.getElementById("calendar").innerHTML = "";
       return;
     }
@@ -276,26 +247,24 @@ async function loadChangeData() {
     optionsData = data;
 
     document.getElementById("reservationInfo").innerHTML =
-      "<strong>現在のレッスン：</strong>" + data.reservation.lesson + "<br>" +
-      "<strong>現在の日時：</strong>" + data.reservation.date + " " + data.reservation.time;
+      "<strong>現在のレッスン / Current Lesson：</strong>" + data.reservation.lesson + "<br>" +
+      "<strong>現在の日時 / Current Time：</strong>" + data.reservation.date + " " + data.reservation.time;
 
     renderCalendar();
 
   } catch (e) {
     console.error(e);
-    document.getElementById("reservationInfo").innerHTML =
-      "<span class='error'>読み込みに失敗しました。</span>";
+    document.getElementById("reservationInfo").innerHTML = "<span class='error'>読み込みに失敗しました。/ Failed to load.</span>";
     document.getElementById("calendar").innerHTML = "";
   }
 }
 
 function renderCalendar() {
   const calendar = document.getElementById("calendar");
-
   const allDates = optionsData.dates || [];
 
   if (!allDates.length) {
-    calendar.innerHTML = "<p style='padding:20px;'>変更できる日時がありません。</p>";
+    calendar.innerHTML = "<p style='padding:20px;'>変更できる日時がありません。/ No available time slots.</p>";
     return;
   }
 
@@ -303,37 +272,30 @@ function renderCalendar() {
   const timeSet = new Set();
 
   visibleDates.forEach(d => {
-    if (d.times && d.times.length > 0) {
-      d.times.forEach(t => timeSet.add(t));
-    }
+    if (d.times && d.times.length > 0) d.times.forEach(t => timeSet.add(t));
   });
 
   const times = Array.from(timeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
   let html = "<table class='calendar-table'><tr><th>時間</th>";
-
   visibleDates.forEach(d => {
     html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
   });
-
   html += "</tr>";
 
   if (times.length === 0) {
-    html += "<tr><td colspan='" + (visibleDates.length + 1) + "'>この週に選べる時間がありません</td></tr>";
+    html += "<tr><td colspan='" + (visibleDates.length + 1) + "'>この週に選べる時間がありません / No slots available this week</td></tr>";
   } else {
     times.forEach(time => {
       html += "<tr><td>" + time + "</td>";
-
       visibleDates.forEach(d => {
         const canSelect = d.times && d.times.includes(time);
-
         if (canSelect) {
           html += '<td><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
         } else {
           html += "<td class='unavailable'>×</td>";
         }
       });
-
       html += "</tr>";
     });
   }
@@ -343,57 +305,37 @@ function renderCalendar() {
 }
 
 function prevWeek() {
-  if (weekOffset <= 0) {
-    alert("今日より前の週は選べません。");
-    return;
-  }
-
+  if (weekOffset <= 0) { alert("今日より前の週は選べません。/ Cannot go before today."); return; }
   weekOffset -= pageSize;
   renderCalendar();
 }
 
 function nextWeek() {
   if (!optionsData || !optionsData.dates) return;
-
-  if (weekOffset + pageSize >= optionsData.dates.length) {
-    alert("予約変更できるのは1か月先までです。");
-    return;
-  }
-
+  if (weekOffset + pageSize >= optionsData.dates.length) { alert("予約変更できるのは1か月先までです。/ Cannot change more than 1 month ahead."); return; }
   weekOffset += pageSize;
   renderCalendar();
 }
 
 function handleSlotTap(date, time) {
   const displayDate = formatShort(date);
-
-  const ok = confirm(displayDate + " " + time + " に変更してもよろしいですか？");
-
+  const ok = confirm(displayDate + " " + time + " に変更してもよろしいですか？\nChange to " + displayDate + " " + time + "?");
   if (!ok) return;
-
   executeChange(date, time);
 }
 
 async function executeChange(date, time) {
   const status = document.getElementById("status");
   status.className = "status";
-  status.textContent = "変更処理を行っています...";
+  status.textContent = "変更処理を行っています... / Processing...";
 
   try {
-    const url =
-      GAS_URL +
-      "?action=changeExecute" +
-      "&mode=raw" +
-      "&id=" + encodeURIComponent(reservationId) +
-      "&date=" + encodeURIComponent(date) +
-      "&time=" + encodeURIComponent(time) +
-      "&t=" + Date.now();
-
+    const url = GAS_URL + "?action=changeExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&date=" + encodeURIComponent(date) + "&time=" + encodeURIComponent(time) + "&t=" + Date.now();
     await fetch(url, { mode: "no-cors" });
 
     document.getElementById("doneInfo").innerHTML =
-      "<strong>新しい日時：</strong>" + formatShort(date) + " " + time + "<br>" +
-      "<strong>変更内容：</strong>予約日時を変更しました。";
+      "<strong>新しい日時 / New Time：</strong>" + formatShort(date) + " " + time + "<br>" +
+      "<strong>変更内容 / Change：</strong>予約日時を変更しました。/ Reservation updated.";
 
     document.getElementById("changeCard").classList.add("hidden");
     document.getElementById("doneCard").classList.remove("hidden");
@@ -401,17 +343,14 @@ async function executeChange(date, time) {
   } catch (e) {
     console.error(e);
     status.className = "status error";
-    status.textContent = "変更に失敗しました。先生にご連絡ください。";
+    status.textContent = "変更に失敗しました。先生にご連絡ください。/ Change failed. Please contact the teacher.";
   }
 }
 
 document.getElementById("calendar").addEventListener("click", function(e) {
   const btn = e.target.closest(".slot-btn");
   if (!btn) return;
-
-  const date = btn.dataset.date;
-  const time = btn.dataset.time;
-  handleSlotTap(date, time);
+  handleSlotTap(btn.dataset.date, btn.dataset.time);
 });
 
 loadChangeData();
