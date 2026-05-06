@@ -336,19 +336,19 @@ body {
 
 <div class="header">
   <div class="header-icon">🎟️</div>
-  <h1>回数券を購入</h1>
+  <h1>回数券を購入<span style="display:block;font-size:11px;font-weight:400;color:#666;">Buy Lesson Tickets</span></h1>
 </div>
 
 <div class="content">
 
   <div class="info-banner">
-    <h2>まとめて買ってお得に！</h2>
-    <p>有効期限3ヶ月・返金不可<br>予約時に自動で残り回数が減ります</p>
+    <h2>まとめて買ってお得に！<span style="display:block;font-size:13px;font-weight:400;opacity:0.9;">Save more by buying in bulk!</span></h2>
+    <p>有効期限3ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.85;">Valid for 3 months · Non-refundable · Auto-deducted when booking</span></p>
   </div>
 
   <!-- レッスン選択 -->
   <div class="card">
-    <div class="card-title">① レッスンの種類</div>
+    <div class="card-title">① レッスンの種類 / Lesson Type</div>
     <div class="lesson-toggle">
       <button class="lesson-btn active" id="btn25" onclick="selectLesson(25)">
         <div class="min">25<span>分</span></div>
@@ -363,7 +363,7 @@ body {
 
   <!-- 回数入力 -->
   <div class="card">
-    <div class="card-title">② 回数を選ぶ（最低2回）</div>
+    <div class="card-title">② 回数を選ぶ（最低2回）/ Number of Lessons (min. 2)</div>
     <div class="count-row">
       <button class="count-btn" id="minusBtn" onclick="changeCount(-1)">－</button>
       <input class="count-input" type="number" id="countInput" value="8" min="2" max="99" oninput="onCountInput()">
@@ -374,23 +374,23 @@ body {
 
   <!-- 合計 -->
   <div class="total-card">
-    <div class="total-label">合計金額</div>
+    <div class="total-label">合計金額 / Total</div>
     <div class="total-price" id="totalPrice"><span>$</span>--</div>
     <div class="total-detail" id="totalDetail">レッスンを選択してください</div>
   </div>
 
   <!-- 注意事項 -->
   <div class="policy-card">
-    <strong>📋 ご購入前にご確認ください</strong>
-    ・有効期限：購入日から3ヶ月<br>
-    ・期限切れ・途中解約による返金はできません<br>
-    ・予約時に残り回数が自動で1回減ります<br>
-    ・回数券がある場合、予約時に使用方法を選べます
+    <strong>📋 ご購入前にご確認ください / Please read before purchasing</strong>
+    ・有効期限：購入日から3ヶ月 / Valid for 3 months from purchase date<br>
+    ・期限切れ・途中解約による返金はできません / No refunds for expired or unused tickets<br>
+    ・予約時に残り回数が自動で1回減ります / 1 ticket is automatically deducted per booking<br>
+    ・回数券がある場合、予約時に使用方法を選べます / You can choose to use tickets when booking
   </div>
 
   <!-- 購入ボタン -->
   <button class="buy-btn" id="buyBtn" onclick="checkout()" disabled>
-    🎟️ 購入して決済へ進む
+    🎟️ 購入して決済へ進む<span style="display:block;font-size:12px;opacity:0.85;">Proceed to Payment</span>
   </button>
 
   <div class="status" id="status"></div>
