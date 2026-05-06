@@ -62,15 +62,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.main {
-  background: #06C755;
-  color: #fff;
-}
-
-.sub {
-  background: #e5e5e5;
-  color: #333;
-}
+.main { background: #06C755; color: #fff; }
+.sub { background: #e5e5e5; color: #333; }
 
 .price {
   font-size: 34px;
@@ -93,9 +86,7 @@ button:disabled {
   margin: 12px 0;
 }
 
-.nav button {
-  margin-top: 0;
-}
+.nav button { margin-top: 0; }
 
 #calendar {
   overflow-x: auto;
@@ -177,17 +168,8 @@ button:disabled {
   text-align: left;
 }
 
-/* 支払い方法選択 */
-.payment-section {
-  margin-top: 16px;
-}
-
-.payment-section .section-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #555;
-  margin-bottom: 10px;
-}
+.payment-section { margin-top: 16px; }
+.payment-section .section-title { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 10px; }
 
 .payment-option {
   border: 2px solid #e8e8e8;
@@ -199,16 +181,8 @@ button:disabled {
   background: #fff;
 }
 
-.payment-option.selected {
-  border-color: #06C755;
-  background: #f1fff6;
-}
-
-.payment-option .opt-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.payment-option.selected { border-color: #06C755; background: #f1fff6; }
+.payment-option .opt-header { display: flex; align-items: center; gap: 10px; }
 
 .payment-option .radio {
   width: 20px;
@@ -222,31 +196,10 @@ button:disabled {
   transition: all 0.15s;
 }
 
-.payment-option.selected .radio {
-  border-color: #06C755;
-  background: #06C755;
-}
-
-.payment-option.selected .radio::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.payment-option .opt-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #222;
-}
-
-.payment-option .opt-sub {
-  font-size: 13px;
-  color: #666;
-  margin-top: 4px;
-  margin-left: 30px;
-}
+.payment-option.selected .radio { border-color: #06C755; background: #06C755; }
+.payment-option.selected .radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.payment-option .opt-label { font-size: 15px; font-weight: 700; color: #222; }
+.payment-option .opt-sub { font-size: 13px; color: #666; margin-top: 4px; margin-left: 30px; }
 
 .ticket-badge {
   display: inline-block;
@@ -259,21 +212,8 @@ button:disabled {
   margin-left: 6px;
 }
 
-.ticket-badge.expired {
-  background: #bbb;
-}
-
-.status {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 15px;
-  color: #06C755;
-  white-space: pre-line;
-}
-
-.error {
-  color: #d93025;
-}
+.status { margin-top: 14px; text-align: center; font-size: 15px; color: #06C755; white-space: pre-line; }
+.error { color: #d93025; }
 </style>
 </head>
 
@@ -299,27 +239,21 @@ button:disabled {
   <div class="card hidden" id="calendarPage">
     <h2>日時を選んでください</h2>
     <p>○を押すと日時を選択できます。</p>
-
     <div class="nav">
       <button class="sub" onclick="prevWeek()">← 前の週</button>
       <button class="sub" onclick="nextWeek()">次の週 →</button>
     </div>
-
     <div id="calendar">読み込み中...</div>
-
     <button class="sub" onclick="go('price')">戻る</button>
   </div>
 
   <div class="card hidden" id="confirmPage">
     <h2>予約内容の最終確認</h2>
     <div id="confirm"></div>
-
-    <!-- 支払い方法選択 -->
     <div class="payment-section" id="paymentSection" style="display:none">
       <div class="section-title">💳 支払い方法を選んでください</div>
       <div id="paymentOptions"></div>
     </div>
-
     <button class="sub" onclick="go('calendarPage')">戻る</button>
     <button class="main" id="checkoutBtn" onclick="checkout()">決済に進む</button>
     <div class="status" id="statusMessage"></div>
@@ -340,7 +274,7 @@ let selectedTime = null;
 let weekOffset = 0;
 let liffReady = false;
 let myTickets = [];
-let selectedPayment = "stripe"; // "stripe" or ticketId
+let selectedPayment = "stripe";
 
 function go(id) {
   document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
@@ -356,45 +290,29 @@ async function init() {
   try {
     setLessonButtons(false);
     document.getElementById("loginStatus").textContent = "LINE情報を確認しています...";
-
     await liff.init({ liffId: LIFF_ID });
-
-    if (!liff.isLoggedIn()) {
-      liff.login({ redirectUri: window.location.href });
-      return;
-    }
-
+    if (!liff.isLoggedIn()) { liff.login({ redirectUri: window.location.href }); return; }
     const profile = await liff.getProfile();
-
-    if (!profile || !profile.userId) {
-      throw new Error("LINE userIdを取得できませんでした。");
-    }
-
+    if (!profile || !profile.userId) throw new Error("LINE userIdを取得できませんでした。");
     userId = profile.userId;
     displayName = profile.displayName || "未設定";
     liffReady = true;
-
     document.getElementById("loginStatus").textContent = "レッスン時間を選んでください。";
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
-
   } catch (e) {
     console.error(e);
     liffReady = false;
     userId = null;
     setLessonButtons(false);
-
     document.getElementById("loginStatus").textContent = "LINE情報を取得できませんでした。";
-    document.getElementById("topStatus").textContent =
-      "LINEアプリ内で開き直してください。\n友達に送るURLは LIFF URL を使ってください。";
+    document.getElementById("topStatus").textContent = "LINEアプリ内で開き直してください。\n友達に送るURLは LIFF URL を使ってください。";
     document.getElementById("topStatus").className = "status error";
   }
 }
 
 async function ensureUserId() {
-  if (liffReady && userId && userId !== "null" && userId !== "undefined") {
-    return true;
-  }
+  if (liffReady && userId && userId !== "null" && userId !== "undefined") return true;
   await init();
   return !!(userId && userId !== "null" && userId !== "undefined");
 }
@@ -402,44 +320,26 @@ async function ensureUserId() {
 async function selectLesson(minutes) {
   selectedMinutes = minutes;
   selectedPrice = null;
-
   go("price");
-
   document.getElementById("lesson").textContent = minutes + "分レッスン";
   document.getElementById("priceText").textContent = "料金を取得中...";
-
   const ok = await ensureUserId();
-
   if (!ok) {
     document.getElementById("priceText").textContent = "LINE情報を取得できませんでした";
     alert("LINE情報を取得できませんでした。\nLINEアプリ内で開き直してください。");
     go("top");
     return;
   }
-
   try {
-    const res = await fetch(
-      "/api/get-user-price" +
-      "?userId=" + encodeURIComponent(userId) +
-      "&lessonType=" + encodeURIComponent(minutes) +
-      "&name=" + encodeURIComponent(displayName)
-    );
-
+    const res = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=" + encodeURIComponent(minutes) + "&name=" + encodeURIComponent(displayName));
     const data = await res.json();
-
     if (!data.ok || !data.price) {
       document.getElementById("priceText").textContent = "料金未設定";
-      alert(
-        "料金がまだ設定されていません。\n\n" +
-        "先生が料金を設定したあと、予約できるようになります。\n\n" +
-        "ID:\n" + userId
-      );
+      alert("料金がまだ設定されていません。\n\n先生が料金を設定したあと、予約できるようになります。\n\nID:\n" + userId);
       return;
     }
-
     selectedPrice = Number(data.price);
     document.getElementById("priceText").textContent = "$" + selectedPrice;
-
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗";
@@ -447,29 +347,20 @@ async function selectLesson(minutes) {
 }
 
 function openCalendar() {
-  if (!selectedPrice) {
-    alert("料金が設定されていません。先生にご連絡ください。");
-    return;
-  }
+  if (!selectedPrice) { alert("料金が設定されていません。先生にご連絡ください。"); return; }
   weekOffset = 0;
   go("calendarPage");
   generateCalendar();
 }
 
 function prevWeek() {
-  if (weekOffset <= 0) {
-    alert("今日より前の週は選べません。");
-    return;
-  }
+  if (weekOffset <= 0) { alert("今日より前の週は選べません。"); return; }
   weekOffset -= 7;
   generateCalendar();
 }
 
 function nextWeek() {
-  if (weekOffset >= 28) {
-    alert("予約できるのは1か月先までです。");
-    return;
-  }
+  if (weekOffset >= 28) { alert("予約できるのは1か月先までです。"); return; }
   weekOffset += 7;
   generateCalendar();
 }
@@ -481,13 +372,9 @@ function formatFull(date) {
   return `${y}-${m}-${d}`;
 }
 
-function formatShort(date) {
-  return `${date.getMonth() + 1}/${date.getDate()}`;
-}
+function formatShort(date) { return `${date.getMonth() + 1}/${date.getDate()}`; }
 
-function getDayLabel(date) {
-  return ["日", "月", "火", "水", "木", "金", "土"][date.getDay()];
-}
+function getDayLabel(date) { return ["日", "月", "火", "水", "木", "金", "土"][date.getDay()]; }
 
 function addDays(base, days) {
   const d = new Date(base);
@@ -531,18 +418,8 @@ function isOverlap(start, end, busyItems) {
 function getTimeWindows(date) {
   const day = date.getDay();
   if (day === 0) return [];
-  if (day >= 1 && day <= 5) {
-    return [
-      { start: "07:00", end: "11:00" },
-      { start: "14:00", end: "22:00" }
-    ];
-  }
-  if (day === 6) {
-    return [
-      { start: "08:00", end: "12:00" },
-      { start: "13:00", end: "19:00" }
-    ];
-  }
+  if (day >= 1 && day <= 5) return [{ start: "07:00", end: "11:00" }, { start: "14:00", end: "22:00" }];
+  if (day === 6) return [{ start: "08:00", end: "12:00" }, { start: "13:00", end: "19:00" }];
   return [];
 }
 
@@ -561,14 +438,22 @@ async function generateCalendar() {
   const calendar = document.getElementById("calendar");
   calendar.innerHTML = "読み込み中...";
 
-  const busyItems = await fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json());
+  // 予約済みスロットと臨時営業日を並行取得
+  const [busyItems, tempData] = await Promise.all([
+    fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
+    fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json())
+  ]);
+
+  const temporaryDates = (tempData.ok && tempData.dates) ? tempData.dates : [];
 
   const today = new Date();
   const days = [];
 
   for (let i = 0; i < 7; i++) {
     const d = addDays(today, weekOffset + i);
-    if (d.getDay() !== 0) {
+    const dateStr = formatFull(d);
+    // 日曜でも臨時営業日なら表示
+    if (d.getDay() !== 0 || temporaryDates.includes(dateStr)) {
       days.push(d);
     }
   }
@@ -576,7 +461,13 @@ async function generateCalendar() {
   const timeSet = new Set();
 
   days.forEach(day => {
-    const windows = getTimeWindows(day);
+    const dateStr = formatFull(day);
+    const isSunday = day.getDay() === 0;
+    const isTemporary = temporaryDates.includes(dateStr);
+    // 日曜の臨時営業は全時間帯を候補に（GAS側で実際の時間を管理）
+    const windows = (isSunday && isTemporary)
+      ? [{ start: "00:00", end: "23:45" }]
+      : getTimeWindows(day);
     const blockMinutes = getBlockMinutes(selectedMinutes);
     windows.forEach(w => {
       const startMin = timeToMinutes(w.start);
@@ -591,7 +482,11 @@ async function generateCalendar() {
 
   let html = "<table class='calendar-table'><tr><th>時間</th>";
   days.forEach(day => {
-    html += `<th>${formatShort(day)}<br>(${getDayLabel(day)})</th>`;
+    const isSunday = day.getDay() === 0;
+    const dayLabel = isSunday
+      ? `<span style="color:#e67e22;font-weight:700;">日</span>`
+      : getDayLabel(day);
+    html += `<th>${formatShort(day)}<br>(${dayLabel})</th>`;
   });
   html += "</tr>";
 
@@ -599,7 +494,11 @@ async function generateCalendar() {
     html += `<tr><td>${time}</td>`;
     days.forEach(day => {
       const date = formatFull(day);
-      const windows = getTimeWindows(day);
+      const isSunday = day.getDay() === 0;
+      const isTemporary = temporaryDates.includes(date);
+      const windows = (isSunday && isTemporary)
+        ? [{ start: "00:00", end: "23:45" }]
+        : getTimeWindows(day);
       const blockMinutes = getBlockMinutes(selectedMinutes);
 
       const inWindow = windows.some(w => {
@@ -628,10 +527,8 @@ async function generateCalendar() {
 async function pickSlot(date, time) {
   selectedDate = date;
   selectedTime = time;
-
   const displayDate = date.split("-")[1].replace(/^0/, "") + "/" + date.split("-")[2].replace(/^0/, "");
   const lessonLabel = selectedMinutes + "分レッスン";
-
   document.getElementById("confirm").innerHTML = `
     <div class="info-box">
       <strong>レッスン：</strong>${lessonLabel}<br>
@@ -647,10 +544,7 @@ async function pickSlot(date, time) {
       内容をご確認のうえ、決済へお進みください。
     </div>
   `;
-
-  // 回数券を取得して支払い方法選択を表示
   await loadPaymentOptions(lessonLabel);
-
   go("confirmPage");
 }
 
@@ -658,34 +552,19 @@ async function loadPaymentOptions(lessonLabel) {
   const section = document.getElementById("paymentSection");
   const optionsEl = document.getElementById("paymentOptions");
   const checkoutBtn = document.getElementById("checkoutBtn");
-
   section.style.display = "none";
   selectedPayment = "stripe";
   checkoutBtn.textContent = "決済に進む";
-
   try {
-    const res = await fetch(
-      GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now()
-    );
+    const res = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
     const data = await res.json();
-
     if (!data.ok) return;
-
-    // このレッスン種別に使える有効な回数券だけ絞り込む
     const lessonKey = selectedMinutes === 50 ? "50分" : "25分";
-    const validTickets = (data.tickets || []).filter(t =>
-      t.isValid && String(t.lesson).includes(lessonKey)
-    );
-
+    const validTickets = (data.tickets || []).filter(t => t.isValid && String(t.lesson).includes(lessonKey));
     if (!validTickets.length) return;
-
-    // 支払い選択UIを表示
     myTickets = validTickets;
     section.style.display = "block";
-
     let html = "";
-
-    // 回数券オプション
     validTickets.forEach((t, i) => {
       const expiry = t.expiry.split("-");
       const expiryStr = `${Number(expiry[1])}/${Number(expiry[2])}まで`;
@@ -698,8 +577,6 @@ async function loadPaymentOptions(lessonLabel) {
           <div class="opt-sub">${t.lesson} / 有効期限 ${expiryStr}</div>
         </div>`;
     });
-
-    // 単回決済オプション
     html += `
       <div class="payment-option" onclick="selectPayment('stripe', this)">
         <div class="opt-header">
@@ -708,140 +585,65 @@ async function loadPaymentOptions(lessonLabel) {
         </div>
         <div class="opt-sub">クレジットカードで今回分のみ支払う</div>
       </div>`;
-
     optionsEl.innerHTML = html;
-
-    // デフォルトは最初の回数券
     selectedPayment = validTickets[0].ticketId;
     checkoutBtn.textContent = "回数券で予約する";
-
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) { console.error(e); }
 }
 
 function selectPayment(value, el) {
   selectedPayment = value;
-
   document.querySelectorAll(".payment-option").forEach(o => o.classList.remove("selected"));
   el.classList.add("selected");
-
-  const checkoutBtn = document.getElementById("checkoutBtn");
-  checkoutBtn.textContent = value === "stripe" ? "決済に進む" : "回数券で予約する";
+  document.getElementById("checkoutBtn").textContent = value === "stripe" ? "決済に進む" : "回数券で予約する";
 }
 
 async function checkout() {
   const checkoutBtn = document.getElementById("checkoutBtn");
   const statusEl = document.getElementById("statusMessage");
-
   checkoutBtn.disabled = true;
   statusEl.className = "status";
 
-  // 回数券で予約
   if (selectedPayment !== "stripe") {
     statusEl.textContent = "回数券を確認しています...";
-
     try {
       const ok = await ensureUserId();
-      if (!ok) {
-        statusEl.className = "status error";
-        statusEl.textContent = "LINE情報を取得できませんでした。";
-        checkoutBtn.disabled = false;
-        return;
-      }
-
-      // 回数券を1回消費
-      const useRes = await fetch(
-        GAS_URL +
-        "?action=useTicket" +
-        "&ticketId=" + encodeURIComponent(selectedPayment) +
-        "&userId=" + encodeURIComponent(userId) +
-        "&t=" + Date.now()
-      );
+      if (!ok) { statusEl.className = "status error"; statusEl.textContent = "LINE情報を取得できませんでした。"; checkoutBtn.disabled = false; return; }
+      const useRes = await fetch(GAS_URL + "?action=useTicket&ticketId=" + encodeURIComponent(selectedPayment) + "&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
       const useData = await useRes.json();
-
-      if (!useData.ok) {
-        statusEl.className = "status error";
-        statusEl.textContent = useData.message || "回数券の使用に失敗しました。";
-        checkoutBtn.disabled = false;
-        return;
-      }
-
-      // 予約をGASに保存（Stripe決済なし）
+      if (!useData.ok) { statusEl.className = "status error"; statusEl.textContent = useData.message || "回数券の使用に失敗しました。"; checkoutBtn.disabled = false; return; }
       statusEl.textContent = "予約を保存しています...";
-
       const lessonLabel = selectedMinutes + "分レッスン";
-
       await fetch(GAS_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          name: displayName,
-          customerLineUserId: userId,
-          userId: userId,
-          date: selectedDate,
-          time: selectedTime,
-          lesson: lessonLabel,
-          lessonName: lessonLabel,
-          price: "回数券",
-          paymentIntentId: "ticket:" + selectedPayment
-        })
+        method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ name: displayName, customerLineUserId: userId, userId: userId, date: selectedDate, time: selectedTime, lesson: lessonLabel, lessonName: lessonLabel, price: "回数券", paymentIntentId: "ticket:" + selectedPayment })
       });
-
-      statusEl.textContent =
-        "✅ 予約しました！\nLINEに予約完了メッセージを送ります。\n（残り" + (useData.remaining) + "回）";
-
+      statusEl.textContent = "✅ 予約しました！\nLINEに予約完了メッセージを送ります。\n（残り" + (useData.remaining) + "回）";
     } catch (e) {
       console.error(e);
       statusEl.className = "status error";
       statusEl.textContent = "エラーが発生しました。先生にご連絡ください。";
       checkoutBtn.disabled = false;
     }
-
     return;
   }
 
-  // 通常のStripe決済
   try {
     statusEl.textContent = "決済ページを準備しています...";
-
     const ok = await ensureUserId();
-    if (!ok) {
-      statusEl.className = "status error";
-      statusEl.textContent = "LINE情報を取得できませんでした。LINEアプリ内で開き直してください。";
-      checkoutBtn.disabled = false;
-      return;
-    }
-
+    if (!ok) { statusEl.className = "status error"; statusEl.textContent = "LINE情報を取得できませんでした。LINEアプリ内で開き直してください。"; checkoutBtn.disabled = false; return; }
     localStorage.setItem("selectedDate", selectedDate);
     localStorage.setItem("selectedTime", selectedTime);
     localStorage.setItem("lessonType", selectedMinutes);
     localStorage.setItem("price", selectedPrice);
     localStorage.setItem("userId", userId);
-
     const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        lessonType: selectedMinutes,
-        selectedDate,
-        selectedTime,
-        userId
-      })
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId })
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      statusEl.className = "status error";
-      statusEl.textContent = "決済ページを開けませんでした。先生にご連絡ください。";
-      checkoutBtn.disabled = false;
-      return;
-    }
-
+    if (!res.ok) { statusEl.className = "status error"; statusEl.textContent = "決済ページを開けませんでした。先生にご連絡ください。"; checkoutBtn.disabled = false; return; }
     window.location.href = data.url;
-
   } catch (e) {
     console.error(e);
     statusEl.className = "status error";
