@@ -571,6 +571,12 @@ body::after {
     </div>
   </div>
 
+  <!-- 回数券 -->
+  <div id="ticketSection" style="display:none; margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0.08em;margin-bottom:8px;">🎟️ 回数券</div>
+    <div id="ticketList"></div>
+  </div>
+
   <!-- タブ -->
   <div class="tabs" id="tabsEl" style="display:none">
     <button class="tab active" onclick="setTab('upcoming', this)">今後</button>
@@ -725,6 +731,50 @@ function escHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
+// ===== 回数券描画 =====
+function renderTickets(tickets) {
+  const section = document.getElementById("ticketSection");
+  const list = document.getElementById("ticketList");
+  const now = new Date();
+
+  const html = tickets.map(t => {
+    const expiry = new Date(t.expiry + "T23:59:59+09:00");
+    const isExpired = expiry < now || t.remaining <= 0;
+    const isLow = !isExpired && t.remaining <= 2;
+    const expiryParts = t.expiry.split("-");
+    const expiryStr = `${Number(expiryParts[1])}/${Number(expiryParts[2])}まで`;
+
+    const remainingClass = isExpired ? "zero" : isLow ? "low" : "";
+
+    return `
+      <div style="
+        background:var(--card);
+        border:1px solid ${isExpired ? 'var(--border)' : 'rgba(6,199,85,0.25)'};
+        border-radius:16px;
+        padding:14px 16px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:8px;
+        opacity:${isExpired ? '0.5' : '1'};
+      ">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${escHtml(t.lesson)}</div>
+          <div style="font-size:11px;color:var(--text2);">有効期限 ${expiryStr}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:700;font-family:'DM Sans',sans-serif;color:${isExpired ? 'var(--text2)' : isLow ? 'var(--yellow)' : 'var(--green)'};line-height:1;">
+            ${isExpired ? '−' : t.remaining}
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">${isExpired ? '期限切れ' : '回残り'}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  list.innerHTML = html;
+  section.style.display = "block";
+}
+
 // ===== サマリー更新 =====
 function updateSummary(reservations) {
   const now = new Date();
@@ -764,17 +814,25 @@ async function init() {
       avatarEl.innerHTML = `<img src="${profile.pictureUrl}" alt="avatar">`;
     }
 
-    // データ取得
-    const res = await fetch(
-      `${GAS_URL}?action=getMyReservations&userId=${encodeURIComponent(userId)}&t=${Date.now()}`
-    );
+    // 予約データと回数券を並行取得
+    const [res, ticketRes] = await Promise.all([
+      fetch(`${GAS_URL}?action=getMyReservations&userId=${encodeURIComponent(userId)}&t=${Date.now()}`),
+      fetch(`${GAS_URL}?action=getMyTickets&userId=${encodeURIComponent(userId)}&t=${Date.now()}`)
+    ]);
+
     const data = await res.json();
+    const ticketData = await ticketRes.json();
 
     if (!data.ok) throw new Error(data.message || "取得失敗");
 
     allReservations = data.reservations || [];
 
     updateSummary(allReservations);
+
+    // 回数券表示
+    if (ticketData.ok && ticketData.tickets && ticketData.tickets.length > 0) {
+      renderTickets(ticketData.tickets);
+    }
 
     document.getElementById("summaryRow").style.display = "grid";
     document.getElementById("tabsEl").style.display = "flex";
