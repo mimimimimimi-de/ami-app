@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理画面 - Ami Lesson</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #06C755;
+  --green-light: #e8faf0;
+  --green-dark: #04a344;
+  --red: #d93025;
+  --red-light: #fff0ef;
+  --yellow: #f5a623;
+  --yellow-light: #fff8ec;
+  --gray-bg: #f5f6f7;
+  --gray-border: #e8e8e8;
+  --gray-text: #888;
+  --text: #1a1a1a;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+body {
+  font-family: 'Noto Sans JP', -apple-system, sans-serif;
+  background: var(--gray-bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ヘッダー */
+.header {
+  background: #fff;
+  border-bottom: 2px solid var(--green);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.header-title span {
+  font-size: 22px;
+}
+
+.refresh-btn {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.refresh-btn:hover { background: var(--green-dark); }
+.refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* コンテンツ */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* サマリーカード */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+
+.summary-card .num {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.summary-card .label {
+  font-size: 12px;
+  color: var(--gray-text);
+}
+
+.summary-card.confirmed .num { color: var(--green); }
+.summary-card.cancelled .num { color: var(--red); }
+.summary-card.total .num { color: #444; }
+
+/* フィルター */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  color: #555;
+}
+
+.filter-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.filter-btn:hover:not(.active) {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.search-input {
+  margin-left: auto;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-border);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 180px;
+  transition: border 0.15s;
+}
+
+.search-input:focus { border-color: var(--green); }
+
+/* 予約カード */
+.reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.res-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: var(--card-shadow);
+  border-left: 4px solid var(--green);
+  transition: box-shadow 0.15s;
+}
+
+.res-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.11); }
+.res-card.cancelled { border-left-color: var(--gray-border); opacity: 0.7; }
+.res-card.upcoming { border-left-color: var(--yellow); }
+
+.res-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.res-name {
+  font-size: 15px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge.confirmed { background: var(--green-light); color: var(--green-dark); }
+.badge.cancelled { background: #f0f0f0; color: #888; }
+.badge.upcoming { background: var(--yellow-light); color: #b07000; }
+
+.res-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: #444;
+}
+
+.res-body .item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.res-body .key {
+  color: var(--gray-text);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.res-body .val {
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.res-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--gray-border);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1.5px solid;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.link-btn.meet { border-color: #4285f4; color: #4285f4; background: #f0f5ff; }
+.link-btn.meet:hover { background: #4285f4; color: #fff; }
+.link-btn.change { border-color: var(--green); color: var(--green); background: var(--green-light); }
+.link-btn.change:hover { background: var(--green); color: #fff; }
+.link-btn.cancel { border-color: var(--red); color: var(--red); background: var(--red-light); }
+.link-btn.cancel:hover { background: var(--red); color: #fff; }
+
+/* 空・エラー */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--gray-text);
+}
+
+.empty .icon { font-size: 40px; margin-bottom: 10px; }
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: var(--gray-text);
+}
+
+.spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--gray-border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* エラー */
+.error-banner {
+  background: var(--red-light);
+  border: 1px solid #f3b6b6;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: var(--red);
+  margin-bottom: 16px;
+  font-size: 13px;
+  display: none;
+}
+
+/* レスポンシブ */
+@media (max-width: 500px) {
+  .summary-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .summary-card .num { font-size: 24px; }
+  .res-body { grid-template-columns: 1fr; }
+  .search-input { width: 100%; margin-left: 0; }
+  .filter-row { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <span>🗓️</span> Ami Lesson 管理画面
+  </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadReservations()">↻ 更新</button>
+</div>
+
+<div class="content">
+
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- サマリー -->
+  <div class="summary-row">
+    <div class="summary-card confirmed">
+      <div class="num" id="countConfirmed">-</div>
+      <div class="label">予約確定</div>
+    </div>
+    <div class="summary-card total">
+      <div class="num" id="countUpcoming">-</div>
+      <div class="label">今後のレッスン</div>
+    </div>
+    <div class="summary-card cancelled">
+      <div class="num" id="countCancelled">-</div>
+      <div class="label">キャンセル</div>
+    </div>
+  </div>
+
+  <!-- フィルター -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">すべて</button>
+    <button class="filter-btn" onclick="setFilter('confirmed', this)">予約確定</button>
+    <button class="filter-btn" onclick="setFilter('upcoming', this)">今後のみ</button>
+    <button class="filter-btn" onclick="setFilter('cancelled', this)">キャンセル</button>
+    <input class="search-input" id="searchInput" type="text" placeholder="🔍 名前で検索..." oninput="renderList()">
+  </div>
+
+  <!-- 予約一覧 -->
+  <div id="reservationList" class="reservation-list">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>読み込み中...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== 設定 =====
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+let allReservations = [];
+let currentFilter = "all";
+
+// ===== データ取得 =====
+async function loadReservations() {
+  const btn = document.getElementById("refreshBtn");
+  btn.disabled = true;
+  btn.textContent = "読み込み中...";
+
+  document.getElementById("reservationList").innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>読み込み中...</div>
+    </div>`;
+  document.getElementById("errorBanner").style.display = "none";
+
+  try {
+    const res = await fetch(
+      GAS_URL + "?action=getReservations&t=" + Date.now()
+    );
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.message || "取得失敗");
+
+    allReservations = data.reservations || [];
+    updateSummary();
+    renderList();
+
+  } catch (e) {
+    console.error(e);
+    const banner = document.getElementById("errorBanner");
+    banner.textContent = "⚠️ データを取得できませんでした。GAS側に getReservations を追加してください。";
+    banner.style.display = "block";
+    document.getElementById("reservationList").innerHTML = `
+      <div class="empty">
+        <div class="icon">📭</div>
+        <div>データがありません</div>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "↻ 更新";
+  }
+}
+
+// ===== サマリー更新 =====
+function updateSummary() {
+  const now = new Date();
+  const confirmed = allReservations.filter(r => r.status === "予約確定");
+  const cancelled = allReservations.filter(r => r.status === "キャンセル");
+  const upcoming = confirmed.filter(r => {
+    const dt = new Date(`${r.date}T${r.time}:00+09:00`);
+    return dt > now;
+  });
+
+  document.getElementById("countConfirmed").textContent = confirmed.length;
+  document.getElementById("countCancelled").textContent = cancelled.length;
+  document.getElementById("countUpcoming").textContent = upcoming.length;
+}
+
+// ===== フィルター =====
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderList();
+}
+
+// ===== リスト描画 =====
+function renderList() {
+  const now = new Date();
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  let list = allReservations.filter(r => {
+    if (search && !r.name.toLowerCase().includes(search)) return false;
+
+    if (currentFilter === "confirmed") return r.status === "予約確定";
+    if (currentFilter === "cancelled") return r.status === "キャンセル";
+    if (currentFilter === "upcoming") {
+      if (r.status !== "予約確定") return false;
+      const dt = new Date(`${r.date}T${r.time}:00+09:00`);
+      return dt > now;
+    }
+    return true;
+  });
+
+  // 日付降順ソート
+  list.sort((a, b) => {
+    const da = new Date(`${a.date}T${a.time}:00+09:00`);
+    const db = new Date(`${b.date}T${b.time}:00+09:00`);
+    return db - da;
+  });
+
+  const container = document.getElementById("reservationList");
+
+  if (!list.length) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="icon">📭</div>
+        <div>該当する予約がありません</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(r => renderCard(r, now)).join("");
+}
+
+// ===== カード1枚の描画 =====
+function renderCard(r, now) {
+  const lessonDt = new Date(`${r.date}T${r.time}:00+09:00`);
+  const isCancelled = r.status === "キャンセル";
+  const isUpcoming = !isCancelled && lessonDt > now;
+  const isPast = !isCancelled && lessonDt <= now;
+
+  const cardClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "";
+  const badgeClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "confirmed";
+  const badgeText = isCancelled ? "キャンセル" : isUpcoming ? "予定あり" : "完了";
+
+  const changeUrl = `https://ami-app-eta.vercel.app/change.html?id=${encodeURIComponent(r.reservationId)}`;
+  const cancelUrl = `https://ami-app-eta.vercel.app/cancel.html?id=${encodeURIComponent(r.reservationId)}`;
+
+  const footerBtns = isCancelled ? "" : `
+    ${r.meetUrl ? `<a class="link-btn meet" href="${r.meetUrl}" target="_blank">📹 Meet</a>` : ""}
+    ${isUpcoming ? `<a class="link-btn change" href="${changeUrl}" target="_blank">📝 変更</a>` : ""}
+    ${isUpcoming ? `<a class="link-btn cancel" href="${cancelUrl}" target="_blank">🗑 キャンセル</a>` : ""}
+  `;
+
+  const refundLabel = r.refundStatus ? `<div class="item"><span class="key">返金：</span><span class="val">${r.refundStatus}</span></div>` : "";
+
+  return `
+    <div class="res-card ${cardClass}">
+      <div class="res-header">
+        <div class="res-name">${escHtml(r.name)}</div>
+        <span class="badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="res-body">
+        <div class="item">
+          <span class="key">日時：</span>
+          <span class="val">${escHtml(r.date)} ${escHtml(r.time)}</span>
+        </div>
+        <div class="item">
+          <span class="key">レッスン：</span>
+          <span class="val">${escHtml(r.lesson)}</span>
+        </div>
+        <div class="item">
+          <span class="key">料金：</span>
+          <span class="val">$${escHtml(String(r.price))}</span>
+        </div>
+        <div class="item">
+          <span class="key">ステータス：</span>
+          <span class="val">${escHtml(r.status)}</span>
+        </div>
+        ${refundLabel}
+      </div>
+      ${footerBtns ? `<div class="res-footer">${footerBtns}</div>` : ""}
+    </div>`;
+}
+
+function escHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// 初回読み込み
+loadReservations();
+</script>
+</body>
+</html>
