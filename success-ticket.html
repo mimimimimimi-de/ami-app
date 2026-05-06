@@ -182,12 +182,11 @@ async function saveTicket() {
       paymentIntentId = data.payment_intent || "";
     }
 
-    // GASにticket保存（通常fetch）
-    const gasRes = await fetch(GAS_URL, {
+    // Vercel経由でGASに保存
+    const gasRes = await fetch("/api/save-ticket", {
       method: "POST",
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        action: "purchaseTicket",
         userId,
         name,
         lesson: lessonLabel,
