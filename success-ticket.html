@@ -182,10 +182,9 @@ async function saveTicket() {
       paymentIntentId = data.payment_intent || "";
     }
 
-    // GASにticket保存
-    await fetch(GAS_URL, {
+    // GASにticket保存（通常fetch）
+    const gasRes = await fetch(GAS_URL, {
       method: "POST",
-      mode: "no-cors",
       headers: { "Content-Type": "text/plain" },
       body: JSON.stringify({
         action: "purchaseTicket",
@@ -197,13 +196,12 @@ async function saveTicket() {
       })
     });
 
-    // LINE通知
-    try {
-      await liff.init({ liffId: LIFF_ID });
-      if (liff.isLoggedIn()) {
-        // 通知はGAS側で対応（今は省略）
-      }
-    } catch (e) {}
+    const gasData = await gasRes.json();
+
+    if (!gasData.ok) {
+      setStatus("保存に失敗しました：" + (gasData.message || "不明なエラー"), true);
+      return;
+    }
 
     // localStorage削除
     localStorage.removeItem("ticketLesson");
@@ -211,7 +209,7 @@ async function saveTicket() {
     localStorage.removeItem("ticketUserId");
     localStorage.removeItem("ticketName");
 
-    setStatus("✅ 回数券を保存しました！");
+    setStatus("✅ 回数券を保存しました！LINEに通知を送りました。");
     document.getElementById("bookBtn").style.display = "block";
     document.getElementById("myBookingBtn").style.display = "block";
 
