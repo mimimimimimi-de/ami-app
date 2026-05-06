@@ -24,6 +24,15 @@ html, body {
   font-family: 'Zen Kaku Gothic New', sans-serif;
 }
 
+.en-sub {
+  display: block;
+  font-size: 0.75em;
+  color: #999;
+  font-weight: 400;
+  margin-top: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 body {
   background: var(--bg);
   display: flex;
@@ -328,7 +337,7 @@ body {
   <div class="logo-area">
     <div class="logo-icon">🇯🇵</div>
     <h1>Ami's<br><span>Japanese Lesson</span></h1>
-    <p>日本語レッスン予約システム</p>
+    <p>日本語レッスン予約システム<br><span class="en-sub">Japanese Lesson Booking System</span></p>
   </div>
 
   <div class="card">
@@ -339,33 +348,34 @@ body {
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-text">
-            <div class="title">まず登録する</div>
-            <div class="desc">下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。</div>
+            <div class="title">まず登録する<span class="en-sub">Register first</span></div>
+            <div class="desc">下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。<span class="en-sub">Just tap the button below. Auto-registered with your LINE account.</span></div>
           </div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            <div class="title">先生が料金を設定</div>
-            <div class="desc">登録後、先生があなたの料金を設定します。</div>
+            <div class="title">先生が料金を設定<span class="en-sub">Teacher sets your price</span></div>
+            <div class="desc">登録後、先生があなたの料金を設定します。<span class="en-sub">After registration, the teacher will set your lesson fee.</span></div>
           </div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-text">
-            <div class="title">予約スタート！</div>
-            <div class="desc">先生からLINEが届いたら予約できるようになります。</div>
+            <div class="title">予約スタート！<span class="en-sub">Start booking!</span></div>
+            <div class="desc">先生からLINEが届いたら予約できるようになります。<span class="en-sub">Once the teacher contacts you via LINE, you can start booking.</span></div>
           </div>
         </div>
       </div>
 
       <button class="register-btn" id="registerBtn" onclick="register()">
-        📝 登録する
+        📝 登録する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Register</span>
       </button>
 
       <p class="note">
         LINEのお名前が自動で登録されます。<br>
-        個人情報は予約管理のみに使用します。
+        個人情報は予約管理のみに使用します。<br>
+        <span class="en-sub">Your LINE display name will be registered automatically.<br>Personal info is used for booking purposes only.</span>
       </p>
 
       <div class="status" id="status"></div>
@@ -374,25 +384,26 @@ body {
     <!-- 登録完了 -->
     <div class="done-card" id="doneView">
       <div class="done-icon">🎉</div>
-      <h2>登録完了！</h2>
+      <h2>登録完了！<span class="en-sub">Registration Complete!</span></h2>
       <div class="done-name" id="doneName"></div>
       <p>
         登録が完了しました。<br>
         先生が料金を設定したら<br>
         <span class="highlight">LINEでお知らせします</span>ので<br>
-        しばらくお待ちください。
+        しばらくお待ちください。<br>
+        <span class="en-sub">Registration complete!<br>We'll notify you via LINE once the teacher sets your fee.</span>
       </p>
     </div>
 
     <!-- 登録済み -->
     <div class="already-card" id="alreadyView">
       <div class="already-icon">✅</div>
-      <h2>すでに登録済みです</h2>
+      <h2>すでに登録済みです<span class="en-sub">Already Registered</span></h2>
       <p id="alreadyText">
         登録が確認できました。
       </p>
       <a class="book-link" href="https://ami-app-eta.vercel.app/">
-        📅 レッスンを予約する
+        📅 レッスンを予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Book a Lesson</span>
       </a>
     </div>
 
