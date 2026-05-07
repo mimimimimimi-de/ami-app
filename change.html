@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>予約変更</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -29,13 +30,21 @@ body {
 
 .hidden { display: none; }
 
-h2 { text-align: center; color: #06C755; font-size: 22px; margin: 0 0 10px; }
-p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; }
+h2 { text-align: center; color: #06C755; font-size: 22px; margin: 0 0 2px; }
+
+.en-title {
+  text-align: center;
+  font-size: 11px;
+  color: #bbb;
+  margin-bottom: 10px;
+}
+
+p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 0 0 8px; }
 
 .en-sub {
   display: block;
-  font-size: 0.72em;
-  color: #999;
+  font-size: 0.7em;
+  color: #bbb;
   font-weight: 400;
   margin-top: 2px;
 }
@@ -55,13 +64,21 @@ p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; }
   border: 1px solid #f3c98b;
   padding: 14px;
   border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.8;
   color: #666;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
-.nav { display: flex; gap: 10px; margin: 12px 0; }
+.scroll-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 6px;
+  padding: 4px;
+}
+
+.nav { display: flex; gap: 10px; margin: 8px 0; }
 
 button {
   width: 100%;
@@ -73,6 +90,7 @@ button {
   font-weight: 700;
   cursor: pointer;
   touch-action: manipulation;
+  font-family: inherit;
 }
 
 .sub { background: #e5e5e5; color: #333; }
@@ -80,12 +98,38 @@ button {
 
 #calendar {
   overflow-x: auto;
-  margin-top: 16px;
   border-radius: 16px;
   border: 1px solid #eee;
   background: #fff;
-  min-height: 80px;
-  -webkit-overflow-scrolling: touch;
+  min-height: 100px;
+}
+
+/* カレンダーローディング */
+.cal-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 14px;
+}
+
+.cal-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #06C755;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.cal-loading-text {
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  line-height: 1.6;
 }
 
 .calendar-table {
@@ -98,16 +142,17 @@ button {
 
 .calendar-table th {
   background: #f8faf9;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 12px 8px;
+  padding: 10px 8px;
   border-bottom: 1px solid #e8e8e8;
   white-space: nowrap;
+  line-height: 1.4;
 }
 
 .calendar-table td {
   font-size: 15px;
-  padding: 8px;
+  padding: 10px 8px;
   border-bottom: 1px solid #f0f0f0;
   border-right: 1px solid #f4f4f4;
   white-space: nowrap;
@@ -136,18 +181,41 @@ button {
   border: 1px solid #ccefd8;
   margin: 0;
   padding: 0;
+  cursor: pointer;
 }
 
-.unavailable { color: #bbb; font-size: 18px; background: #fafafa; }
+.unavailable { color: #ddd; font-size: 16px; background: #fafafa; }
 
-.status {
-  margin-top: 18px;
-  white-space: pre-line;
-  line-height: 1.7;
-  font-size: 15px;
-  font-weight: bold;
-  color: #06C755;
+/* 処理中オーバーレイ */
+.processing-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.88);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.processing-overlay.show { display: flex; }
+
+.processing-overlay .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #06C755;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.processing-overlay .processing-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
   text-align: center;
+  line-height: 1.6;
 }
 
 .done-icon { font-size: 44px; text-align: center; margin-bottom: 10px; }
@@ -156,58 +224,98 @@ button {
 </head>
 
 <body>
+
+<!-- 処理中オーバーレイ -->
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div class="processing-text">
+    変更中...<br>
+    <span style="font-size:13px;color:#888;">Processing change...</span>
+  </div>
+</div>
+
 <div class="container">
 
   <div class="card" id="changeCard">
-    <h2>予約変更<span class="en-sub">Change Reservation</span></h2>
-    <p>○を押すと、変更確認が表示されます。<span class="en-sub">Tap ○ to select a new time slot.</span></p>
+    <h2>予約変更</h2>
+    <div class="en-title">Change Reservation</div>
+    <p>○をタップして新しい時間を選んでください<span class="en-sub">Tap ○ to select a new time slot</span></p>
 
-    <div class="info-box" id="reservationInfo">読み込み中... / Loading...</div>
+    <div class="info-box" id="reservationInfo">
+      <div class="cal-loading">
+        <div class="cal-spinner"></div>
+        <div class="cal-loading-text">読み込み中...<br><span style="font-size:12px;color:#bbb;">Loading...</span></div>
+      </div>
+    </div>
 
     <div class="warning-box">
       <strong>予約変更について / About Changes</strong><br>
-      ・予約変更はレッスン開始12時間前まで可能です。<br>
-      <span class="en-sub">・Changes are available up to 12 hours before the lesson.</span>
-      ・12時間前を過ぎた予約は変更できません。<br>
-      <span class="en-sub">・Changes are not allowed within 12 hours of the lesson.</span>
-      ・変更後は新しいGoogle Meetリンクが発行されます。<br>
-      <span class="en-sub">・A new Google Meet link will be issued after the change.</span>
+      ・12時間前まで変更可能 / Changes available up to 12h before<br>
+      ・変更後は新しいMeetリンクが発行されます / New Meet link will be issued
     </div>
 
-    <div class="nav">
+    <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
+
+    <div id="calendar">
+      <div class="cal-loading">
+        <div class="cal-spinner"></div>
+        <div class="cal-loading-text">
+          空き時間を確認しています...<br>
+          <span style="font-size:12px;color:#bbb;">Checking available slots...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" style="margin-top:12px;">
       <button class="sub" type="button" onclick="prevWeek()">← 前の週 / Prev</button>
       <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
     </div>
-
-    <div id="calendar">読み込み中... / Loading...</div>
-
-    <div class="status" id="status"></div>
   </div>
 
   <div class="card hidden" id="doneCard">
     <div class="done-icon">✅</div>
-    <h2>予約を変更しました<span class="en-sub">Reservation Changed</span></h2>
+    <h2>予約を変更しました</h2>
+    <div class="en-title">Reservation Changed</div>
 
     <div class="info-box" id="doneInfo"></div>
 
     <p>
       LINEに新しい予約内容を送信しました。<br>
       このページは閉じて大丈夫です。<br>
-      <span class="en-sub">New booking details have been sent via LINE.<br>You can close this page.</span>
+      <span class="en-sub">New booking details sent via LINE. You can close this page.</span>
     </p>
 
-    <button class="main" onclick="window.close()">閉じる / Close</button>
+    <button class="main" onclick="closePage()">閉じる / Close</button>
   </div>
 
 </div>
 
 <script>
+const LIFF_ID = "2009890655-O8QZVlRf";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let reservationId = "";
 let optionsData = null;
 let weekOffset = 0;
 const pageSize = 7;
+let liffReady = false;
+
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    liffReady = true;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function closePage() {
+  if (liffReady && liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    history.back();
+  }
+}
 
 function formatShort(dateStr) {
   const parts = dateStr.split("-");
@@ -229,7 +337,7 @@ async function loadChangeData() {
   reservationId = params.get("id");
 
   if (!reservationId) {
-    document.getElementById("reservationInfo").innerHTML = "<span class='error'>予約IDが見つかりません。 / Reservation ID not found.</span>";
+    document.getElementById("reservationInfo").innerHTML = "<span class='error'>予約IDが見つかりません。/ Reservation ID not found.</span>";
     document.getElementById("calendar").innerHTML = "";
     return;
   }
@@ -264,7 +372,7 @@ function renderCalendar() {
   const allDates = optionsData.dates || [];
 
   if (!allDates.length) {
-    calendar.innerHTML = "<p style='padding:20px;'>変更できる日時がありません。/ No available time slots.</p>";
+    calendar.innerHTML = "<p style='padding:20px;text-align:center;color:#aaa;'>変更できる日時がありません。<br><span style='font-size:12px;'>No available slots.</span></p>";
     return;
   }
 
@@ -277,14 +385,14 @@ function renderCalendar() {
 
   const times = Array.from(timeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
-  let html = "<table class='calendar-table'><tr><th>時間</th>";
+  let html = "<table class='calendar-table'><tr><th>時間 / Time</th>";
   visibleDates.forEach(d => {
     html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
   });
   html += "</tr>";
 
   if (times.length === 0) {
-    html += "<tr><td colspan='" + (visibleDates.length + 1) + "'>この週に選べる時間がありません / No slots available this week</td></tr>";
+    html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
   } else {
     times.forEach(time => {
       html += "<tr><td>" + time + "</td>";
@@ -305,29 +413,27 @@ function renderCalendar() {
 }
 
 function prevWeek() {
-  if (weekOffset <= 0) { alert("今日より前の週は選べません。/ Cannot go before today."); return; }
+  if (weekOffset <= 0) { alert("今日より前の週は選べません。\nCannot go before today."); return; }
   weekOffset -= pageSize;
   renderCalendar();
 }
 
 function nextWeek() {
   if (!optionsData || !optionsData.dates) return;
-  if (weekOffset + pageSize >= optionsData.dates.length) { alert("予約変更できるのは1か月先までです。/ Cannot change more than 1 month ahead."); return; }
+  if (weekOffset + pageSize >= optionsData.dates.length) { alert("予約変更できるのは1か月先までです。\nCannot change more than 1 month ahead."); return; }
   weekOffset += pageSize;
   renderCalendar();
 }
 
 function handleSlotTap(date, time) {
   const displayDate = formatShort(date);
-  const ok = confirm(displayDate + " " + time + " に変更してもよろしいですか？\nChange to " + displayDate + " " + time + "?");
+  const ok = confirm(displayDate + " " + time + " に変更しますか？\nChange to " + displayDate + " " + time + "?");
   if (!ok) return;
   executeChange(date, time);
 }
 
 async function executeChange(date, time) {
-  const status = document.getElementById("status");
-  status.className = "status";
-  status.textContent = "変更処理を行っています... / Processing...";
+  document.getElementById("processingOverlay").classList.add("show");
 
   try {
     const url = GAS_URL + "?action=changeExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&date=" + encodeURIComponent(date) + "&time=" + encodeURIComponent(time) + "&t=" + Date.now();
@@ -335,15 +441,16 @@ async function executeChange(date, time) {
 
     document.getElementById("doneInfo").innerHTML =
       "<strong>新しい日時 / New Time：</strong>" + formatShort(date) + " " + time + "<br>" +
-      "<strong>変更内容 / Change：</strong>予約日時を変更しました。/ Reservation updated.";
+      "<strong>ステータス / Status：</strong>変更完了 / Changed";
 
     document.getElementById("changeCard").classList.add("hidden");
     document.getElementById("doneCard").classList.remove("hidden");
 
   } catch (e) {
     console.error(e);
-    status.className = "status error";
-    status.textContent = "変更に失敗しました。先生にご連絡ください。/ Change failed. Please contact the teacher.";
+    alert("変更に失敗しました。先生にご連絡ください。\nChange failed. Please contact the teacher.");
+  } finally {
+    document.getElementById("processingOverlay").classList.remove("show");
   }
 }
 
@@ -353,6 +460,7 @@ document.getElementById("calendar").addEventListener("click", function(e) {
   handleSlotTap(btn.dataset.date, btn.dataset.time);
 });
 
+initLiff();
 loadChangeData();
 </script>
 </body>
