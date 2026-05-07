@@ -243,7 +243,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     <div class="icon" id="resultIcon">✅</div>
     <h2 id="resultTitle" class="green">キャンセルしました</h2>
     <div class="result-message" id="resultMessage"></div>
-    <div class="small">このページは閉じて大丈夫です。</div>
+    <div class="small">このページは閉じて大丈夫です。<br><span style="font-size:12px;color:#aaa;">You can close this page.</span></div>
     <button class="absence" type="button" id="absenceBtn2" style="display:none">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
     <button class="back" type="button" onclick="closePage()">閉じる / Close</button>
   </div>
@@ -296,7 +296,7 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  window.location.href = "https://line.me/R/home";
+  window.location.href = "https://line.me/ti/p/@080ztfaq";
 }
 
 async function loadCancelData() {
@@ -360,7 +360,15 @@ async function executeCancel() {
     const isSuccess = message.includes("キャンセルしました") || message.includes("返金処理も完了しました");
 
     if (isSuccess) {
-      showResult(true, message);
+      // 現地時間も追加
+      let extraInfo = "";
+      if (reservationData) {
+        const localTime = getLocalTimeLabel(reservationData.date, reservationData.time);
+        if (localTime) {
+          extraInfo = `\n\n【キャンセルしたレッスン】\n${reservationData.date} ${reservationData.time} (JST)\n${localTime} (${userTzName || ''})`;
+        }
+      }
+      showResult(true, message + extraInfo);
     } else {
       showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。");
       document.getElementById("absenceBtn2").style.display = "block";
@@ -403,11 +411,11 @@ function showResult(isSuccess, message) {
 
   if (isSuccess) {
     icon.textContent = "✅";
-    title.textContent = "キャンセルしました";
+    title.textContent = "キャンセルしました / Cancelled";
     title.className = "green";
   } else {
     icon.textContent = "⚠️";
-    title.textContent = "キャンセルできません";
+    title.textContent = "キャンセルできません / Cannot Cancel";
     title.className = "red";
   }
 
