@@ -715,6 +715,8 @@ async function generateCalendar() {
 }
 
 async function pickSlot(date, time) {
+  showProcessing("日時を確認しています...\nChecking selected time...");
+
   selectedDate = date;
   selectedTime = time;
 
@@ -739,6 +741,7 @@ async function pickSlot(date, time) {
   `;
 
   await loadPaymentOptions(lessonLabel);
+  hideProcessing();
   go("confirmPage");
 }
 
