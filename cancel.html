@@ -186,13 +186,26 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     <div id="ticketSection" class="hidden">
       <div class="ticket-notice">
         <div class="notice-icon">🎟️</div>
-        <div class="notice-title">回数券でのご予約です</div>
+        <div class="notice-title">回数券でのご予約です<span style="display:block;font-size:11px;font-weight:400;color:#888;">Ticket Reservation</span></div>
         <div class="notice-text">
           回数券でご予約のレッスンは<br>
-          <strong>キャンセル・返金ができません。</strong><br><br>
-          欠席を希望する場合は、<br>
-          下のボタンから先生に連絡できます。
+          <strong>キャンセル・返金ができません。</strong><br>
+          <span style="font-size:12px;color:#888;">Ticket bookings cannot be cancelled or refunded.</span><br><br>
+          欠席される場合は、事前にLINEで<br>
+          先生に直接ご連絡ください。<br>
+          <span style="font-size:12px;color:#888;">If you cannot attend, please notify the teacher directly via LINE in advance.</span>
         </div>
+      </div>
+    </div>
+
+    <!-- キャンセル期限切れの場合の案内 -->
+    <div id="absenceGuide" class="hidden" style="background:#f0f7ff;border:1px solid #b8d4f5;border-radius:18px;padding:20px;margin:18px 0;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">⏰</div>
+      <div style="font-size:15px;font-weight:700;color:#1a5fa8;margin-bottom:8px;">キャンセル期限を過ぎています<span style="display:block;font-size:11px;font-weight:400;color:#5a8cc7;">Past the cancellation deadline</span></div>
+      <div style="font-size:13px;color:#3a6fa8;line-height:1.8;">
+        欠席される場合は、できるだけ早く<br>
+        LINEで先生に直接ご連絡ください。<br>
+        <span style="font-size:12px;color:#5a8cc7;">If you cannot attend, please contact the teacher directly via LINE as soon as possible.</span>
       </div>
     </div>
 
@@ -226,15 +239,19 @@ async function initLiff() {
   try {
     await liff.init({ liffId: LIFF_ID });
     liffReady = true;
-  } catch (e) { console.error(e); }
+  } catch (e) {
+    liffReady = false;
+  }
 }
 
 function closePage() {
-  if (liffReady && liff.isInClient()) {
-    liff.closeWindow();
-  } else {
-    history.back();
-  }
+  try {
+    if (typeof liff !== 'undefined' && liff.isInClient()) {
+      liff.closeWindow();
+      return;
+    }
+  } catch (e) {}
+  history.back();
 }
 
 async function loadCancelData() {
