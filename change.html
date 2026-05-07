@@ -305,17 +305,8 @@ let userTimezone = null;
 let userTzName = null;
 
 // LINEブラウザ判定（LIFF IDなし）
-// 閉じる（success.htmlと同じ方式）
 function closePage() {
-  try {
-    liff.closeWindow();
-  } catch (e) {
-    if (window.history.length > 1) {
-      history.back();
-    } else {
-      window.close();
-    }
-  }
+  window.location.href = "https://line.me/R/home";
 }
 
 // LIFF初期化
