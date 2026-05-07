@@ -32,22 +32,11 @@ body {
 
 h2 { text-align: center; color: #06C755; font-size: 22px; margin: 0 0 2px; }
 
-.en-title {
-  text-align: center;
-  font-size: 11px;
-  color: #bbb;
-  margin-bottom: 10px;
-}
+.en-title { text-align: center; font-size: 11px; color: #bbb; margin-bottom: 10px; }
 
 p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 0 0 8px; }
 
-.en-sub {
-  display: block;
-  font-size: 0.7em;
-  color: #bbb;
-  font-weight: 400;
-  margin-top: 2px;
-}
+.en-sub { display: block; font-size: 0.7em; color: #bbb; font-weight: 400; margin-top: 2px; }
 
 .info-box {
   background: #f7fdf9;
@@ -70,11 +59,22 @@ p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 
   margin: 12px 0;
 }
 
+.absence-box {
+  background: #f0f7ff;
+  border: 1px solid #b8d4f5;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #1a5fa8;
+  margin: 12px 0;
+}
+
 .tz-info {
   text-align: center;
   font-size: 12px;
   color: #aaa;
-  margin: 6px 0 4px;
+  margin: 4px 0;
   padding: 4px 8px;
   background: #f8faf9;
   border-radius: 8px;
@@ -84,11 +84,11 @@ p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 
   text-align: center;
   font-size: 12px;
   color: #aaa;
-  margin-bottom: 6px;
   padding: 4px;
+  margin-bottom: 4px;
 }
 
-.nav { display: flex; gap: 10px; margin: 8px 0; }
+.nav { display: flex; gap: 10px; margin: 8px 0 4px; }
 
 button {
   width: 100%;
@@ -134,12 +134,7 @@ button {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.cal-loading-text {
-  font-size: 14px;
-  color: #888;
-  text-align: center;
-  line-height: 1.6;
-}
+.cal-loading-text { font-size: 14px; color: #888; text-align: center; line-height: 1.6; }
 
 .calendar-table {
   width: 100%;
@@ -261,7 +256,19 @@ button {
       ・変更後は新しいMeetリンクが発行されます / New Meet link will be issued
     </div>
 
+    <div class="absence-box">
+      ⚠️ <strong>欠席される場合 / If you cannot attend</strong><br>
+      キャンセル期限（12時間前）を過ぎている場合は、できるだけ早くLINEで先生に直接ご連絡ください。<br>
+      <span style="font-size:12px;color:#5a8cc7;">If past the 12h cancellation deadline, please notify the teacher directly via LINE as soon as possible.</span>
+    </div>
+
     <div class="tz-info" id="tzInfo">📍 表示時刻: 日本時間 (JST) / Times shown in JST</div>
+
+    <div class="nav">
+      <button class="sub" type="button" onclick="prevWeek()">← 前の週 / Prev</button>
+      <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
+    </div>
+
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
     <div id="calendar">
@@ -272,11 +279,6 @@ button {
           <span style="font-size:12px;color:#bbb;">Checking available slots...</span>
         </div>
       </div>
-    </div>
-
-    <div class="nav" style="margin-top:12px;">
-      <button class="sub" type="button" onclick="prevWeek()">← 前の週 / Prev</button>
-      <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
     </div>
   </div>
 
@@ -307,27 +309,33 @@ let weekOffset = 0;
 const pageSize = 7;
 let userTimezone = null;
 let userTzName = null;
-let liffReady = false;
 
-// LIFFの初期化（閉じるために必要）
-async function initLiff() {
-  try {
-    await liff.init({ liffId: "2009890655-O8QZVlRf" });
-    liffReady = true;
-  } catch (e) {
-    // LIFF初期化失敗時はhistory.backを使う
-    liffReady = false;
+// LINEブラウザ判定（LIFF IDなし）
+function isLineInApp() {
+  return /Line\//i.test(navigator.userAgent);
+}
+
+// 閉じる
+function closePage() {
+  if (isLineInApp()) {
+    try {
+      liff.closeWindow();
+      return;
+    } catch (e) {}
+  }
+  // LINEアプリ外またはliff失敗時
+  if (window.history.length > 1) {
+    history.back();
+  } else {
+    window.close();
   }
 }
 
-function closePage() {
+// LIFF初期化（閉じるのためだけ）
+async function initLiffSilent() {
   try {
-    if (typeof liff !== 'undefined' && liff.isInClient()) {
-      liff.closeWindow();
-      return;
-    }
+    await liff.init({ liffId: "2009890655-9G9Ve0wB" });
   } catch (e) {}
-  history.back();
 }
 
 // タイムゾーン自動取得
@@ -390,7 +398,6 @@ async function loadChangeData() {
 
     optionsData = data;
 
-    // 現地時間も表示
     const jstTime = data.reservation.time;
     const localTime = getLocalTimeLabel(data.reservation.date, jstTime);
     const timeDisplay = localTime ? `${jstTime} (JST) / ${localTime} (${userTzName || ''})` : jstTime;
@@ -472,7 +479,7 @@ function handleSlotTap(date, time) {
   const displayDate = formatShort(date);
   const localTime = getLocalTimeLabel(date, time);
   const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
-  const ok = confirm(displayDate + " " + timeDisplay + "\nに変更しますか？/ Change to this time?");
+  const ok = confirm(displayDate + " " + timeDisplay + "\nに変更しますか？\nChange to this time?");
   if (!ok) return;
   executeChange(date, time);
 }
@@ -508,8 +515,8 @@ document.getElementById("calendar").addEventListener("click", function(e) {
 });
 
 // 初期化
-initLiff();
 detectTimezone();
+initLiffSilent();
 loadChangeData();
 </script>
 </body>
