@@ -607,6 +607,28 @@ let allReservations = [];
 let currentTab = "upcoming";
 let userId = null;
 
+// ===== タイムゾーン =====
+let userTimezone = null;
+let userTzName = null;
+
+function detectTimezone() {
+  try {
+    userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const now = new Date();
+    userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+  } catch (e) {}
+}
+
+function getLocalTime(dateStr, timeStr) {
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') return '';
+  try {
+    const jstDate = new Date(`${dateStr}T${timeStr}:00+09:00`);
+    return jstDate.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: userTimezone
+    });
+  } catch (e) { return ''; }
+}
+
 // ===== 曜日 =====
 function getDayLabel(dateStr) {
   const d = new Date(dateStr + "T00:00:00+09:00");
@@ -711,9 +733,10 @@ function renderCard(r, now, index) {
       <div class="card-body">
         <div class="datetime-row">
           <span class="datetime-date">${formatDate(r.date)}</span>
-          <span class="datetime-time">${escHtml(r.time)}</span>
+          <span class="datetime-time">${escHtml(r.time)} <span style="font-size:11px;color:#aaa;">JST</span></span>
           <span class="datetime-day">${getDayLabel(r.date)}</span>
         </div>
+        ${getLocalTime(r.date, r.time) ? `<div style="font-size:12px;color:#aaa;margin-top:2px;padding-left:2px;">🌍 ${getLocalTime(r.date, r.time)} (${userTzName || ''})</div>` : ''}
         <div class="detail-row">
           <span>レッスン料金</span>
           <span class="price-text">$${escHtml(price)}</span>
@@ -849,6 +872,7 @@ async function init() {
   }
 }
 
+detectTimezone();
 init();
 </script>
 </body>
