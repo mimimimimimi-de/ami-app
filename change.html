@@ -56,7 +56,7 @@ p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 
   border-radius: 16px;
   font-size: 15px;
   line-height: 1.8;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 .warning-box {
@@ -68,6 +68,16 @@ p { text-align: center; color: #666; line-height: 1.7; font-size: 15px; margin: 
   line-height: 1.8;
   color: #666;
   margin: 12px 0;
+}
+
+.tz-info {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin: 6px 0 4px;
+  padding: 4px 8px;
+  background: #f8faf9;
+  border-radius: 8px;
 }
 
 .scroll-hint {
@@ -104,7 +114,6 @@ button {
   min-height: 100px;
 }
 
-/* カレンダーローディング */
 .cal-loading {
   display: flex;
   flex-direction: column;
@@ -186,7 +195,6 @@ button {
 
 .unavailable { color: #ddd; font-size: 16px; background: #fafafa; }
 
-/* 処理中オーバーレイ */
 .processing-overlay {
   display: none;
   position: fixed;
@@ -225,7 +233,6 @@ button {
 
 <body>
 
-<!-- 処理中オーバーレイ -->
 <div class="processing-overlay" id="processingOverlay">
   <div class="spinner"></div>
   <div class="processing-text">
@@ -254,6 +261,7 @@ button {
       ・変更後は新しいMeetリンクが発行されます / New Meet link will be issued
     </div>
 
+    <div class="tz-info" id="tzInfo">📍 表示時刻: 日本時間 (JST) / Times shown in JST</div>
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
     <div id="calendar">
@@ -291,30 +299,58 @@ button {
 </div>
 
 <script>
-const LIFF_ID = "2009890655-O8QZVlRf";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let reservationId = "";
 let optionsData = null;
 let weekOffset = 0;
 const pageSize = 7;
+let userTimezone = null;
+let userTzName = null;
 let liffReady = false;
 
+// LIFFの初期化（閉じるために必要）
 async function initLiff() {
   try {
-    await liff.init({ liffId: LIFF_ID });
+    await liff.init({ liffId: "2009890655-O8QZVlRf" });
     liffReady = true;
   } catch (e) {
-    console.error(e);
+    // LIFF初期化失敗時はhistory.backを使う
+    liffReady = false;
   }
 }
 
 function closePage() {
-  if (liffReady && liff.isInClient()) {
-    liff.closeWindow();
-  } else {
-    history.back();
-  }
+  try {
+    if (typeof liff !== 'undefined' && liff.isInClient()) {
+      liff.closeWindow();
+      return;
+    }
+  } catch (e) {}
+  history.back();
+}
+
+// タイムゾーン自動取得
+function detectTimezone() {
+  try {
+    userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const now = new Date();
+    const tzShort = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    userTzName = tzShort;
+    if (userTimezone && userTimezone !== 'Asia/Tokyo') {
+      document.getElementById("tzInfo").textContent = `📍 日本時間 (JST) / あなたの時間 (${userTzName}) も表示`;
+    }
+  } catch (e) {}
+}
+
+function getLocalTimeLabel(dateStr, timeStr) {
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') return '';
+  try {
+    const jstDate = new Date(`${dateStr}T${timeStr}:00+09:00`);
+    return jstDate.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: userTimezone
+    });
+  } catch (e) { return ''; }
 }
 
 function formatShort(dateStr) {
@@ -354,9 +390,14 @@ async function loadChangeData() {
 
     optionsData = data;
 
+    // 現地時間も表示
+    const jstTime = data.reservation.time;
+    const localTime = getLocalTimeLabel(data.reservation.date, jstTime);
+    const timeDisplay = localTime ? `${jstTime} (JST) / ${localTime} (${userTzName || ''})` : jstTime;
+
     document.getElementById("reservationInfo").innerHTML =
       "<strong>現在のレッスン / Current Lesson：</strong>" + data.reservation.lesson + "<br>" +
-      "<strong>現在の日時 / Current Time：</strong>" + data.reservation.date + " " + data.reservation.time;
+      "<strong>現在の日時 / Current Time：</strong>" + data.reservation.date + " " + timeDisplay;
 
     renderCalendar();
 
@@ -370,6 +411,7 @@ async function loadChangeData() {
 function renderCalendar() {
   const calendar = document.getElementById("calendar");
   const allDates = optionsData.dates || [];
+  const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
 
   if (!allDates.length) {
     calendar.innerHTML = "<p style='padding:20px;text-align:center;color:#aaa;'>変更できる日時がありません。<br><span style='font-size:12px;'>No available slots.</span></p>";
@@ -378,14 +420,14 @@ function renderCalendar() {
 
   const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
   const timeSet = new Set();
-
   visibleDates.forEach(d => {
     if (d.times && d.times.length > 0) d.times.forEach(t => timeSet.add(t));
   });
 
   const times = Array.from(timeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
-  let html = "<table class='calendar-table'><tr><th>時間 / Time</th>";
+  let html = "<table class='calendar-table'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
+
   visibleDates.forEach(d => {
     html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
   });
@@ -395,7 +437,8 @@ function renderCalendar() {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
   } else {
     times.forEach(time => {
-      html += "<tr><td>" + time + "</td>";
+      const localTime = showLocalTime && visibleDates.length > 0 ? getLocalTimeLabel(visibleDates[0].date, time) : '';
+      html += "<tr><td>" + time + (localTime ? `<br><span style='font-size:11px;color:#aaa;'>${localTime}</span>` : '') + "</td>";
       visibleDates.forEach(d => {
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
@@ -427,20 +470,24 @@ function nextWeek() {
 
 function handleSlotTap(date, time) {
   const displayDate = formatShort(date);
-  const ok = confirm(displayDate + " " + time + " に変更しますか？\nChange to " + displayDate + " " + time + "?");
+  const localTime = getLocalTimeLabel(date, time);
+  const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
+  const ok = confirm(displayDate + " " + timeDisplay + "\nに変更しますか？/ Change to this time?");
   if (!ok) return;
   executeChange(date, time);
 }
 
 async function executeChange(date, time) {
   document.getElementById("processingOverlay").classList.add("show");
-
   try {
     const url = GAS_URL + "?action=changeExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&date=" + encodeURIComponent(date) + "&time=" + encodeURIComponent(time) + "&t=" + Date.now();
     await fetch(url, { mode: "no-cors" });
 
+    const localTime = getLocalTimeLabel(date, time);
+    const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
+
     document.getElementById("doneInfo").innerHTML =
-      "<strong>新しい日時 / New Time：</strong>" + formatShort(date) + " " + time + "<br>" +
+      "<strong>新しい日時 / New Time：</strong>" + formatShort(date) + " " + timeDisplay + "<br>" +
       "<strong>ステータス / Status：</strong>変更完了 / Changed";
 
     document.getElementById("changeCard").classList.add("hidden");
@@ -460,7 +507,9 @@ document.getElementById("calendar").addEventListener("click", function(e) {
   handleSlotTap(btn.dataset.date, btn.dataset.time);
 });
 
+// 初期化
 initLiff();
+detectTimezone();
 loadChangeData();
 </script>
 </body>
