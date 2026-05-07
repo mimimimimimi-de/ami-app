@@ -287,14 +287,8 @@ function formatTimeDisplay(dateStr, timeStr) {
 
 // LINEブラウザ判定（LIFF IDなし）
 async function initLiffSilent() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    liffReady = true;
-  } catch (e) {
-    liffReady = false;
-  }
+  // LIFF初期化不要
 }
-
 function closePage() {
   window.location.href = "https://ami-app-eta.vercel.app/mybooking.html";
 }
