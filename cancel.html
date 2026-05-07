@@ -80,6 +80,19 @@ h2 {
   color: #5f4200;
 }
 
+.absence-notice {
+  background: #f0f7ff;
+  border: 1px solid #b8d4f5;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 18px 0;
+  text-align: center;
+}
+
+.absence-notice .notice-icon { font-size: 36px; margin-bottom: 8px; }
+.absence-notice .notice-title { font-size: 15px; font-weight: 700; color: #1a5fa8; margin-bottom: 8px; }
+.absence-notice .notice-text { font-size: 13px; color: #3a6fa8; line-height: 1.8; }
+
 .ticket-notice {
   background: #fff8ec;
   border: 1px solid #f3c98b;
@@ -176,8 +189,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
         <span class="en-sub">・Payment processing fees are non-refundable.</span>
         ・12時間前を過ぎた場合：キャンセル・返金はできません。<br>
         <span class="en-sub">・After 12 hours before the lesson: No cancellation or refund.</span>
-        ・欠席を希望する場合は下のボタンから先生に連絡できます。<br>
-        <span class="en-sub">・If you need to be absent, use the button below to notify the teacher.</span>
       </div>
       <button class="cancel" type="button" id="cancelBtn">キャンセルを確定する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Confirm Cancellation</span></button>
     </div>
@@ -209,6 +220,18 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
       </div>
     </div>
 
+    <!-- 欠席案内（青い枠） -->
+    <div class="absence-notice">
+      <div class="notice-icon">⏰</div>
+      <div class="notice-title">12時間を過ぎて欠席される場合<span style="display:block;font-size:11px;font-weight:400;color:#5a8cc7;">If past the cancellation deadline</span></div>
+      <div class="notice-text">
+        キャンセル・返金はできませんが、<br>
+        できるだけ早くLINEで先生に<br>
+        直接ご連絡ください。<br>
+        <span style="font-size:12px;color:#5a8cc7;">Please notify the teacher directly via LINE as soon as possible.</span>
+      </div>
+    </div>
+
     <!-- 欠席ボタン（常に表示） -->
     <button class="absence" type="button" id="absenceBtn">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
     <button class="back-small" type="button" onclick="closePage()">閉じる / Close</button>
@@ -228,7 +251,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 </div>
 
 <script>
-const LIFF_ID = "2009890655-O8QZVlRf";
+const LIFF_ID = "2009890655-jIJpN1Ya";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let reservationId = "";
