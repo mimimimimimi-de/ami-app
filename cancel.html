@@ -257,6 +257,33 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1gr
 let reservationId = "";
 let reservationData = null;
 let liffReady = false;
+let userTimezone = null;
+let userTzName = null;
+
+// タイムゾーン自動取得
+function detectTimezone() {
+  try {
+    userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const now = new Date();
+    userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+  } catch (e) {}
+}
+
+function getLocalTimeLabel(dateStr, timeStr) {
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') return '';
+  try {
+    const jstDate = new Date(`${dateStr}T${timeStr}:00+09:00`);
+    return jstDate.toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: userTimezone
+    });
+  } catch (e) { return ''; }
+}
+
+function formatTimeDisplay(dateStr, timeStr) {
+  const localTime = getLocalTimeLabel(dateStr, timeStr);
+  if (localTime) return `${timeStr} (JST) / ${localTime} (${userTzName || ''})`;
+  return timeStr + ' (JST)';
+}
 
 // LINEブラウザ判定（LIFF IDなし）
 async function initLiffSilent() {
@@ -269,15 +296,7 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  try {
-    liff.closeWindow();
-  } catch (e) {
-    if (window.history.length > 1) {
-      history.back();
-    } else {
-      window.close();
-    }
-  }
+  window.location.href = "https://line.me/R/home";
 }
 
 async function loadCancelData() {
@@ -303,9 +322,10 @@ async function loadCancelData() {
     reservationData = data.reservation;
 
     const lessonCard = document.getElementById("reservationInfo");
+    const timeDisplay = formatTimeDisplay(reservationData.date, reservationData.time);
     lessonCard.innerHTML =
       "<strong>レッスン：</strong>" + reservationData.lesson + "<br>" +
-      "<strong>日時：</strong>" + reservationData.date + " " + reservationData.time + "<br>" +
+      "<strong>日時：</strong>" + reservationData.date + " " + timeDisplay + "<br>" +
       "<strong>料金：</strong>" + (data.isTicket ? "回数券" : reservationData.price);
 
     if (data.isTicket) {
@@ -398,6 +418,7 @@ document.getElementById("cancelBtn").addEventListener("click", executeCancel);
 document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
 document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
 
+detectTimezone();
 initLiffSilent();
 loadCancelData();
 </script>
