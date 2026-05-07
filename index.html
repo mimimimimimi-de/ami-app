@@ -324,7 +324,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     <div id="lesson"></div>
     <div class="price" id="priceText">-</div>
     <button class="sub" onclick="go('top')">← 戻る / Back</button>
-    <button class="main" onclick="openCalendar()">次へ / Next →</button>
+    <button class="main" id="nextBtn" onclick="openCalendar()" disabled>
+      次へ / Next →<span class="en-sub" style="color:rgba(255,255,255,0.7);">Select date & time</span>
+    </button>
   </div>
 
   <div class="card hidden" id="calendarPage">
@@ -474,6 +476,7 @@ async function selectLesson(minutes) {
   selectedMinutes = minutes;
   selectedPrice = null;
   go("price");
+  document.getElementById("nextBtn").disabled = true;
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + minutes + "-min Lesson";
   document.getElementById("priceText").textContent = "取得中... / Loading...";
   const ok = await ensureUserId();
@@ -493,6 +496,7 @@ async function selectLesson(minutes) {
     }
     selectedPrice = Number(data.price);
     document.getElementById("priceText").textContent = "$" + selectedPrice;
+    document.getElementById("nextBtn").disabled = false;
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
