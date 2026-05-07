@@ -235,7 +235,12 @@ let reservationId = "";
 let reservationData = null;
 let liffReady = false;
 
-async function initLiff() {
+// LINEブラウザ判定（LIFF IDなし）
+function isLineInApp() {
+  return /Line\//i.test(navigator.userAgent);
+}
+
+async function initLiffSilent() {
   try {
     await liff.init({ liffId: LIFF_ID });
     liffReady = true;
@@ -245,13 +250,17 @@ async function initLiff() {
 }
 
 function closePage() {
-  try {
-    if (typeof liff !== 'undefined' && liff.isInClient()) {
+  if (isLineInApp()) {
+    try {
       liff.closeWindow();
       return;
-    }
-  } catch (e) {}
-  history.back();
+    } catch (e) {}
+  }
+  if (window.history.length > 1) {
+    history.back();
+  } else {
+    window.close();
+  }
 }
 
 async function loadCancelData() {
@@ -372,7 +381,7 @@ document.getElementById("cancelBtn").addEventListener("click", executeCancel);
 document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
 document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
 
-initLiff();
+initLiffSilent();
 loadCancelData();
 </script>
 </body>
