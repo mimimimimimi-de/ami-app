@@ -296,7 +296,7 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  window.location.href = "https://line.me/ti/p/@080ztfaq";
+  window.location.href = "https://liff.line.me/2009890655-O8QZVlRf";
 }
 
 async function loadCancelData() {
@@ -360,15 +360,12 @@ async function executeCancel() {
     const isSuccess = message.includes("キャンセルしました") || message.includes("返金処理も完了しました");
 
     if (isSuccess) {
-      // 現地時間も追加
-      let extraInfo = "";
-      if (reservationData) {
-        const localTime = getLocalTimeLabel(reservationData.date, reservationData.time);
-        if (localTime) {
-          extraInfo = `\n\n【キャンセルしたレッスン】\n${reservationData.date} ${reservationData.time} (JST)\n${localTime} (${userTzName || ''})`;
-        }
-      }
-      showResult(true, message + extraInfo);
+      const localTime = reservationData ? getLocalTimeLabel(reservationData.date, reservationData.time) : '';
+      const timeDisplay = reservationData
+        ? `${reservationData.date} ${reservationData.time} (JST)` + (localTime ? ` / ${localTime} (${userTzName || ''})` : '')
+        : '';
+      const successMsg = `キャンセルが完了しました。\nCancellation complete.\n\n【日時 / Time】\n${timeDisplay}\n\n返金処理も完了しました。\nRefund has been processed.`;
+      showResult(true, successMsg);
     } else {
       showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。");
       document.getElementById("absenceBtn2").style.display = "block";
