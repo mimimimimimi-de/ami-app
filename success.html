@@ -68,9 +68,12 @@
     <div class="status" id="status">保存中...</div>
     <div id="calendarBtnArea" style="display:none;">
       <a id="calendarLink" class="cal-btn" href="#" target="_blank">
-        📅 Googleカレンダーに追加する
+        📅 Googleカレンダーに追加 / Add to Google Calendar
       </a>
     </div>
+    <button id="closeBtn" onclick="closePage()" style="display:none;margin-top:14px;width:100%;padding:14px;background:#e5e5e5;color:#333;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
+      閉じる / Close
+    </button>
   </div>
 
   <script>
@@ -210,10 +213,13 @@
 
         statusEl.classList.remove("error");
         statusEl.textContent =
-          "予約を保存しました。\nLINEに予約完了メッセージを送信しました。";
+          "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\nBooking saved. Notification sent via LINE.";
 
         // Googleカレンダーボタン表示
         showCalendarBtn(date, time, lessonType);
+
+        // 閉じるボタン表示
+        document.getElementById("closeBtn").style.display = "block";
 
         localStorage.removeItem("selectedDate");
         localStorage.removeItem("selectedTime");
@@ -225,7 +231,16 @@
       } catch (error) {
         console.error("GAS error:", error);
         statusEl.classList.add("error");
-        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。";
+        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。\nFailed to save. Please contact the teacher.";
+        document.getElementById("closeBtn").style.display = "block";
+      }
+    }
+
+    function closePage() {
+      if (liff.isInClient()) {
+        liff.closeWindow();
+      } else {
+        history.back();
       }
     }
 
