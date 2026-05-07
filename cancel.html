@@ -148,6 +148,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   color: #06C755;
 }
 </style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
@@ -197,7 +198,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     <!-- 欠席ボタン（常に表示） -->
     <button class="absence" type="button" id="absenceBtn">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
-    <button class="back-small" type="button" onclick="window.close()">閉じる / Close</button>
+    <button class="back-small" type="button" onclick="closePage()">閉じる / Close</button>
 
     <div class="status" id="status"></div>
   </div>
@@ -207,17 +208,34 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     <h2 id="resultTitle" class="green">キャンセルしました</h2>
     <div class="result-message" id="resultMessage"></div>
     <div class="small">このページは閉じて大丈夫です。</div>
-    <button class="absence" type="button" id="absenceBtn2" style="display:none">📨 欠席を先生に連絡する</button>
-    <button class="back" type="button" onclick="window.close()">閉じる</button>
+    <button class="absence" type="button" id="absenceBtn2" style="display:none">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
+    <button class="back" type="button" onclick="closePage()">閉じる / Close</button>
   </div>
 
 </div>
 
 <script>
+const LIFF_ID = "2009890655-O8QZVlRf";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 let reservationId = "";
 let reservationData = null;
+let liffReady = false;
+
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    liffReady = true;
+  } catch (e) { console.error(e); }
+}
+
+function closePage() {
+  if (liffReady && liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    history.back();
+  }
+}
 
 async function loadCancelData() {
   const params = new URLSearchParams(window.location.search);
@@ -337,6 +355,7 @@ document.getElementById("cancelBtn").addEventListener("click", executeCancel);
 document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
 document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
 
+initLiff();
 loadCancelData();
 </script>
 </body>
