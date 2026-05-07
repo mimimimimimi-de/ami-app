@@ -236,10 +236,6 @@ let reservationData = null;
 let liffReady = false;
 
 // LINEブラウザ判定（LIFF IDなし）
-function isLineInApp() {
-  return /Line\//i.test(navigator.userAgent);
-}
-
 async function initLiffSilent() {
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -250,16 +246,14 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  if (isLineInApp()) {
-    try {
-      liff.closeWindow();
-      return;
-    } catch (e) {}
-  }
-  if (window.history.length > 1) {
-    history.back();
-  } else {
-    window.close();
+  try {
+    liff.closeWindow();
+  } catch (e) {
+    if (window.history.length > 1) {
+      history.back();
+    } else {
+      window.close();
+    }
   }
 }
 
