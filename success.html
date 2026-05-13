@@ -202,14 +202,38 @@
       };
 
       try {
-        statusEl.textContent = "予約内容を保存しています...";
+        statusEl.textContent = "空き状況を確認しています...\nChecking availability...";
 
-        // 仮予約を確定に更新（仮予約IDがある場合）
-        const tempReservationId = localStorage.getItem("tempReservationId");
-        if (tempReservationId) {
-          await fetch(GAS_URL + "?action=confirmTempReservation&reservationId=" + encodeURIComponent(tempReservationId) + "&t=" + Date.now());
-          localStorage.removeItem("tempReservationId");
+        // 空き確認
+        const checkRes = await fetch(
+          GAS_URL + "?action=checkSlotAvailable" +
+          "&date=" + encodeURIComponent(date) +
+          "&time=" + encodeURIComponent(time) +
+          "&lesson=" + encodeURIComponent(lessonLabel) +
+          "&t=" + Date.now()
+        );
+        const checkData = await checkRes.json();
+
+        if (!checkData.available) {
+          // 埋まっている場合は返金して終了
+          statusEl.classList.add("error");
+          statusEl.textContent =
+            "⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。\n\nSorry, this time slot was just booked by someone else.\nYou will be refunded.";
+
+          // 返金処理
+          if (paymentIntentId) {
+            await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ paymentIntentId: paymentIntentId })
+            });
+          }
+
+          document.getElementById("closeBtn").style.display = "block";
+          return;
         }
+
+        statusEl.textContent = "予約内容を保存しています...\nSaving reservation...";
 
         await fetch(GAS_URL, {
           method: "POST",
@@ -234,6 +258,7 @@
         localStorage.removeItem("price");
         localStorage.removeItem("userId");
         localStorage.removeItem("pendingReservation");
+        localStorage.removeItem("tempReservationId");
 
       } catch (error) {
         console.error("GAS error:", error);
