@@ -815,6 +815,9 @@ function updateSummary(reservations) {
 }
 
 // ===== メイン =====
+let retryCount = 0;
+const MAX_RETRY = 2;
+
 async function init() {
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -865,9 +868,30 @@ async function init() {
 
   } catch (e) {
     console.error(e);
+    // 自動リトライ
+    if (retryCount < MAX_RETRY) {
+      retryCount++;
+      console.log(`リトライ ${retryCount}/${MAX_RETRY}`);
+      setTimeout(init, 1500);
+      return;
+    }
     const box = document.getElementById("errorBox");
     box.style.display = "block";
-    box.textContent = "⚠️ 読み込みに失敗しました。LINEアプリ内で開き直してください。";
+    box.innerHTML = `
+      ⚠️ 読み込みに失敗しました。<br>
+      <span style="font-size:12px;color:#ff8a8a;">Failed to load.</span><br><br>
+      <button onclick="location.reload()" style="
+        padding:10px 20px;
+        background:#ff4d4d;
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        font-size:14px;
+        font-weight:700;
+        cursor:pointer;
+        font-family:inherit;
+      ">🔄 再読み込み / Retry</button>
+    `;
     document.getElementById("listEl").innerHTML = "";
   }
 }
