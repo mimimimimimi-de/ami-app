@@ -204,6 +204,13 @@
       try {
         statusEl.textContent = "予約内容を保存しています...";
 
+        // 仮予約を確定に更新（仮予約IDがある場合）
+        const tempReservationId = localStorage.getItem("tempReservationId");
+        if (tempReservationId) {
+          await fetch(GAS_URL + "?action=confirmTempReservation&reservationId=" + encodeURIComponent(tempReservationId) + "&t=" + Date.now());
+          localStorage.removeItem("tempReservationId");
+        }
+
         await fetch(GAS_URL, {
           method: "POST",
           mode: "no-cors",
