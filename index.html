@@ -880,6 +880,24 @@ async function checkout() {
     localStorage.setItem("price", selectedPrice);
     localStorage.setItem("userId", userId);
 
+    // 仮予約を作成してスロットをキープ
+    const lessonLabel = selectedMinutes + "分レッスン";
+    const tempRes = await fetch(
+      GAS_URL +
+      "?action=createTempReservation" +
+      "&userId=" + encodeURIComponent(userId) +
+      "&name=" + encodeURIComponent(displayName) +
+      "&date=" + encodeURIComponent(selectedDate) +
+      "&time=" + encodeURIComponent(selectedTime) +
+      "&lesson=" + encodeURIComponent(lessonLabel) +
+      "&price=" + encodeURIComponent("$" + selectedPrice) +
+      "&t=" + Date.now()
+    );
+    const tempData = await tempRes.json();
+    if (tempData.ok) {
+      localStorage.setItem("tempReservationId", tempData.reservationId);
+    }
+
     const res = await fetch("/api/create-checkout-session", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId })
