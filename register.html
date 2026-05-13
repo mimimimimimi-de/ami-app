@@ -45,7 +45,6 @@ body {
   min-height: 100vh;
 }
 
-/* 背景の丸 */
 .bg-circle {
   position: fixed;
   border-radius: 50%;
@@ -76,7 +75,6 @@ body {
   max-width: 400px;
 }
 
-/* ロゴエリア */
 .logo-area {
   text-align: center;
   margin-bottom: 28px;
@@ -105,17 +103,10 @@ body {
   line-height: 1.2;
 }
 
-.logo-area h1 span {
-  color: var(--green);
-}
+.logo-area h1 span { color: var(--green); }
 
-.logo-area p {
-  font-size: 14px;
-  color: var(--text2);
-  margin-top: 6px;
-}
+.logo-area p { font-size: 14px; color: var(--text2); margin-top: 6px; }
 
-/* メインカード */
 .card {
   background: #fff;
   border-radius: 28px;
@@ -125,10 +116,7 @@ body {
   animation: fadeUp 0.5s ease 0.2s forwards;
 }
 
-/* ステップ表示（登録前） */
-.steps {
-  margin-bottom: 28px;
-}
+.steps { margin-bottom: 24px; }
 
 .step {
   display: flex;
@@ -155,20 +143,104 @@ body {
   margin-top: 1px;
 }
 
-.step-text .title {
-  font-size: 14px;
+.step-text .title { font-size: 14px; font-weight: 700; color: var(--text); }
+.step-text .desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.6; }
+
+/* タイムゾーン選択 */
+.tz-section {
+  margin-bottom: 20px;
+  background: #f8fdf9;
+  border: 1.5px solid #d4f0df;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.tz-label {
+  font-size: 13px;
   font-weight: 700;
   color: var(--text);
+  margin-bottom: 2px;
 }
 
-.step-text .desc {
-  font-size: 12px;
-  color: var(--text2);
-  margin-top: 2px;
-  line-height: 1.6;
+.tz-label-en {
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 10px;
 }
 
-/* 登録ボタン */
+.tz-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.tz-selected-btn {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #d4f0df;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text);
+  transition: border 0.15s;
+}
+
+.tz-selected-btn:focus { outline: none; border-color: var(--green); }
+.tz-selected-btn .placeholder { color: #aaa; }
+.tz-selected-btn .arrow { color: #aaa; font-size: 12px; transition: transform 0.2s; }
+.tz-selected-btn.open .arrow { transform: rotate(180deg); }
+
+.tz-popup {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #d4f0df;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.tz-popup.open { display: block; }
+
+.tz-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid #e8e8e8;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.tz-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tz-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.1s;
+  line-height: 1.4;
+}
+
+.tz-item:last-child { border-bottom: none; }
+.tz-item:hover { background: var(--green-pale); }
+.tz-item.selected { background: var(--green-pale); color: var(--green2); font-weight: 700; }
+.tz-item .tz-name { font-weight: 600; }
+.tz-item .tz-offset { font-size: 11px; color: #aaa; margin-top: 1px; }
+
 .register-btn {
   width: 100%;
   padding: 18px;
@@ -189,20 +261,9 @@ body {
   letter-spacing: 0.02em;
 }
 
-.register-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(6,199,85,0.4);
-}
-
-.register-btn:active {
-  transform: translateY(0);
-}
-
-.register-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
+.register-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(6,199,85,0.4); }
+.register-btn:active { transform: translateY(0); }
+.register-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 .note {
   margin-top: 14px;
@@ -212,7 +273,6 @@ body {
   line-height: 1.7;
 }
 
-/* ステータスメッセージ */
 .status {
   margin-top: 16px;
   font-size: 14px;
@@ -224,11 +284,7 @@ body {
 
 .status.error { color: #d93025; }
 
-/* 完了画面 */
-.done-card {
-  display: none;
-  text-align: center;
-}
+.done-card { display: none; text-align: center; }
 
 .done-icon {
   font-size: 64px;
@@ -236,12 +292,7 @@ body {
   animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
 
-.done-card h2 {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--text);
-  margin-bottom: 10px;
-}
+.done-card h2 { font-size: 22px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
 
 .done-card .done-name {
   display: inline-block;
@@ -254,40 +305,13 @@ body {
   margin-bottom: 16px;
 }
 
-.done-card p {
-  font-size: 14px;
-  color: var(--text2);
-  line-height: 1.8;
-}
+.done-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
+.done-card .highlight { color: var(--green); font-weight: 700; }
 
-.done-card .highlight {
-  color: var(--green);
-  font-weight: 700;
-}
-
-/* すでに登録済み */
-.already-card {
-  display: none;
-  text-align: center;
-}
-
-.already-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-}
-
-.already-card h2 {
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-
-.already-card p {
-  font-size: 14px;
-  color: var(--text2);
-  line-height: 1.8;
-}
+.already-card { display: none; text-align: center; }
+.already-icon { font-size: 48px; margin-bottom: 12px; }
+.already-card h2 { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
+.already-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
 
 .book-link {
   display: inline-flex;
@@ -305,12 +329,8 @@ body {
   transition: all 0.2s;
 }
 
-.book-link:hover {
-  background: var(--green2);
-  transform: translateY(-1px);
-}
+.book-link:hover { background: var(--green2); transform: translateY(-1px); }
 
-/* アニメーション */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -369,6 +389,22 @@ body {
         </div>
       </div>
 
+      <!-- タイムゾーン選択 -->
+      <div class="tz-section">
+        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
+        <div class="tz-label-en">Select your timezone</div>
+        <div class="tz-dropdown">
+          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
+            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="tz-popup" id="tzPopup">
+            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
+            <div class="tz-list" id="tzList"></div>
+          </div>
+        </div>
+      </div>
+
       <button class="register-btn" id="registerBtn" onclick="register()">
         📝 登録する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Register</span>
       </button>
@@ -400,9 +436,7 @@ body {
     <div class="already-card" id="alreadyView">
       <div class="already-icon">✅</div>
       <h2>すでに登録済みです<span class="en-sub">Already Registered</span></h2>
-      <p id="alreadyText">
-        登録が確認できました。
-      </p>
+      <p id="alreadyText">登録が確認できました。</p>
       <a class="book-link" href="https://ami-app-eta.vercel.app/">
         📅 レッスンを予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Book a Lesson</span>
       </a>
@@ -417,6 +451,102 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1gr
 
 let userId = null;
 let displayName = null;
+let selectedTimezone = "";
+
+// タイムゾーン一覧
+const TIMEZONES = [
+  { tz: "Pacific/Honolulu",      label: "Hawaii",                offset: "UTC-10" },
+  { tz: "America/Anchorage",     label: "Alaska",                offset: "UTC-9" },
+  { tz: "America/Los_Angeles",   label: "Los Angeles / Seattle / Vancouver (PT)", offset: "UTC-8/-7" },
+  { tz: "America/Denver",        label: "Denver / Salt Lake City (MT)", offset: "UTC-7/-6" },
+  { tz: "America/Chicago",       label: "Chicago / Dallas / Houston (CT)", offset: "UTC-6/-5" },
+  { tz: "America/New_York",      label: "New York / Toronto / Miami (ET)", offset: "UTC-5/-4" },
+  { tz: "America/Halifax",       label: "Halifax / Atlantic (AT)", offset: "UTC-4/-3" },
+  { tz: "America/Sao_Paulo",     label: "São Paulo / Brazil",    offset: "UTC-3" },
+  { tz: "Atlantic/Azores",       label: "Azores",                offset: "UTC-1" },
+  { tz: "Europe/London",         label: "London / Dublin (GMT/BST)", offset: "UTC+0/+1" },
+  { tz: "Europe/Paris",          label: "Paris / Berlin / Rome / Amsterdam (CET)", offset: "UTC+1/+2" },
+  { tz: "Europe/Helsinki",       label: "Helsinki / Kiev / Tallinn (EET)", offset: "UTC+2/+3" },
+  { tz: "Europe/Moscow",         label: "Moscow",                offset: "UTC+3" },
+  { tz: "Asia/Dubai",            label: "Dubai / Abu Dhabi",     offset: "UTC+4" },
+  { tz: "Asia/Karachi",          label: "Karachi / Pakistan",    offset: "UTC+5" },
+  { tz: "Asia/Kolkata",          label: "India / Mumbai / Delhi", offset: "UTC+5:30" },
+  { tz: "Asia/Dhaka",            label: "Dhaka / Bangladesh",    offset: "UTC+6" },
+  { tz: "Asia/Bangkok",          label: "Bangkok / Jakarta / Hanoi", offset: "UTC+7" },
+  { tz: "Asia/Singapore",        label: "Singapore / Kuala Lumpur / Manila", offset: "UTC+8" },
+  { tz: "Asia/Shanghai",         label: "China / Beijing / Shanghai / Taipei", offset: "UTC+8" },
+  { tz: "Asia/Hong_Kong",        label: "Hong Kong",             offset: "UTC+8" },
+  { tz: "Asia/Tokyo",            label: "Japan / Tokyo (JST)",   offset: "UTC+9" },
+  { tz: "Asia/Seoul",            label: "Korea / Seoul",         offset: "UTC+9" },
+  { tz: "Australia/Sydney",      label: "Sydney / Melbourne (AEST)", offset: "UTC+10/+11" },
+  { tz: "Pacific/Auckland",      label: "New Zealand / Auckland", offset: "UTC+12/+13" },
+];
+
+function toggleDropdown() {
+  const btn = document.getElementById("tzBtn");
+  const popup = document.getElementById("tzPopup");
+  const isOpen = popup.classList.contains("open");
+  if (isOpen) {
+    popup.classList.remove("open");
+    btn.classList.remove("open");
+  } else {
+    popup.classList.add("open");
+    btn.classList.add("open");
+    document.getElementById("tzSearch").focus();
+  }
+}
+
+// ドロップダウン外クリックで閉じる
+document.addEventListener("click", function(e) {
+  const dropdown = document.querySelector(".tz-dropdown");
+  if (dropdown && !dropdown.contains(e.target)) {
+    document.getElementById("tzPopup").classList.remove("open");
+    document.getElementById("tzBtn").classList.remove("open");
+  }
+});
+
+function renderTimezones(list) {
+  const container = document.getElementById("tzList");
+  if (!list.length) {
+    container.innerHTML = "<div class='tz-item' style='color:#aaa;'>見つかりません / Not found</div>";
+    return;
+  }
+  container.innerHTML = list.map(tz => `
+    <div class="tz-item ${selectedTimezone === tz.tz ? 'selected' : ''}" onclick="selectTimezone('${tz.tz}', '${tz.label}')">
+      <div class="tz-name">${tz.label}</div>
+      <div class="tz-offset">${tz.offset}</div>
+    </div>
+  `).join("");
+}
+
+function filterTimezones() {
+  const q = document.getElementById("tzSearch").value.toLowerCase();
+  const filtered = TIMEZONES.filter(tz =>
+    tz.label.toLowerCase().includes(q) || tz.tz.toLowerCase().includes(q) || tz.offset.toLowerCase().includes(q)
+  );
+  renderTimezones(filtered);
+}
+
+function selectTimezone(tz, label) {
+  selectedTimezone = tz;
+  document.getElementById("tzBtnText").textContent = label;
+  document.getElementById("tzBtnText").classList.remove("placeholder");
+  document.getElementById("tzPopup").classList.remove("open");
+  document.getElementById("tzBtn").classList.remove("open");
+  document.getElementById("tzSearch").value = "";
+  renderTimezones(TIMEZONES);
+}
+
+// ブラウザから自動でタイムゾーンを推測してデフォルト選択
+function autoDetectTimezone() {
+  try {
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const match = TIMEZONES.find(tz => tz.tz === detected);
+    if (match) {
+      selectTimezone(match.tz, match.label);
+    }
+  } catch (e) {}
+}
 
 function setStatus(msg, isError = false) {
   const el = document.getElementById("status");
@@ -431,9 +561,14 @@ function showView(id) {
 }
 
 async function register() {
+  if (!selectedTimezone) {
+    alert("タイムゾーンを選択してください。\nPlease select your timezone.");
+    return;
+  }
+
   const btn = document.getElementById("registerBtn");
   btn.disabled = true;
-  setStatus("登録処理中...");
+  setStatus("登録処理中... / Registering...");
 
   try {
     const res = await fetch(
@@ -441,13 +576,13 @@ async function register() {
       "?action=registerUser" +
       "&userId=" + encodeURIComponent(userId) +
       "&name=" + encodeURIComponent(displayName) +
+      "&timezone=" + encodeURIComponent(selectedTimezone) +
       "&t=" + Date.now()
     );
 
     const data = await res.json();
 
     if (data.already) {
-      // 登録済み → 料金があれば予約へ誘導
       document.getElementById("alreadyText").textContent =
         data.hasPrice
           ? "すでに登録済みで、料金も設定されています。予約ページへどうぞ！"
@@ -472,12 +607,12 @@ async function register() {
   } catch (e) {
     console.error(e);
     btn.disabled = false;
-    setStatus("登録に失敗しました。もう一度お試しください。", true);
+    setStatus("登録に失敗しました。もう一度お試しください。/ Registration failed. Please try again.", true);
   }
 }
 
 async function init() {
-  setStatus("LINE情報を確認しています...");
+  setStatus("LINE情報を確認しています... / Checking LINE info...");
 
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -493,9 +628,13 @@ async function init() {
 
     setStatus("");
 
+    // タイムゾーンリスト表示＆自動検出
+    renderTimezones(TIMEZONES);
+    autoDetectTimezone();
+
   } catch (e) {
     console.error(e);
-    setStatus("LINEアプリ内で開き直してください。", true);
+    setStatus("LINEアプリ内で開き直してください。/ Please reopen in the LINE app.", true);
     document.getElementById("registerBtn").disabled = true;
   }
 }
