@@ -160,11 +160,54 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   font-weight: bold;
   color: #06C755;
 }
+
+.processing-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.88);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.processing-overlay.show { display: flex; }
+
+.processing-overlay .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e8e8e8;
+  border-top-color: #d93025;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.processing-overlay .processing-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  line-height: 1.6;
+}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
+
+<!-- 処理中オーバーレイ -->
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div class="processing-text">
+    キャンセル中...<br>
+    <span style="font-size:13px;color:#888;">Processing cancellation...</span>
+  </div>
+</div>
+
 <div class="container">
 
   <div class="card" id="confirmCard">
@@ -287,8 +330,14 @@ function formatTimeDisplay(dateStr, timeStr) {
 
 // LINEブラウザ判定（LIFF IDなし）
 async function initLiffSilent() {
-  // LIFF初期化不要
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    liffReady = true;
+  } catch (e) {
+    liffReady = false;
+  }
 }
+
 function closePage() {
   window.location.href = "https://ami-app-eta.vercel.app/mybooking.html";
 }
@@ -341,10 +390,11 @@ async function executeCancel() {
   );
   if (!ok) return;
 
-  const status = document.getElementById("status");
   const btn = document.getElementById("cancelBtn");
   btn.disabled = true;
-  status.textContent = "キャンセル処理を確認しています...";
+
+  // 処理中オーバーレイ表示
+  document.getElementById("processingOverlay").classList.add("show");
 
   try {
     const url = GAS_URL + "?action=cancelExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now();
@@ -367,6 +417,8 @@ async function executeCancel() {
   } catch (e) {
     console.error(e);
     showResult(false, "キャンセル処理に失敗しました。\n先生にご連絡ください。");
+  } finally {
+    document.getElementById("processingOverlay").classList.remove("show");
   }
 }
 
