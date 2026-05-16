@@ -798,6 +798,15 @@ function renderUserCard(u) {
         <div class="user-name">👤 ${escHtml(u.name)}</div>
       </div>
       <div class="tz-display">${tzDisplay}</div>
+      <div class="price-form" style="margin-bottom:10px;">
+        <div class="price-form-title">🌍 タイムゾーンを変更する</div>
+        <select id="tz-${escHtml(u.userId)}" style="width:100%;padding:8px 12px;border:1.5px solid var(--gray-border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:8px;background:#fff;">
+          <option value="">-- 選択してください --</option>
+          ${TIMEZONE_OPTIONS.map(tz => `<option value="${tz.value}" ${u.timezone === tz.value ? 'selected' : ''}>${tz.label}</option>`).join('')}
+        </select>
+        <button class="price-save-btn" style="background:var(--yellow);" onclick="saveUserTimezone('${escHtml(u.userId)}')">💾 タイムゾーンを保存</button>
+        <div class="price-save-status" id="tzStatus-${escHtml(u.userId)}"></div>
+      </div>
       <div class="price-row">
         <div class="price-box ${!price25 ? 'unset' : ''}">
           <div class="price-label">25分</div>
@@ -860,6 +869,73 @@ async function saveUserPrice(userId) {
       statusEl.textContent = "✅ 保存しました！LINE通知を送りました。";
       statusEl.className = "price-save-status ok";
       setTimeout(() => loadAll(), 2000);
+    } else {
+      statusEl.textContent = "⚠️ " + (data.message || "保存に失敗しました。");
+      statusEl.className = "price-save-status err";
+      btn.disabled = false;
+    }
+  } catch (e) {
+    console.error(e);
+    statusEl.textContent = "エラーが発生しました。";
+    statusEl.className = "price-save-status err";
+    btn.disabled = false;
+  }
+}
+
+const TIMEZONE_OPTIONS = [
+  { value: "Pacific/Honolulu",    label: "Hawaii (UTC-10)" },
+  { value: "America/Anchorage",   label: "Alaska (UTC-9)" },
+  { value: "America/Los_Angeles", label: "Los Angeles / Seattle (UTC-8/-7)" },
+  { value: "America/Denver",      label: "Denver / Salt Lake City (UTC-7/-6)" },
+  { value: "America/Chicago",     label: "Chicago / Dallas (UTC-6/-5)" },
+  { value: "America/New_York",    label: "New York / Toronto (UTC-5/-4)" },
+  { value: "America/Halifax",     label: "Halifax / Atlantic (UTC-4/-3)" },
+  { value: "America/Sao_Paulo",   label: "São Paulo / Brazil (UTC-3)" },
+  { value: "Europe/London",       label: "London / Dublin (UTC+0/+1)" },
+  { value: "Europe/Paris",        label: "Paris / Berlin / Rome (UTC+1/+2)" },
+  { value: "Europe/Helsinki",     label: "Helsinki / Kiev (UTC+2/+3)" },
+  { value: "Europe/Moscow",       label: "Moscow (UTC+3)" },
+  { value: "Asia/Dubai",          label: "Dubai / Abu Dhabi (UTC+4)" },
+  { value: "Asia/Kolkata",        label: "India / Mumbai (UTC+5:30)" },
+  { value: "Asia/Bangkok",        label: "Bangkok / Jakarta (UTC+7)" },
+  { value: "Asia/Singapore",      label: "Singapore / Manila (UTC+8)" },
+  { value: "Asia/Shanghai",       label: "China / Taipei (UTC+8)" },
+  { value: "Asia/Hong_Kong",      label: "Hong Kong (UTC+8)" },
+  { value: "Asia/Tokyo",          label: "Japan / Tokyo (UTC+9)" },
+  { value: "Asia/Seoul",          label: "Korea / Seoul (UTC+9)" },
+  { value: "Australia/Sydney",    label: "Sydney / Melbourne (UTC+10/+11)" },
+  { value: "Pacific/Auckland",    label: "New Zealand / Auckland (UTC+12/+13)" },
+];
+
+async function saveUserTimezone(userId) {
+  const tz = document.getElementById(`tz-${userId}`).value;
+  const statusEl = document.getElementById(`tzStatus-${userId}`);
+  const btn = document.querySelector(`#usercard-${userId} [onclick="saveUserTimezone('${userId}')"]`);
+
+  if (!tz) {
+    statusEl.textContent = "タイムゾーンを選択してください。";
+    statusEl.className = "price-save-status err";
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.textContent = "保存中...";
+  statusEl.className = "price-save-status";
+
+  try {
+    const res = await fetch(
+      GAS_URL +
+      "?action=setUserTimezone" +
+      "&userId=" + encodeURIComponent(userId) +
+      "&timezone=" + encodeURIComponent(tz) +
+      "&t=" + Date.now()
+    );
+    const data = await res.json();
+
+    if (data.ok) {
+      statusEl.textContent = "✅ 保存しました！";
+      statusEl.className = "price-save-status ok";
+      setTimeout(() => loadAll(), 1500);
     } else {
       statusEl.textContent = "⚠️ " + (data.message || "保存に失敗しました。");
       statusEl.className = "price-save-status err";
