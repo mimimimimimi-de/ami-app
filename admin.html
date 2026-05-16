@@ -249,8 +249,17 @@ body {
   border-left: 4px solid var(--green);
 }
 
-.user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.user-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .user-name { font-size: 15px; font-weight: 700; flex: 1; }
+
+.tz-display {
+  font-size: 12px;
+  color: var(--gray-text);
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: var(--gray-bg);
+  border-radius: 8px;
+}
 
 .price-row { display: flex; gap: 10px; margin-bottom: 12px; }
 
@@ -265,27 +274,6 @@ body {
 .price-box .price-label { font-size: 11px; color: var(--gray-text); margin-bottom: 4px; }
 .price-box .price-val { font-size: 18px; font-weight: 700; color: var(--green-dark); }
 .price-box.unset .price-val { color: var(--gray-text); font-size: 13px; }
-
-.ticket-list { display: flex; flex-direction: column; gap: 6px; }
-
-.ticket-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f7fdf9;
-  border: 1px solid #d7f3df;
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 13px;
-}
-
-.ticket-row.expired { opacity: 0.5; background: #f5f5f5; border-color: var(--gray-border); }
-.ticket-lesson { color: #444; font-weight: 500; }
-.ticket-remaining { font-weight: 700; font-size: 16px; color: var(--green); }
-.ticket-remaining.low { color: var(--yellow); }
-.ticket-remaining.zero { color: var(--gray-text); }
-.ticket-expiry { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
-.no-ticket { font-size: 13px; color: var(--gray-text); text-align: center; padding: 8px; }
 
 /* 料金設定フォーム */
 .price-form {
@@ -321,7 +309,6 @@ body {
 }
 
 .price-input-group:focus-within { border-color: var(--green); }
-
 .price-input-group .unit { font-size: 13px; color: var(--gray-text); }
 .price-input-group .min-label { font-size: 11px; color: var(--gray-text); white-space: nowrap; }
 
@@ -365,14 +352,29 @@ body {
 .price-save-status.ok { color: var(--green); }
 .price-save-status.err { color: var(--red); }
 
-.tz-display {
-  font-size: 12px;
-  color: var(--gray-text);
-  margin-bottom: 8px;
-  padding: 6px 10px;
-  background: var(--gray-bg);
-  border-radius: 8px;
+.ticket-list { display: flex; flex-direction: column; gap: 6px; }
+
+.ticket-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7fdf9;
+  border: 1px solid #d7f3df;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
 }
+
+.ticket-row.expired { opacity: 0.5; background: #f5f5f5; border-color: var(--gray-border); }
+.ticket-lesson { color: #444; font-weight: 500; }
+.ticket-remaining { font-weight: 700; font-size: 16px; color: var(--green); }
+.ticket-remaining.low { color: var(--yellow); }
+.ticket-remaining.zero { color: var(--gray-text); }
+.ticket-expiry { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+.no-ticket { font-size: 13px; color: var(--gray-text); text-align: center; padding: 8px; }
+
+/* モーダル */
+.modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
@@ -552,7 +554,6 @@ let allReservations = [];
 let allUsers = [];
 let currentFilter = "all";
 let selectedReservationId = "";
-let selectedReservationInfo = "";
 
 function switchTab(tab, btn) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -660,7 +661,6 @@ function renderResCard(r, now) {
   const isTicket = String(r.paymentIntentId || "").startsWith("ticket:");
   const priceText = isTicket ? "回数券" : "$" + escHtml(String(r.price));
   const refundLabel = r.refundStatus ? `<div class="item"><span class="key">返金：</span><span class="val">${r.refundStatus}</span></div>` : "";
-
   const infoStr = escHtml(r.name) + " / " + escHtml(r.lesson) + " / " + escHtml(r.date) + " " + escHtml(r.time);
 
   const footerBtns = isCancelled ? "" : `
@@ -734,16 +734,12 @@ async function executeAdminChange() {
     if (data.ok) {
       statusEl.textContent = "✅ 変更しました！生徒にLINE通知を送りました。";
       statusEl.className = "modal-status ok";
-      setTimeout(() => {
-        closeModal();
-        loadAll();
-      }, 1500);
+      setTimeout(() => { closeModal(); loadAll(); }, 1500);
     } else {
       statusEl.textContent = "⚠️ " + (data.message || "変更に失敗しました。");
       statusEl.className = "modal-status err";
       execBtn.disabled = false;
     }
-
   } catch (e) {
     console.error(e);
     statusEl.textContent = "エラーが発生しました。";
@@ -752,7 +748,6 @@ async function executeAdminChange() {
   }
 }
 
-// モーダル外クリックで閉じる
 document.getElementById("adminChangeModal").addEventListener("click", function(e) {
   if (e.target === this) closeModal();
 });
@@ -827,14 +822,14 @@ function renderUserCard(u) {
             <input type="number" id="p50-${escHtml(u.userId)}" placeholder="${u.price50 || '0'}" min="0" step="1">
           </div>
         </div>
-        <button class="price-save-btn" onclick="saveUserPrice('${escHtml(u.userId)}', '${escHtml(u.name)}')">💾 保存してLINE通知を送る</button>
+        <button class="price-save-btn" onclick="saveUserPrice('${escHtml(u.userId)}')">💾 保存してLINE通知を送る</button>
         <div class="price-save-status" id="priceStatus-${escHtml(u.userId)}"></div>
       </div>
       <div class="ticket-list" style="margin-top:12px;">${ticketsHtml}</div>
     </div>`;
 }
 
-async function saveUserPrice(userId, name) {
+async function saveUserPrice(userId) {
   const price25 = document.getElementById(`p25-${userId}`).value.trim();
   const price50 = document.getElementById(`p50-${userId}`).value.trim();
   const statusEl = document.getElementById(`priceStatus-${userId}`);
