@@ -287,8 +287,92 @@ body {
 .ticket-expiry { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
 .no-ticket { font-size: 13px; color: var(--gray-text); text-align: center; padding: 8px; }
 
-/* モーダル */
-.modal-overlay {
+/* 料金設定フォーム */
+.price-form {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-border);
+}
+
+.price-form-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-text);
+  margin-bottom: 8px;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.price-input-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--gray-bg);
+  border: 1.5px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  transition: border 0.15s;
+}
+
+.price-input-group:focus-within { border-color: var(--green); }
+
+.price-input-group .unit { font-size: 13px; color: var(--gray-text); }
+.price-input-group .min-label { font-size: 11px; color: var(--gray-text); white-space: nowrap; }
+
+.price-input-group input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  outline: none;
+  width: 60px;
+  color: var(--text);
+}
+
+.price-save-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.price-save-btn:hover { background: var(--green-dark); }
+.price-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.price-save-status {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+  min-height: 16px;
+}
+
+.price-save-status.ok { color: var(--green); }
+.price-save-status.err { color: var(--red); }
+
+.tz-display {
+  font-size: 12px;
+  color: var(--gray-text);
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: var(--gray-bg);
+  border-radius: 8px;
+}
   display: none;
   position: fixed;
   inset: 0;
@@ -692,6 +776,7 @@ function renderUserCard(u) {
   const now = new Date();
   const price25 = u.price25 ? `$${u.price25}` : null;
   const price50 = u.price50 ? `$${u.price50}` : null;
+  const tzDisplay = u.timezone ? `🌍 ${u.timezone}` : '🌍 タイムゾーン未設定';
 
   const ticketsHtml = u.tickets && u.tickets.length > 0
     ? u.tickets.map(t => {
@@ -713,10 +798,11 @@ function renderUserCard(u) {
     : `<div class="no-ticket">回数券なし</div>`;
 
   return `
-    <div class="user-card">
+    <div class="user-card" id="usercard-${escHtml(u.userId)}">
       <div class="user-header">
         <div class="user-name">👤 ${escHtml(u.name)}</div>
       </div>
+      <div class="tz-display">${tzDisplay}</div>
       <div class="price-row">
         <div class="price-box ${!price25 ? 'unset' : ''}">
           <div class="price-label">25分</div>
@@ -727,8 +813,69 @@ function renderUserCard(u) {
           <div class="price-val">${price50 || '未設定'}</div>
         </div>
       </div>
-      <div class="ticket-list">${ticketsHtml}</div>
+      <div class="price-form">
+        <div class="price-form-title">💰 料金を設定して通知する</div>
+        <div class="price-inputs">
+          <div class="price-input-group">
+            <span class="min-label">25分</span>
+            <span class="unit">$</span>
+            <input type="number" id="p25-${escHtml(u.userId)}" placeholder="${u.price25 || '0'}" min="0" step="1">
+          </div>
+          <div class="price-input-group">
+            <span class="min-label">50分</span>
+            <span class="unit">$</span>
+            <input type="number" id="p50-${escHtml(u.userId)}" placeholder="${u.price50 || '0'}" min="0" step="1">
+          </div>
+        </div>
+        <button class="price-save-btn" onclick="saveUserPrice('${escHtml(u.userId)}', '${escHtml(u.name)}')">💾 保存してLINE通知を送る</button>
+        <div class="price-save-status" id="priceStatus-${escHtml(u.userId)}"></div>
+      </div>
+      <div class="ticket-list" style="margin-top:12px;">${ticketsHtml}</div>
     </div>`;
+}
+
+async function saveUserPrice(userId, name) {
+  const price25 = document.getElementById(`p25-${userId}`).value.trim();
+  const price50 = document.getElementById(`p50-${userId}`).value.trim();
+  const statusEl = document.getElementById(`priceStatus-${userId}`);
+  const btn = document.querySelector(`#usercard-${userId} .price-save-btn`);
+
+  if (!price25 && !price50) {
+    statusEl.textContent = "料金を入力してください。";
+    statusEl.className = "price-save-status err";
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.textContent = "保存中...";
+  statusEl.className = "price-save-status";
+
+  try {
+    const res = await fetch(
+      GAS_URL +
+      "?action=setUserPrice" +
+      "&userId=" + encodeURIComponent(userId) +
+      "&price25=" + encodeURIComponent(price25) +
+      "&price50=" + encodeURIComponent(price50) +
+      "&t=" + Date.now()
+    );
+    const data = await res.json();
+
+    if (data.ok) {
+      statusEl.textContent = "✅ 保存しました！LINE通知を送りました。";
+      statusEl.className = "price-save-status ok";
+      setTimeout(() => loadAll(), 2000);
+    } else {
+      statusEl.textContent = "⚠️ " + (data.message || "保存に失敗しました。");
+      statusEl.className = "price-save-status err";
+      btn.disabled = false;
+    }
+  } catch (e) {
+    console.error(e);
+    statusEl.textContent = "エラーが発生しました。";
+    statusEl.className = "price-save-status err";
+    btn.disabled = false;
+  }
 }
 
 function escHtml(str) {
