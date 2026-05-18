@@ -666,7 +666,8 @@ function renderList() {
       // 過去タブは3ヶ月以内のみ表示
       return isPast && dt >= threeMonthsAgo;
     }
-    return true;
+    // すべてタブも3ヶ月以内のみ表示
+    return dt >= threeMonthsAgo || isUpcoming;
   });
 
   // 今後は昇順、過去・全ては降順
