@@ -828,7 +828,7 @@ function updateSummary(reservations) {
 
 // ===== メイン =====
 let retryCount = 0;
-const MAX_RETRY = 2;
+const MAX_RETRY = 3;
 
 async function init() {
   try {
@@ -884,7 +884,7 @@ async function init() {
     if (retryCount < MAX_RETRY) {
       retryCount++;
       console.log(`リトライ ${retryCount}/${MAX_RETRY}`);
-      setTimeout(init, 1500);
+      setTimeout(init, 2000);
       return;
     }
     const box = document.getElementById("errorBox");
