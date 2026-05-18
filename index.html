@@ -498,6 +498,15 @@ async function selectLesson(minutes) {
     selectedPrice = Number(data.price);
     document.getElementById("priceText").textContent = "$" + selectedPrice;
     document.getElementById("nextBtn").disabled = false;
+
+    // 登録時のタイムゾーンを使用（ブラウザ自動検出を上書き）
+    if (data.timezone && data.timezone !== '') {
+      userTimezone = data.timezone;
+      try {
+        const now = new Date();
+        userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch (e) {}
+    }
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
