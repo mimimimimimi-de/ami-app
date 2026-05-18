@@ -850,7 +850,35 @@ async function checkout() {
       });
 
       hideProcessing();
-      statusEl.textContent = "✅ 予約しました！LINEに通知を送ります。\nBooked! Notification sent via LINE.\n（残り" + useData.remaining + "回 / " + useData.remaining + " tickets left）";
+
+      // 完了画面に切り替え
+      const parts = selectedDate.split("-");
+      const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
+      const localTimeDisplay = formatTimeWithTz(selectedDate, selectedTime);
+
+      document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
+      const doneCard = document.createElement("div");
+      doneCard.className = "card";
+      doneCard.innerHTML = `
+        <div style="text-align:center;font-size:52px;margin-bottom:10px;">✅</div>
+        <h2 style="text-align:center;color:#06C755;font-size:22px;margin-bottom:4px;">予約完了！</h2>
+        <div style="text-align:center;font-size:11px;color:#bbb;margin-bottom:16px;">Booking Complete</div>
+        <div style="background:#f7fdf9;border:1px solid #d7f3df;padding:16px;border-radius:16px;font-size:15px;line-height:1.9;margin-bottom:16px;">
+          <strong>レッスン / Lesson：</strong>${selectedMinutes}分レッスン<br>
+          <strong>日付 / Date：</strong>${displayDate}<br>
+          <strong>時間 / Time：</strong>${localTimeDisplay}<br>
+          <strong>支払い / Payment：</strong>回数券 / Ticket<br>
+          <strong>残り回数 / Remaining：</strong>${useData.remaining}回 / ${useData.remaining} left
+        </div>
+        <p style="text-align:center;color:#666;font-size:14px;line-height:1.7;">
+          LINEに予約内容を送信しました。<br>
+          <span style="font-size:12px;color:#bbb;">Booking details sent via LINE.</span>
+        </p>
+        <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="width:100%;padding:15px;margin-top:12px;background:#06C755;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
+          マイ予約を見る / My Bookings
+        </button>
+      `;
+      document.querySelector(".container").appendChild(doneCard);
 
     } catch (e) {
       console.error(e);
