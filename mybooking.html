@@ -526,6 +526,29 @@ body::after {
   to { transform: rotate(360deg); }
 }
 
+.processing-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.88);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+.processing-overlay.show { display: flex; }
+.processing-overlay .proc-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #e8e8e8;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.processing-overlay .proc-text {
+  font-size: 16px; font-weight: 700; color: #333; text-align: center; line-height: 1.6;
+}
+
 /* カードのスタガーアニメーション */
 .res-card:nth-child(1) { animation-delay: 0.2s; }
 .res-card:nth-child(2) { animation-delay: 0.25s; }
@@ -537,6 +560,11 @@ body::after {
 </head>
 
 <body>
+
+<div class="processing-overlay" id="processingOverlay">
+  <div class="proc-spinner"></div>
+  <div class="proc-text">読み込み中...<br><span style="font-size:13px;color:#888;">Loading...</span></div>
+</div>
 
 <div class="header">
   <div class="header-icon">📅</div>
@@ -831,6 +859,7 @@ let retryCount = 0;
 const MAX_RETRY = 3;
 
 async function init() {
+  document.getElementById("processingOverlay").classList.add("show");
   try {
     await liff.init({ liffId: LIFF_ID });
 
@@ -877,9 +906,11 @@ async function init() {
     document.getElementById("bookBtn").style.display = "flex";
 
     renderList();
+    document.getElementById("processingOverlay").classList.remove("show");
 
   } catch (e) {
     console.error(e);
+    document.getElementById("processingOverlay").classList.remove("show");
     // 自動リトライ
     if (retryCount < MAX_RETRY) {
       retryCount++;
