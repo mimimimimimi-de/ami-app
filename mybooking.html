@@ -651,6 +651,8 @@ function setTab(tab, btn) {
 // ===== リスト描画 =====
 function renderList() {
   const now = new Date();
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   const list = document.getElementById("listEl");
 
   let filtered = allReservations.filter(r => {
@@ -660,7 +662,10 @@ function renderList() {
     const isPast = !isCancelled && dt <= now;
 
     if (currentTab === "upcoming") return isUpcoming;
-    if (currentTab === "past") return isPast;
+    if (currentTab === "past") {
+      // 過去タブは3ヶ月以内のみ表示
+      return isPast && dt >= threeMonthsAgo;
+    }
     return true;
   });
 
@@ -675,7 +680,7 @@ function renderList() {
     list.innerHTML = `
       <div class="empty">
         <div class="empty-icon">${currentTab === "upcoming" ? "📭" : "📋"}</div>
-        <p>${currentTab === "upcoming" ? "今後の予約はありません。\n新しいレッスンを予約しましょう！" : "該当する予約がありません。"}</p>
+        <p>${currentTab === "upcoming" ? "今後の予約はありません。\n新しいレッスンを予約しましょう！" : "該当する予約がありません。\n(直近3ヶ月の履歴のみ表示)"}</p>
       </div>`;
     return;
   }
@@ -760,36 +765,42 @@ function renderTickets(tickets) {
   const list = document.getElementById("ticketList");
   const now = new Date();
 
-  const html = tickets.map(t => {
+  // 有効な回数券のみ表示（残り0・期限切れは非表示）
+  const validTickets = tickets.filter(t => {
     const expiry = new Date(t.expiry + "T23:59:59+09:00");
-    const isExpired = expiry < now || t.remaining <= 0;
-    const isLow = !isExpired && t.remaining <= 2;
+    return t.remaining > 0 && expiry >= now;
+  });
+
+  if (!validTickets.length) {
+    section.style.display = "none";
+    return;
+  }
+
+  const html = validTickets.map(t => {
+    const isLow = t.remaining <= 2;
     const expiryParts = t.expiry.split("-");
     const expiryStr = `${Number(expiryParts[1])}/${Number(expiryParts[2])}まで`;
-
-    const remainingClass = isExpired ? "zero" : isLow ? "low" : "";
 
     return `
       <div style="
         background:var(--card);
-        border:1px solid ${isExpired ? 'var(--border)' : 'rgba(6,199,85,0.25)'};
+        border:1px solid rgba(6,199,85,0.25);
         border-radius:16px;
         padding:14px 16px;
         display:flex;
         align-items:center;
         justify-content:space-between;
         margin-bottom:8px;
-        opacity:${isExpired ? '0.5' : '1'};
       ">
         <div>
           <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${escHtml(t.lesson)}</div>
           <div style="font-size:11px;color:var(--text2);">有効期限 ${expiryStr}</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:28px;font-weight:700;font-family:'DM Sans',sans-serif;color:${isExpired ? 'var(--text2)' : isLow ? 'var(--yellow)' : 'var(--green)'};line-height:1;">
-            ${isExpired ? '−' : t.remaining}
+          <div style="font-size:28px;font-weight:700;font-family:'DM Sans',sans-serif;color:${isLow ? 'var(--yellow)' : 'var(--green)'};line-height:1;">
+            ${t.remaining}
           </div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px;">${isExpired ? '期限切れ' : '回残り'}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">回残り</div>
         </div>
       </div>`;
   }).join("");
