@@ -851,6 +851,18 @@ async function checkout() {
 
       hideProcessing();
 
+      // カレンダーURL生成
+      function toCalDate(d) {
+        return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      }
+      const calStart = new Date(`${selectedDate}T${selectedTime}:00+09:00`);
+      const durationMin = Number(selectedMinutes) === 50 ? 50 : 25;
+      const calEnd = new Date(calStart.getTime() + durationMin * 60000);
+      const calUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+        "&text=" + encodeURIComponent("日本語レッスン（Ami先生）") +
+        "&dates=" + toCalDate(calStart) + "/" + toCalDate(calEnd) +
+        "&details=" + encodeURIComponent("Ami先生との日本語レッスン");
+
       // 完了画面に切り替え
       const parts = selectedDate.split("-");
       const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
@@ -874,7 +886,10 @@ async function checkout() {
           LINEに予約内容を送信しました。<br>
           <span style="font-size:12px;color:#bbb;">Booking details sent via LINE.</span>
         </p>
-        <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="width:100%;padding:15px;margin-top:12px;background:#06C755;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
+        <a href="${calUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:12px;background:#fff;color:#4285f4;border:2px solid #4285f4;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;">
+          📅 Googleカレンダーに追加 / Add to Google Calendar
+        </a>
+        <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="width:100%;padding:15px;margin-top:10px;background:#06C755;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
           マイ予約を見る / My Bookings
         </button>
       `;
