@@ -311,7 +311,9 @@ function closePage() {
 
 // LIFF初期化
 async function initLiffSilent() {
-  // LIFF初期化不要
+  try {
+    await liff.init({ liffId: "2009890655-jIJpN1Ya" });
+  } catch (e) {}
 }
 
 // タイムゾーン自動取得
@@ -472,6 +474,23 @@ async function executeChange(date, time) {
     document.getElementById("doneInfo").innerHTML =
       "<strong>新しい日時 / New Time：</strong>" + formatShort(date) + " " + timeDisplay + "<br>" +
       "<strong>ステータス / Status：</strong>変更完了 / Changed";
+
+    // カレンダーボタン追加
+    function toCalDate(d) {
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
+    const lessonMinutes = optionsData && optionsData.reservation && optionsData.reservation.lesson
+      ? (String(optionsData.reservation.lesson).includes('50') ? 50 : 25)
+      : 25;
+    const calStart = new Date(`${date}T${time}:00+09:00`);
+    const calEnd = new Date(calStart.getTime() + lessonMinutes * 60000);
+    const calUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent("日本語レッスン（Ami先生）") +
+      "&dates=" + toCalDate(calStart) + "/" + toCalDate(calEnd) +
+      "&details=" + encodeURIComponent("Ami先生との日本語レッスン");
+
+    const calBtnHtml = `<a href="${calUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:10px;background:#fff;color:#4285f4;border:2px solid #4285f4;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;">📅 Googleカレンダーに追加 / Add to Calendar</a>`;
+    document.getElementById("doneCard").querySelector("p").insertAdjacentHTML("afterend", calBtnHtml);
 
     document.getElementById("changeCard").classList.add("hidden");
     document.getElementById("doneCard").classList.remove("hidden");
