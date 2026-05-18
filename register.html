@@ -331,6 +331,30 @@ body {
 
 .book-link:hover { background: var(--green2); transform: translateY(-1px); }
 
+.processing-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.88);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+.processing-overlay.show { display: flex; }
+.processing-overlay .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #e8e8e8;
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: proc-spin 0.7s linear infinite;
+}
+.processing-overlay .proc-text {
+  font-size: 16px; font-weight: 700; color: #333; text-align: center; line-height: 1.6;
+}
+@keyframes proc-spin { to { transform: rotate(360deg); } }
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -349,6 +373,11 @@ body {
 </head>
 
 <body>
+
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div class="proc-text">登録中...<br><span style="font-size:13px;color:#888;">Registering...</span></div>
+</div>
 
 <div class="bg-circle bg-circle-1"></div>
 <div class="bg-circle bg-circle-2"></div>
@@ -568,7 +597,7 @@ async function register() {
 
   const btn = document.getElementById("registerBtn");
   btn.disabled = true;
-  setStatus("登録処理中... / Registering...");
+  document.getElementById("processingOverlay").classList.add("show");
 
   try {
     const res = await fetch(
@@ -583,6 +612,7 @@ async function register() {
     const data = await res.json();
 
     if (data.already) {
+      document.getElementById("processingOverlay").classList.remove("show");
       document.getElementById("alreadyText").textContent =
         data.hasPrice
           ? "すでに登録済みで、料金も設定されています。予約ページへどうぞ！"
@@ -597,6 +627,7 @@ async function register() {
     }
 
     if (data.ok) {
+      document.getElementById("processingOverlay").classList.remove("show");
       document.getElementById("doneName").textContent = displayName + " さん";
       showView("doneView");
       return;
@@ -606,6 +637,7 @@ async function register() {
 
   } catch (e) {
     console.error(e);
+    document.getElementById("processingOverlay").classList.remove("show");
     btn.disabled = false;
     setStatus("登録に失敗しました。もう一度お試しください。/ Registration failed. Please try again.", true);
   }
