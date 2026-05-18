@@ -55,12 +55,42 @@
     }
 
     .cal-btn:hover { background: #3367d6; }
+
+    .processing-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .processing-overlay.show { display: flex; }
+    .processing-overlay .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #e8e8e8;
+      border-top-color: #06C755;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    .processing-overlay .processing-text {
+      font-size: 16px; font-weight: 700; color: #333; text-align: center; line-height: 1.6;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
+
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div class="processing-text">処理中...<br><span style="font-size:13px;color:#888;">Processing...</span></div>
+</div>
+
   <div class="card">
     <h1>決済が完了しました<br><small style="font-size:0.6em;color:#04a344;">Payment Complete</small></h1>
     <p>ご予約ありがとうございます。<br><small style="color:#888;font-size:0.9em;">Thank you for your booking.</small></p>
@@ -203,6 +233,7 @@
 
       try {
         statusEl.textContent = "空き状況を確認しています...\nChecking availability...";
+        document.getElementById("processingOverlay").classList.add("show");
 
         // 空き確認
         const checkRes = await fetch(
@@ -246,6 +277,8 @@
         statusEl.textContent =
           "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\nBooking saved. Notification sent via LINE.";
 
+        document.getElementById("processingOverlay").classList.remove("show");
+
         // Googleカレンダーボタン表示
         showCalendarBtn(date, time, lessonType);
 
@@ -262,6 +295,7 @@
 
       } catch (error) {
         console.error("GAS error:", error);
+        document.getElementById("processingOverlay").classList.remove("show");
         statusEl.classList.add("error");
         statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。\nFailed to save. Please contact the teacher.";
         document.getElementById("closeBtn").style.display = "block";
