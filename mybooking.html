@@ -617,7 +617,7 @@ body::after {
 
   <!-- 新規予約ボタン -->
   <a class="book-btn" href="https://ami-app-eta.vercel.app/" id="bookBtn" style="display:none">
-    ＋ 新しいレッスンを予約する<span style="display:block;font-size:12px;opacity:0.85;">Book a New Lesson</span>
+    ＋ 新しいレッスンを予約する<span id="bookBtnSub" style="display:block;font-size:12px;opacity:0.85;">Book a New Lesson</span>
   </a>
 
 </div>
@@ -719,18 +719,9 @@ function applyMyBookingLang() {
   const totalLabel = document.querySelectorAll(".stat-card .label span");
   if (totalLabel[1]) totalLabel[1].textContent = T.totalLabel || "Total";
 
-  // 予約ボタンメインテキスト
-  const bookLink = document.querySelector(".book-link");
-  if (bookLink) {
-    const span = bookLink.querySelector("span");
-    if (span) span.textContent = T.bookBtn;
-    // メインテキストも更新
-    bookLink.childNodes.forEach(node => {
-      if (node.nodeType === 3 && node.textContent.trim()) {
-        node.textContent = "＋ 新しいレッスンを予約する / ";
-      }
-    });
-  }
+  // 予約ボタンのサブテキスト
+  const bookBtnSub = document.getElementById("bookBtnSub");
+  if (bookBtnSub) bookBtnSub.textContent = T.bookBtn;
 
   // 回数券タイトル
   const ticketTitle = document.querySelector("#ticketSection > div");
