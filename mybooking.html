@@ -629,7 +629,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1gr
 const MYBOOKING_TRANS = {
   en: {
     title: "My Bookings", upcoming: "Upcoming", all: "All", past: "Past",
-    upcomingLabel: "Upcoming", bookBtn: "Book a New Lesson",
+    upcomingLabel: "Upcoming", totalLabel: "Total", bookBtn: "Book a New Lesson", bookBtnMain: "＋ Book a New Lesson",
     tickets: "Lesson Tickets", ticketsLeft: "left", ticketExpiry: "Until",
     meetBtn: "Join Lesson via Google Meet", changeBtn: "Change", cancelBtn: "Cancel",
     cancelled: "Cancelled", soon: "Soon", confirmed: "Confirmed", done: "Done",
@@ -639,7 +639,7 @@ const MYBOOKING_TRANS = {
   },
   zh: {
     title: "我的预约", upcoming: "即将到来", all: "全部", past: "过去",
-    upcomingLabel: "即将到来", bookBtn: "预约新课程",
+    upcomingLabel: "即将到来", totalLabel: "累计", bookBtn: "预约新课程", bookBtnMain: "＋ 预约新课程",
     tickets: "课程次券", ticketsLeft: "剩余", ticketExpiry: "截止",
     meetBtn: "通过Google Meet参加课程", changeBtn: "更改", cancelBtn: "取消",
     cancelled: "已取消", soon: "即将开始", confirmed: "已确认", done: "已完成",
@@ -649,7 +649,7 @@ const MYBOOKING_TRANS = {
   },
   ko: {
     title: "내 예약", upcoming: "예정", all: "전체", past: "지난",
-    upcomingLabel: "예정", bookBtn: "새 레슨 예약",
+    upcomingLabel: "예정", totalLabel: "누계", bookBtn: "새 레슨 예약", bookBtnMain: "＋ 새 레슨 예약",
     tickets: "레슨 횟수권", ticketsLeft: "남음", ticketExpiry: "까지",
     meetBtn: "Google Meet으로 레슨 참여", changeBtn: "변경", cancelBtn: "취소",
     cancelled: "취소됨", soon: "곧 시작", confirmed: "예약 확정", done: "완료",
@@ -659,7 +659,7 @@ const MYBOOKING_TRANS = {
   },
   th: {
     title: "การจองของฉัน", upcoming: "กำลังจะมาถึง", all: "ทั้งหมด", past: "ที่ผ่านมา",
-    upcomingLabel: "กำลังจะมาถึง", bookBtn: "จองบทเรียนใหม่",
+    upcomingLabel: "กำลังจะมาถึง", totalLabel: "รวม", bookBtn: "จองบทเรียนใหม่", bookBtnMain: "＋ จองบทเรียนใหม่",
     tickets: "คูปองบทเรียน", ticketsLeft: "เหลือ", ticketExpiry: "ถึง",
     meetBtn: "เข้าร่วมบทเรียนผ่าน Google Meet", changeBtn: "เปลี่ยน", cancelBtn: "ยกเลิก",
     cancelled: "ยกเลิกแล้ว", soon: "เร็วๆนี้", confirmed: "ยืนยันแล้ว", done: "เสร็จสิ้น",
@@ -669,7 +669,7 @@ const MYBOOKING_TRANS = {
   },
   fr: {
     title: "Mes réservations", upcoming: "À venir", all: "Tout", past: "Passé",
-    upcomingLabel: "À venir", bookBtn: "Réserver une nouvelle leçon",
+    upcomingLabel: "À venir", totalLabel: "Total", bookBtn: "Réserver une nouvelle leçon", bookBtnMain: "＋ Réserver une nouvelle leçon",
     tickets: "Tickets de leçon", ticketsLeft: "restant(s)", ticketExpiry: "Jusqu'au",
     meetBtn: "Rejoindre la leçon via Google Meet", changeBtn: "Modifier", cancelBtn: "Annuler",
     cancelled: "Annulé", soon: "Bientôt", confirmed: "Confirmé", done: "Terminé",
@@ -679,7 +679,7 @@ const MYBOOKING_TRANS = {
   },
   de: {
     title: "Meine Buchungen", upcoming: "Bevorstehend", all: "Alle", past: "Vergangen",
-    upcomingLabel: "Bevorstehend", bookBtn: "Neue Unterrichtsstunde buchen",
+    upcomingLabel: "Bevorstehend", totalLabel: "Gesamt", bookBtn: "Neue Unterrichtsstunde buchen", bookBtnMain: "＋ Neue Unterrichtsstunde buchen",
     tickets: "Unterrichts-Tickets", ticketsLeft: "verbleibend", ticketExpiry: "Bis",
     meetBtn: "Unterricht über Google Meet beitreten", changeBtn: "Ändern", cancelBtn: "Stornieren",
     cancelled: "Storniert", soon: "Bald", confirmed: "Bestätigt", done: "Abgeschlossen",
@@ -715,9 +715,22 @@ function applyMyBookingLang() {
   const upcomingLabel = document.querySelector(".stat-card .label span");
   if (upcomingLabel) upcomingLabel.textContent = T.upcomingLabel;
 
-  // 予約ボタン
-  const bookBtn = document.querySelector(".book-link span");
-  if (bookBtn) bookBtn.textContent = T.bookBtn;
+  // 累計レッスン
+  const totalLabel = document.querySelectorAll(".stat-card .label span");
+  if (totalLabel[1]) totalLabel[1].textContent = T.totalLabel || "Total";
+
+  // 予約ボタンメインテキスト
+  const bookLink = document.querySelector(".book-link");
+  if (bookLink) {
+    const span = bookLink.querySelector("span");
+    if (span) span.textContent = T.bookBtn;
+    // メインテキストも更新
+    bookLink.childNodes.forEach(node => {
+      if (node.nodeType === 3 && node.textContent.trim()) {
+        node.textContent = "＋ 新しいレッスンを予約する / ";
+      }
+    });
+  }
 
   // 回数券タイトル
   const ticketTitle = document.querySelector("#ticketSection > div");
