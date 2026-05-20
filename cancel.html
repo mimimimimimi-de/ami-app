@@ -202,7 +202,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 <!-- 処理中オーバーレイ -->
 <div class="processing-overlay" id="processingOverlay">
   <div class="spinner"></div>
-  <div class="processing-text">
+  <div class="processing-text" id="overlayText">
     キャンセル中...<br>
     <span style="font-size:13px;color:#888;">Processing cancellation...</span>
   </div>
@@ -313,6 +313,8 @@ const CANCEL_TRANS = {
     absenceSent: "Absence notification sent to the teacher.",
     absenceConfirm: "Send absence notification to the teacher?",
     confirmCancelMsg: "No cancellation or refund after 12 hours before the lesson.",
+    sending: "Sending...",
+    absenceGuide: "You can notify the teacher using the button below."
     lesson: "Lesson", date: "Date", time: "Time", payment: "Payment", ticket: "Ticket"
   },
   zh: {
@@ -330,6 +332,8 @@ const CANCEL_TRANS = {
     absenceSent: "缺席通知已发送给老师。",
     absenceConfirm: "向老师发送缺席通知？",
     confirmCancelMsg: "12小时后无法取消或退款。",
+    sending: "发送中...",
+    absenceGuide: "您可以使用下方按钮通知老师。"
     lesson: "课程", date: "日期", time: "时间", payment: "支付", ticket: "次券"
   },
   ko: {
@@ -347,6 +351,8 @@ const CANCEL_TRANS = {
     absenceSent: "결석 알림이 선생님께 전송되었습니다.",
     absenceConfirm: "선생님께 결석 알림을 보내시겠습니까?",
     confirmCancelMsg: "레슨 시작 12시간 후에는 취소 및 환불이 불가합니다.",
+    sending: "전송 중...",
+    absenceGuide: "아래 버튼으로 선생님께 연락할 수 있습니다."
     lesson: "레슨", date: "날짜", time: "시간", payment: "결제", ticket: "횟수권"
   },
   th: {
@@ -364,6 +370,8 @@ const CANCEL_TRANS = {
     absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
     absenceConfirm: "ส่งการแจ้งขาดเรียนให้ครูหรือไม่?",
     confirmCancelMsg: "หลัง 12 ชั่วโมง ไม่สามารถยกเลิกหรือคืนเงินได้",
+    sending: "กำลังส่ง...",
+    absenceGuide: "คุณสามารถแจ้งครูได้โดยใช้ปุ่มด้านล่าง"
     lesson: "บทเรียน", date: "วันที่", time: "เวลา", payment: "การชำระเงิน", ticket: "คูปอง"
   },
   fr: {
@@ -381,6 +389,8 @@ const CANCEL_TRANS = {
     absenceSent: "Notification d'absence envoyée au professeur.",
     absenceConfirm: "Envoyer une notification d'absence au professeur ?",
     confirmCancelMsg: "Pas d'annulation ou de remboursement après 12h avant la leçon.",
+    sending: "Envoi en cours...",
+    absenceGuide: "Vous pouvez notifier le professeur en utilisant le bouton ci-dessous."
     lesson: "Leçon", date: "Date", time: "Heure", payment: "Paiement", ticket: "Ticket"
   },
   de: {
@@ -398,6 +408,8 @@ const CANCEL_TRANS = {
     absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
     absenceConfirm: "Abwesenheitsbenachrichtigung an den Lehrer senden?",
     confirmCancelMsg: "Keine Stornierung oder Rückerstattung nach 12h vor der Unterrichtsstunde.",
+    sending: "Wird gesendet...",
+    absenceGuide: "Sie können den Lehrer über die Schaltfläche unten benachrichtigen."
     lesson: "Unterricht", date: "Datum", time: "Uhrzeit", payment: "Zahlung", ticket: "Ticket"
   }
 };
@@ -439,6 +451,16 @@ function applyCancelLang() {
   const ticketSpans = document.querySelectorAll(".ticket-notice .notice-text span");
   if (ticketSpans[0]) ticketSpans[0].textContent = T.ticketNoCancel;
   if (ticketSpans[1]) ticketSpans[1].textContent = T.ticketNotify;
+
+  // 返金ルールタイトル
+  const refundTitle = document.querySelector("#normalSection .warning-box strong");
+  if (refundTitle) refundTitle.innerHTML = "返金ルール / " + T.refundPolicy;
+
+  // キャンセルできません画面のテキスト
+  const resultMsg = document.getElementById("resultMessage");
+  if (resultMsg && resultMsg.textContent) {
+    // 動的に更新されるので showResult で対応
+  }
 
   // 欠席案内（青い枠）
   const absenceNoticeTitle = document.querySelector(".absence-notice .notice-title");
@@ -578,7 +600,7 @@ async function executeCancel() {
       const successMsg = `キャンセルが完了しました。\n${T.successMsg || "Cancellation complete."}\n\n【日時 / ${T.time || "Time"}】\n${timeDisplay}\n\n返金処理も完了しました。\n${T.refundDone || "Refund has been processed."}`;
       showResult(true, successMsg);
     } else {
-      showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。");
+      showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。" + (T.absenceGuide ? "\n" + T.absenceGuide : ""));
       document.getElementById("absenceBtn2").style.display = "block";
     }
   } catch (e) {
@@ -599,7 +621,9 @@ async function sendAbsence() {
   if (btn) btn.disabled = true;
   if (btn2) btn2.disabled = true;
 
-  // 処理中オーバーレイ表示
+  // 処理中オーバーレイ表示（欠席用テキスト）
+  const overlayText = document.getElementById("overlayText");
+  if (overlayText) overlayText.innerHTML = "送信中...<br><span style='font-size:13px;color:#888;'>" + (T.sending || "Sending...") + "</span>";
   document.getElementById("processingOverlay").classList.add("show");
 
   try {
