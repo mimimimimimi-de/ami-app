@@ -703,6 +703,12 @@ async function selectLesson(minutes) {
         userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
       } catch (e) {}
     }
+
+    // 登録時の言語設定を適用
+    if (data.lang && data.lang !== 'ja') {
+      localStorage.setItem("userLang", data.lang);
+      applyTranslations();
+    }
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
