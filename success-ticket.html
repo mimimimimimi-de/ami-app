@@ -107,6 +107,34 @@ p {
 
 .status.error { color: #d93025; }
 
+.processing-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.processing-overlay.show { display: flex; }
+.spinner {
+  width: 44px; height: 44px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #06C755;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.processing-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  line-height: 1.8;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @keyframes popIn {
   from { transform: scale(0.5); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
@@ -115,6 +143,13 @@ p {
 </head>
 
 <body>
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div class="processing-text" id="overlayText">
+    保存中...<br><span style="font-size:13px;color:#888;">Saving...</span>
+  </div>
+</div>
+
 <div class="card">
   <div class="icon">🎉</div>
   <h1>購入完了！<span id="subTitle" style="display:block;font-size:0.55em;font-weight:400;color:#06C755;margin-top:4px;"></span></h1>
@@ -219,6 +254,13 @@ async function saveTicket() {
     return;
   }
 
+  // オーバーレイ表示
+  const T = window._stT || {};
+  const overlay = document.getElementById("processingOverlay");
+  const overlayText = document.getElementById("overlayText");
+  if (overlayText) overlayText.innerHTML = `保存中...<br><span style="font-size:13px;color:#888;">${T.saving || "Saving..."}</span>`;
+  if (overlay) overlay.classList.add("show");
+
   try {
     // Vercel経由でGASに保存
     const gasRes = await fetch("/api/save-ticket", {
@@ -246,12 +288,14 @@ async function saveTicket() {
     localStorage.removeItem("ticketUserId");
     localStorage.removeItem("ticketName");
 
-    setStatus(T.saved || "✅ 回数券を保存しました！LINEに通知を送りました。");
+    setStatus("✅ 回数券を保存しました！\n" + (T.saved || "Purchase saved!"));
+    if (overlay) overlay.classList.remove("show");
     document.getElementById("bookBtn").style.display = "block";
     document.getElementById("myBookingBtn").style.display = "block";
 
   } catch (e) {
     console.error(e);
+    if (overlay) overlay.classList.remove("show");
     setStatus("保存に失敗しました。先生にご連絡ください。", true);
   }
 }
