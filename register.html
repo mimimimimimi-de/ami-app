@@ -509,10 +509,11 @@ body {
     <!-- 登録済み -->
     <div class="already-card" id="alreadyView">
       <div class="already-icon">✅</div>
-      <h2>すでに登録済みです<span class="en-sub">Already Registered</span></h2>
+      <h2>すでに登録済みです<span class="en-sub" id="subAlreadyTitle"></span></h2>
       <p id="alreadyText">登録が確認できました。</p>
+      <p id="alreadyTextSub" style="font-size:12px;color:#aaa;margin-top:-8px;"></p>
       <a class="book-link" href="https://ami-app-eta.vercel.app/">
-        📅 レッスンを予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Book a Lesson</span>
+        📅 レッスンを予約する<span class="en-sub" id="subBookBtn" style="color:rgba(255,255,255,0.8);"></span>
       </a>
     </div>
 
@@ -550,6 +551,8 @@ const LANG_TEXT = {
     doneTitle: "Registration Complete!", doneTitleSub: "",
     doneMsg: "You're all set!<br>We'll notify you via LINE<br><span class='highlight'>once the teacher sets your fee.</span>", doneMsgSub: "",
     alreadyTitle: "Already Registered", alreadyTitleSub: "",
+    alreadyMsgPrice: "Already registered and fee is set. Head to the booking page!",
+    alreadyMsgWait: "Registered. We'll notify you via LINE once the teacher sets your fee.",
     bookBtn: "📅 Book a Lesson", bookBtnSub: ""
   },
   zh: {
@@ -563,6 +566,8 @@ const LANG_TEXT = {
     doneTitle: "注册完成！", doneTitleSub: "",
     doneMsg: "注册已完成。<br>老师设置费用后，<br><span class='highlight'>我们将通过LINE通知您。</span>", doneMsgSub: "",
     alreadyTitle: "已经注册", alreadyTitleSub: "",
+    alreadyMsgPrice: "已经注册且费用已设置。请前往预约页面！",
+    alreadyMsgWait: "已注册。老师设置费用后，我们将通过LINE通知您。",
     bookBtn: "📅 预约课程", bookBtnSub: ""
   },
   ko: {
@@ -576,6 +581,8 @@ const LANG_TEXT = {
     doneTitle: "등록 완료！", doneTitleSub: "",
     doneMsg: "등록이 완료되었습니다。<br>선생님이 요금을 설정하면<br><span class='highlight'>LINE으로 알려드립니다。</span>", doneMsgSub: "",
     alreadyTitle: "이미 등록되어 있습니다", alreadyTitleSub: "",
+    alreadyMsgPrice: "이미 등록되어 있고 요금도 설정되어 있습니다. 예약 페이지로 이동하세요！",
+    alreadyMsgWait: "등록되었습니다. 선생님이 요금을 설정하면 LINE으로 알려드립니다。",
     bookBtn: "📅 레슨 예약하기", bookBtnSub: ""
   },
   th: {
@@ -589,6 +596,8 @@ const LANG_TEXT = {
     doneTitle: "ลงทะเบียนเสร็จสมบูรณ์！", doneTitleSub: "",
     doneMsg: "การลงทะเบียนเสร็จสมบูรณ์。<br>เมื่อครูตั้งค่าค่าเรียนแล้ว<br><span class='highlight'>เราจะแจ้งให้ทราบผ่าน LINE。</span>", doneMsgSub: "",
     alreadyTitle: "ลงทะเบียนแล้ว", alreadyTitleSub: "",
+    alreadyMsgPrice: "ลงทะเบียนแล้วและตั้งค่าค่าเรียนแล้ว ไปที่หน้าการจองได้เลย！",
+    alreadyMsgWait: "ลงทะเบียนแล้ว เราจะแจ้งให้ทราบผ่าน LINE เมื่อครูตั้งค่าค่าเรียน。",
     bookBtn: "📅 จองบทเรียน", bookBtnSub: ""
   },
   fr: {
@@ -602,6 +611,8 @@ const LANG_TEXT = {
     doneTitle: "Inscription terminee！", doneTitleSub: "",
     doneMsg: "Inscription reussie！<br>Nous vous informerons via LINE<br><span class='highlight'>des que le professeur fixe vos frais。</span>", doneMsgSub: "",
     alreadyTitle: "Deja inscrit", alreadyTitleSub: "",
+    alreadyMsgPrice: "Deja inscrit et frais fixes. Rendez-vous sur la page de reservation！",
+    alreadyMsgWait: "Inscrit. Nous vous informerons via LINE des que le professeur fixe vos frais。",
     bookBtn: "📅 Reserver une lecon", bookBtnSub: ""
   },
   de: {
@@ -615,6 +626,8 @@ const LANG_TEXT = {
     doneTitle: "Registrierung abgeschlossen！", doneTitleSub: "",
     doneMsg: "Registrierung erfolgreich！<br>Wir benachrichtigen Sie uber LINE,<br><span class='highlight'>sobald der Lehrer Ihre Gebuhr festlegt。</span>", doneMsgSub: "",
     alreadyTitle: "Bereits registriert", alreadyTitleSub: "",
+    alreadyMsgPrice: "Bereits registriert und Gebuhr festgelegt. Gehen Sie zur Buchungsseite！",
+    alreadyMsgWait: "Registriert. Wir benachrichtigen Sie uber LINE, sobald der Lehrer Ihre Gebuhr festlegt。",
     bookBtn: "📅 Unterricht buchen", bookBtnSub: ""
   }
 };
@@ -684,14 +697,10 @@ function applyLang(lang) {
     : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${T.doneMsg}</span>`;
 
   // 登録済み画面
-  const alreadyH2 = document.querySelector("#alreadyView h2");
-  if (alreadyH2) alreadyH2.innerHTML = isJa
-    ? `${LANG_TEXT.ja.alreadyTitle}<span class="en-sub">${LANG_TEXT.en.alreadyTitle}</span>`
-    : `${LANG_TEXT.ja.alreadyTitle}<span class="en-sub">${T.alreadyTitle}</span>`;
-  const bookLink = document.querySelector("#alreadyView .book-link");
-  if (bookLink) bookLink.innerHTML = isJa
-    ? `${LANG_TEXT.ja.bookBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${LANG_TEXT.en.bookBtn}</span>`
-    : `${LANG_TEXT.ja.bookBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookBtn}</span>`;
+  const subAlreadyTitle = document.getElementById("subAlreadyTitle");
+  if (subAlreadyTitle) subAlreadyTitle.textContent = isJa ? LANG_TEXT.en.alreadyTitle : T.alreadyTitle;
+  const subBookBtn = document.getElementById("subBookBtn");
+  if (subBookBtn) subBookBtn.textContent = isJa ? LANG_TEXT.en.bookBtn.replace("📅 ", "") : T.bookBtn.replace("📅 ", "");
 }
 
 let userId = null;
@@ -839,10 +848,18 @@ async function register() {
 
     if (data.already) {
       document.getElementById("processingOverlay").classList.remove("show");
-      document.getElementById("alreadyText").textContent =
-        data.hasPrice
-          ? "すでに登録済みで、料金も設定されています。予約ページへどうぞ！"
-          : "登録済みです。先生が料金を設定したらLINEでお知らせします。";
+      const T = LANG_TEXT[selectedLang] || {};
+      const isJa = selectedLang === "ja";
+
+      const msgJa = data.hasPrice
+        ? "すでに登録済みで、料金も設定されています。予約ページへどうぞ！"
+        : "登録済みです。先生が料金を設定したらLINEでお知らせします。";
+      const msgSub = data.hasPrice
+        ? (isJa ? "Already registered and fee is set. Head to the booking page!" : T.alreadyMsgPrice || "Already registered and fee is set. Head to the booking page!")
+        : (isJa ? "Registered. We'll notify you via LINE once the teacher sets your fee." : T.alreadyMsgWait || "Registered. We'll notify you via LINE once the teacher sets your fee.");
+
+      document.getElementById("alreadyText").textContent = msgJa;
+      document.getElementById("alreadyTextSub").textContent = msgSub;
 
       if (!data.hasPrice) {
         document.querySelector(".book-link").style.display = "none";
