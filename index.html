@@ -706,6 +706,7 @@ async function selectLesson(minutes) {
 
     // 登録時の言語設定を適用
     if (data.lang && data.lang !== 'ja') {
+      alert("言語: " + data.lang); // デバッグ用
       applyTranslations(data.lang);
     }
   } catch (e) {
