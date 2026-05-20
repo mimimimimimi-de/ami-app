@@ -500,45 +500,6 @@ function t(key) {
   return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS["en"][key] || "";
 }
 
-function applyTranslations() {
-  const lang = getLang();
-  if (lang === "ja") return; // 日本語はそのまま
-
-  // 各サブテキストを切り替え
-  const setSubText = (selector, key) => {
-    const el = document.querySelector(selector);
-    if (el) el.textContent = t(key);
-  };
-
-  setSubText("#top .en-title", "selectLesson");
-  setSubText("#price .en-title", "confirmFee");
-  setSubText("#calendarPage .en-title", "selectDateTime");
-  setSubText("#confirmPage .en-title", "confirmBooking");
-  setSubText(".scroll-hint", "scrollHint");
-
-  // ボタンのサブテキスト
-  const btn25 = document.getElementById("btn25");
-  if (btn25) {
-    const sub = btn25.querySelector(".en-sub");
-    if (sub) sub.textContent = t("btn25");
-  }
-  const btn50 = document.getElementById("btn50");
-  if (btn50) {
-    const sub = btn50.querySelector(".en-sub");
-    if (sub) sub.textContent = t("btn50");
-  }
-  const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) {
-    const sub = checkoutBtn.querySelector(".en-sub");
-    if (sub) sub.textContent = t("proceed");
-  }
-  const procText = document.getElementById("processingText");
-  if (procText) {
-    const sub = procText.querySelector("span");
-    if (sub) sub.textContent = t("processing");
-  }
-}
-
 function getLang() {
   return localStorage.getItem("userLang") || "en";
 }
@@ -551,7 +512,6 @@ function t(key, lang) {
 
 function applyTranslations(lang) {
   const l = lang || getLang();
-  alert("applyTranslations: l=" + l); // デバッグ用
   if (l === "ja") return;
 
   const setSubText = (selector, key) => {
@@ -688,12 +648,10 @@ async function selectLesson(minutes) {
     const res = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=" + encodeURIComponent(minutes) + "&name=" + encodeURIComponent(displayName));
     const data = await res.json();
     if (!data.ok || !data.price) {
-      alert("data.ok=" + data.ok + " data.price=" + data.price); // デバッグ
       document.getElementById("priceText").textContent = "料金未設定 / Not Set";
       alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
       return;
     }
-    alert("料金OK: " + data.price + " lang: " + data.lang); // デバッグ
     selectedPrice = Number(data.price);
     document.getElementById("priceText").textContent = "$" + selectedPrice;
     document.getElementById("nextBtn").disabled = false;
@@ -708,9 +666,11 @@ async function selectLesson(minutes) {
     }
 
     // 登録時の言語設定を適用
-    alert("lang確認: " + data.lang + " / timezone: " + data.timezone); // デバッグ用
     if (data.lang && data.lang !== 'ja') {
       applyTranslations(data.lang);
+      // デバッグ：サブテキストが変わったか確認
+      const topSub = document.querySelector("#top .en-title");
+      if (topSub) topSub.style.color = "red"; // 赤くなったら成功
     }
   } catch (e) {
     console.error(e);
@@ -1164,13 +1124,9 @@ async function checkout() {
 }
 
 window.onload = function() {
-  applyTranslations();
   init();
 };
 
-function applyTranslations() {
-  // 日本語はそのまま、サブテキスト（英語部分）だけ言語切り替え
-}
 </script>
 </body>
 </html>
