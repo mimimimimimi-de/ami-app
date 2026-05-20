@@ -301,6 +301,103 @@ button {
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+const CHANGE_TRANS = {
+  en: {
+    title: "Change Reservation", tapToSelect: "Tap ○ to select a new time slot",
+    aboutChanges: "About Changes", changeLine1: "Changes available up to 12h before",
+    changeLine2: "New Meet link will be issued", timesShown: "Times shown in JST",
+    prevWeek: "Prev", nextWeek: "Next", scrollHint: "Scroll to see more days →",
+    doneTitle: "Reservation Changed", doneLine: "New booking details sent via LINE. You can close this page.",
+    deleteNote: "Please manually delete the previous lesson from your Google Calendar.",
+    close: "Close", loading: "Loading...", checkingSlots: "Checking available slots...",
+    confirmMsg: "Change to this time?", status: "Changed", changeFailMsg: "Change failed. Please contact the teacher."
+  },
+  zh: {
+    title: "更改预约", tapToSelect: "点击○选择新时间",
+    aboutChanges: "关于更改", changeLine1: "可在12小时前更改",
+    changeLine2: "更改后将发放新的Meet链接", timesShown: "时间以JST显示",
+    prevWeek: "上一周", nextWeek: "下一周", scrollHint: "横向滚动查看更多日期 →",
+    doneTitle: "预约已更改", doneLine: "新预约内容已通过LINE发送。可以关闭此页面。",
+    deleteNote: "请从Google日历手动删除以前的课程。",
+    close: "关闭", loading: "加载中...", checkingSlots: "正在检查可用时段...",
+    confirmMsg: "更改为此时间？", status: "已更改", changeFailMsg: "更改失败，请联系老师。"
+  },
+  ko: {
+    title: "예약 변경", tapToSelect: "○을 탭하여 새 시간을 선택해주세요",
+    aboutChanges: "예약 변경에 대하여", changeLine1: "12시간 전까지 변경 가능",
+    changeLine2: "변경 후 새 Meet 링크가 발급됩니다", timesShown: "JST 기준으로 표시",
+    prevWeek: "이전 주", nextWeek: "다음 주", scrollHint: "옆으로 스크롤하여 다른 날짜 확인 →",
+    doneTitle: "예약이 변경되었습니다", doneLine: "새 예약 내용을 LINE으로 전송했습니다. 이 페이지를 닫아도 됩니다.",
+    deleteNote: "이전 레슨을 Google 캘린더에서 수동으로 삭제해주세요.",
+    close: "닫기", loading: "불러오는 중...", checkingSlots: "가능한 시간대를 확인하고 있습니다...",
+    confirmMsg: "이 시간으로 변경할까요?", status: "변경 완료", changeFailMsg: "변경에 실패했습니다. 선생님께 연락해주세요."
+  },
+  th: {
+    title: "เปลี่ยนการจอง", tapToSelect: "แตะ ○ เพื่อเลือกเวลาใหม่",
+    aboutChanges: "เกี่ยวกับการเปลี่ยนแปลง", changeLine1: "เปลี่ยนได้ก่อน 12 ชั่วโมง",
+    changeLine2: "จะมีลิงก์ Meet ใหม่หลังการเปลี่ยน", timesShown: "แสดงเวลาตาม JST",
+    prevWeek: "สัปดาห์ก่อน", nextWeek: "สัปดาห์ถัดไป", scrollHint: "เลื่อนเพื่อดูวันอื่น →",
+    doneTitle: "เปลี่ยนการจองแล้ว", doneLine: "ส่งรายละเอียดการจองใหม่ทาง LINE แล้ว สามารถปิดหน้านี้ได้",
+    deleteNote: "กรุณาลบบทเรียนเก่าออกจาก Google Calendar ด้วยตนเอง",
+    close: "ปิด", loading: "กำลังโหลด...", checkingSlots: "กำลังตรวจสอบเวลาว่าง...",
+    confirmMsg: "เปลี่ยนเป็นเวลานี้ใช่ไหม?", status: "เปลี่ยนแล้ว", changeFailMsg: "การเปลี่ยนล้มเหลว กรุณาติดต่อครู"
+  },
+  fr: {
+    title: "Modifier la réservation", tapToSelect: "Appuyez sur ○ pour sélectionner un nouveau créneau",
+    aboutChanges: "À propos des modifications", changeLine1: "Modifications disponibles jusqu'à 12h avant",
+    changeLine2: "Un nouveau lien Meet sera émis", timesShown: "Heures affichées en JST",
+    prevWeek: "Semaine précédente", nextWeek: "Semaine suivante", scrollHint: "Faites défiler pour voir plus de jours →",
+    doneTitle: "Réservation modifiée", doneLine: "Nouveaux détails de réservation envoyés via LINE. Vous pouvez fermer cette page.",
+    deleteNote: "Veuillez supprimer manuellement l'ancien cours de Google Agenda.",
+    close: "Fermer", loading: "Chargement...", checkingSlots: "Vérification des créneaux disponibles...",
+    confirmMsg: "Changer pour ce créneau ?", status: "Modifié", changeFailMsg: "Échec de la modification. Veuillez contacter le professeur."
+  },
+  de: {
+    title: "Buchung ändern", tapToSelect: "Tippen Sie auf ○, um einen neuen Zeitslot zu wählen",
+    aboutChanges: "Über Änderungen", changeLine1: "Änderungen bis 12h vorher möglich",
+    changeLine2: "Nach der Änderung wird ein neuer Meet-Link ausgestellt", timesShown: "Zeiten in JST angezeigt",
+    prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", scrollHint: "Scrollen Sie, um mehr Tage zu sehen →",
+    doneTitle: "Buchung geändert", doneLine: "Neue Buchungsdetails per LINE gesendet. Sie können diese Seite schließen.",
+    deleteNote: "Bitte löschen Sie die vorherige Unterrichtsstunde manuell aus Google Kalender.",
+    close: "Schließen", loading: "Wird geladen...", checkingSlots: "Verfügbare Zeitslots werden überprüft...",
+    confirmMsg: "Zu diesem Zeitslot wechseln?", status: "Geändert", changeFailMsg: "Änderung fehlgeschlagen. Bitte kontaktieren Sie den Lehrer."
+  }
+};
+
+function getChangeLang() {
+  return localStorage.getItem("userLang") || "en";
+}
+
+function applyChangeLang(lang) {
+  const l = lang || getChangeLang();
+  if (l === "ja") return;
+  const T = CHANGE_TRANS[l] || CHANGE_TRANS["en"];
+
+  const setSubText = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
+
+  setSubText("#changeCard .en-title", T.title);
+  setSubText("#changeCard p .en-sub", T.tapToSelect);
+  setSubText(".scroll-hint", T.scrollHint);
+  setSubText("#doneCard .en-title", T.doneTitle);
+  setSubText("#doneCard p .en-sub", T.doneLine);
+
+  // 週ボタン
+  const prevBtn = document.querySelector("button[onclick='prevWeek()']");
+  if (prevBtn) prevBtn.textContent = "← 前の週 / " + T.prevWeek;
+  const nextBtn = document.querySelector("button[onclick='nextWeek()']");
+  if (nextBtn) nextBtn.textContent = "次の週 / " + T.nextWeek + " →";
+
+  // 閉じるボタン
+  const closeBtn = document.querySelector("button[onclick='closePage()']");
+  if (closeBtn) closeBtn.textContent = "閉じる / " + T.close;
+
+  // 注意書きサブテキスト
+  const deleteNote = document.querySelector("#doneCard p[style] span");
+  if (deleteNote) deleteNote.textContent = "※" + T.deleteNote;
+
+  window._changeT = T;
+}
+
 let reservationId = "";
 let optionsData = null;
 let weekOffset = 0;
@@ -357,6 +454,11 @@ function timeToMinutes(time) {
 }
 
 async function loadChangeData() {
+  // 言語適用（localStorageまたはURLパラメータから）
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
+  if (urlLang) localStorage.setItem("userLang", urlLang);
+  applyChangeLang(localStorage.getItem("userLang") || "en");
+
   const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
 
