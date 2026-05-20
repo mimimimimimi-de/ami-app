@@ -737,7 +737,9 @@ function renderCard(r, now, index) {
 
   const cardClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "past";
 
-  const changeUrl = `https://ami-app-eta.vercel.app/change.html?id=${encodeURIComponent(r.reservationId)}`;
+  const userLang = localStorage.getItem("userLang") || "";
+  const langParam = userLang && userLang !== "ja" ? `&lang=${encodeURIComponent(userLang)}` : "";
+  const changeUrl = `https://ami-app-eta.vercel.app/change.html?id=${encodeURIComponent(r.reservationId)}${langParam}`;
   const cancelUrl = `https://ami-app-eta.vercel.app/cancel.html?id=${encodeURIComponent(r.reservationId)}`;
 
   const meetSection = (isUpcoming && r.meetUrl) ? `
