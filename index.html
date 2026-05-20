@@ -525,6 +525,20 @@ function applyTranslations(lang) {
   setSubText("#confirmPage .en-title", "confirmBooking");
   setSubText(".scroll-hint", "scrollHint");
 
+  // tapToSelect
+  const tapEl = document.querySelector("#calendarPage p .en-sub");
+  if (tapEl) tapEl.textContent = t("tapToSelect", l);
+
+  // 週ボタン
+  document.querySelectorAll(".sub").forEach(btn => {
+    if (btn.textContent.includes("前の週")) {
+      btn.textContent = "← 前の週 / " + t("prevWeek", l);
+    }
+    if (btn.textContent.includes("次の週")) {
+      btn.textContent = "次の週 / " + t("nextWeek", l) + " →";
+    }
+  });
+
   const btn25 = document.getElementById("btn25");
   if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = t("btn25", l); }
   const btn50 = document.getElementById("btn50");
@@ -668,9 +682,6 @@ async function selectLesson(minutes) {
     // 登録時の言語設定を適用
     if (data.lang && data.lang !== 'ja') {
       applyTranslations(data.lang);
-      // デバッグ：サブテキストが変わったか確認
-      const topSub = document.querySelector("#top .en-title");
-      if (topSub) topSub.style.color = "red"; // 赤くなったら成功
     }
   } catch (e) {
     console.error(e);
