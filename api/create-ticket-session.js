@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { userId, lessonType, count } = req.body;
+    const { userId, lessonType, count, lang } = req.body;
 
     if (!userId || !lessonType || !count) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -32,9 +32,10 @@ module.exports = async function handler(req, res) {
 
     const unitPrice = Number(priceJson.price);
     const totalPrice = unitPrice * lessonCount;
-    const unitAmount = totalPrice * 100; // Stripeはセント単位
+    const unitAmount = totalPrice * 100;
 
     const lessonLabel = lessonMinutes === 50 ? "50分レッスン" : "25分レッスン";
+    const langParam = lang && lang !== "ja" ? `&lang=${encodeURIComponent(lang)}` : "";
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -60,7 +61,7 @@ module.exports = async function handler(req, res) {
         unitPrice: String(unitPrice),
         totalPrice: String(totalPrice)
       },
-      success_url: `https://ami-app-eta.vercel.app/success-ticket.html?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `https://ami-app-eta.vercel.app/success-ticket.html?session_id={CHECKOUT_SESSION_ID}${langParam}`,
       cancel_url: `https://ami-app-eta.vercel.app/ticket.html`
     });
 
