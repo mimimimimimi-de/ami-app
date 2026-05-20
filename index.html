@@ -589,6 +589,8 @@ function applyTranslations(lang) {
   if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = T.btn25 || ""; }
   const btn50 = document.getElementById("btn50");
   if (btn50) { const sub = btn50.querySelector(".en-sub"); if (sub) sub.textContent = T.btn50 || ""; }
+  const nextMainBtn = document.getElementById("nextBtn");
+  if (nextMainBtn) { const sub = nextMainBtn.querySelector(".en-sub"); if (sub) sub.textContent = T.selectDateNext || ""; }
   const checkoutBtn = document.getElementById("checkoutBtn");
   if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = T.proceed || ""; }
   const procText = document.getElementById("processingText");
@@ -1000,7 +1002,8 @@ async function loadPaymentOptions(lessonLabel) {
   const checkoutBtn = document.getElementById("checkoutBtn");
   section.style.display = "none";
   selectedPayment = "stripe";
-  checkoutBtn.innerHTML = '決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">Proceed to Payment</span>';
+  const T0 = window._currentT || {};
+  checkoutBtn.innerHTML = `決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T0.proceed || "Proceed to Payment"}</span>`;
 
   try {
     const res = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
