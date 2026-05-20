@@ -146,6 +146,18 @@ body {
 .step-text .title { font-size: 14px; font-weight: 700; color: var(--text); }
 .step-text .desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.6; }
 
+.lang-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.lang-label-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
 .lang-btn {
   padding: 8px 14px;
   border-radius: 20px;
@@ -438,8 +450,8 @@ body {
 
       <!-- 言語選択 -->
       <div class="tz-section" style="margin-bottom:16px;">
-        <div class="tz-label">🌐 言語を選んでください</div>
-        <div class="tz-label-en">Select your language</div>
+        <div class="lang-label">🌐 言語を選んでください</div>
+        <div class="lang-label-sub">Select your language</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
           <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
           <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
@@ -628,29 +640,42 @@ const LANG_TEXT = {
 };
 
 function applyLang(lang) {
-  const T = LANG_TEXT[lang] || LANG_TEXT["ja"];
+  if (lang === "ja") {
+    // 日本語の場合はサブテキストをデフォルトに戻す
+    const subs = document.querySelectorAll(".en-sub");
+    const defaults = {
+      0: "Registration Complete!",
+      1: "Registration complete!<br>We'll notify you via LINE once the teacher sets your fee.",
+      2: "Already Registered",
+      3: "Book a Lesson",
+      4: "Register"
+    };
+    return;
+  }
 
-  // 登録完了画面
-  const doneH2 = document.querySelector("#doneView h2");
-  if (doneH2) doneH2.innerHTML = T.title + (T.titleSub ? `<span class="en-sub">${T.titleSub}</span>` : "");
-  const doneP = document.querySelector("#doneView p");
-  if (doneP) doneP.innerHTML = T.doneMsg + (T.doneMsgSub ? `<br><span class="en-sub">${T.doneMsgSub}</span>` : "");
+  const T = LANG_TEXT[lang] || LANG_TEXT["en"];
 
-  // 登録済み画面
-  const alreadyH2 = document.querySelector("#alreadyView h2");
-  if (alreadyH2) alreadyH2.innerHTML = T.alreadyTitle + (T.alreadyTitleSub ? `<span class="en-sub">${T.alreadyTitleSub}</span>` : "");
-  const bookBtn = document.querySelector("#alreadyView .book-link");
-  if (bookBtn) bookBtn.innerHTML = T.bookBtn + (T.bookBtnSub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookBtnSub}</span>` : "");
+  // サブテキストのみ変更（日本語テキストはそのまま）
+  const doneH2Sub = document.querySelector("#doneView h2 .en-sub");
+  if (doneH2Sub) doneH2Sub.textContent = T.titleSub || T.title;
+  const donePSub = document.querySelector("#doneView p .en-sub");
+  if (donePSub) donePSub.innerHTML = T.doneMsgSub || T.doneMsg;
 
-  // 登録ボタン
-  const regBtn = document.getElementById("registerBtn");
-  if (regBtn) regBtn.innerHTML = `📝 ${T.registerBtn}` + (T.registerBtnSub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.registerBtnSub}</span>` : "");
+  const alreadyH2Sub = document.querySelector("#alreadyView h2 .en-sub");
+  if (alreadyH2Sub) alreadyH2Sub.textContent = T.alreadyTitleSub || T.alreadyTitle;
+  const bookBtnSub = document.querySelector("#alreadyView .book-link .en-sub");
+  if (bookBtnSub) bookBtnSub.textContent = T.bookBtnSub || T.bookBtn;
 
-  // タイムゾーンラベル
-  const tzLabel = document.querySelector(".tz-label");
-  if (tzLabel) tzLabel.textContent = T.tzLabel;
+  const regBtnSub = document.querySelector("#registerBtn .en-sub");
+  if (regBtnSub) regBtnSub.textContent = T.registerBtnSub || T.registerBtn;
+
+  // タイムゾーンラベルのサブテキスト
   const tzLabelEn = document.querySelector(".tz-label-en");
-  if (tzLabelEn) tzLabelEn.textContent = T.tzLabelSub;
+  if (tzLabelEn) tzLabelEn.textContent = T.tzLabelSub || T.tzLabel;
+
+  // 言語ラベルのサブテキスト
+  const langLabelSub = document.querySelector(".lang-label-sub");
+  if (langLabelSub) langLabelSub.textContent = T.langLabelSub || T.langLabel;
 }
 
 let userId = null;
