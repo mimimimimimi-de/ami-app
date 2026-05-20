@@ -92,23 +92,48 @@
 </div>
 
   <div class="card">
-    <h1>決済が完了しました<br><small style="font-size:0.6em;color:#04a344;">Payment Complete</small></h1>
-    <p>ご予約ありがとうございます。<br><small style="color:#888;font-size:0.9em;">Thank you for your booking.</small></p>
-    <p>予約内容を保存しています。<br><small style="color:#888;font-size:0.9em;">Saving your reservation...</small></p>
+    <h1>決済が完了しました<br><small id="subPaymentComplete" style="font-size:0.6em;color:#04a344;">Payment Complete</small></h1>
+    <p>ご予約ありがとうございます。<br><small id="subThankYou" style="color:#888;font-size:0.9em;">Thank you for your booking.</small></p>
+    <p>予約内容を保存しています。<br><small id="subSaving" style="color:#888;font-size:0.9em;">Saving your reservation...</small></p>
     <div class="status" id="status">保存中...</div>
     <div id="calendarBtnArea" style="display:none;">
       <a id="calendarLink" class="cal-btn" href="#" target="_blank">
-        📅 Googleカレンダーに追加 / Add to Google Calendar
+        📅 Googleカレンダーに追加 / <span id="subCalendar">Add to Google Calendar</span>
       </a>
     </div>
     <button id="closeBtn" onclick="closePage()" style="display:none;margin-top:14px;width:100%;padding:14px;background:#e5e5e5;color:#333;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
-      閉じる / Close
+      閉じる / <span id="subClose">Close</span>
     </button>
   </div>
 
   <script>
     const LIFF_ID = "2009890655-jIJpN1Ya";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+    const SUCCESS_TRANS = {
+      en: { paymentComplete: "Payment Complete", thankYou: "Thank you for your booking.", saving: "Saving your reservation...", saved: "✅ Booking saved. Notification sent via LINE.", calendar: "Add to Google Calendar", close: "Close" },
+      zh: { paymentComplete: "付款完成", thankYou: "感谢您的预约。", saving: "正在保存预约内容...", saved: "✅ 预约已保存。已通过LINE发送通知。", calendar: "添加到Google日历", close: "关闭" },
+      ko: { paymentComplete: "결제 완료", thankYou: "예약해 주셔서 감사합니다.", saving: "예약 내용을 저장하고 있습니다...", saved: "✅ 예약이 저장되었습니다. LINE으로 알림을 보냈습니다.", calendar: "Google 캘린더에 추가", close: "닫기" },
+      th: { paymentComplete: "ชำระเงินเสร็จสมบูรณ์", thankYou: "ขอบคุณสำหรับการจอง", saving: "กำลังบันทึกการจอง...", saved: "✅ บันทึกการจองแล้ว แจ้งเตือนทาง LINE แล้ว", calendar: "เพิ่มใน Google Calendar", close: "ปิด" },
+      fr: { paymentComplete: "Paiement effectué", thankYou: "Merci pour votre réservation.", saving: "Enregistrement de votre réservation...", saved: "✅ Réservation enregistrée. Notification envoyée via LINE.", calendar: "Ajouter à Google Agenda", close: "Fermer" },
+      de: { paymentComplete: "Zahlung abgeschlossen", thankYou: "Danke für Ihre Buchung.", saving: "Buchung wird gespeichert...", saved: "✅ Buchung gespeichert. Benachrichtigung via LINE gesendet.", calendar: "Zu Google Kalender hinzufügen", close: "Schließen" }
+    };
+
+    function applySuccessLang() {
+      const urlLang = new URLSearchParams(window.location.search).get("lang");
+      const lang = urlLang || localStorage.getItem("userLang") || "en";
+      if (lang === "ja") return;
+      const T = SUCCESS_TRANS[lang] || SUCCESS_TRANS["en"];
+      const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      set("subPaymentComplete", T.paymentComplete);
+      set("subThankYou", T.thankYou);
+      set("subSaving", T.saving);
+      set("subCalendar", T.calendar);
+      set("subClose", T.close);
+      window._successT = T;
+    }
+
+    applySuccessLang();
 
     const statusEl = document.getElementById("status");
 
@@ -275,7 +300,7 @@
 
         statusEl.classList.remove("error");
         statusEl.textContent =
-          "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\nBooking saved. Notification sent via LINE.";
+          "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\n" + ((window._successT && window._successT.saved) || "Booking saved. Notification sent via LINE.");
 
         document.getElementById("processingOverlay").classList.remove("show");
 
