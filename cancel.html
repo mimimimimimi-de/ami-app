@@ -311,6 +311,8 @@ const CANCEL_TRANS = {
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
     absenceSent: "Absence notification sent to the teacher.",
+    absenceConfirm: "Send absence notification to the teacher?",
+    confirmCancelMsg: "No cancellation or refund after 12 hours before the lesson.",
     lesson: "Lesson", date: "Date", time: "Time", payment: "Payment", ticket: "Ticket"
   },
   zh: {
@@ -326,6 +328,8 @@ const CANCEL_TRANS = {
     canClose: "可以关闭此页面。", cancelled: "已取消", cannotCancel: "无法取消",
     successMsg: "取消完成。", refundDone: "退款处理完成。",
     absenceSent: "缺席通知已发送给老师。",
+    absenceConfirm: "向老师发送缺席通知？",
+    confirmCancelMsg: "12小时后无法取消或退款。",
     lesson: "课程", date: "日期", time: "时间", payment: "支付", ticket: "次券"
   },
   ko: {
@@ -341,6 +345,8 @@ const CANCEL_TRANS = {
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
     absenceSent: "결석 알림이 선생님께 전송되었습니다.",
+    absenceConfirm: "선생님께 결석 알림을 보내시겠습니까?",
+    confirmCancelMsg: "레슨 시작 12시간 후에는 취소 및 환불이 불가합니다.",
     lesson: "레슨", date: "날짜", time: "시간", payment: "결제", ticket: "횟수권"
   },
   th: {
@@ -356,6 +362,8 @@ const CANCEL_TRANS = {
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
     absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
+    absenceConfirm: "ส่งการแจ้งขาดเรียนให้ครูหรือไม่?",
+    confirmCancelMsg: "หลัง 12 ชั่วโมง ไม่สามารถยกเลิกหรือคืนเงินได้",
     lesson: "บทเรียน", date: "วันที่", time: "เวลา", payment: "การชำระเงิน", ticket: "คูปอง"
   },
   fr: {
@@ -371,6 +379,8 @@ const CANCEL_TRANS = {
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
     absenceSent: "Notification d'absence envoyée au professeur.",
+    absenceConfirm: "Envoyer une notification d'absence au professeur ?",
+    confirmCancelMsg: "Pas d'annulation ou de remboursement après 12h avant la leçon.",
     lesson: "Leçon", date: "Date", time: "Heure", payment: "Paiement", ticket: "Ticket"
   },
   de: {
@@ -386,6 +396,8 @@ const CANCEL_TRANS = {
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
     absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
+    absenceConfirm: "Abwesenheitsbenachrichtigung an den Lehrer senden?",
+    confirmCancelMsg: "Keine Stornierung oder Rückerstattung nach 12h vor der Unterrichtsstunde.",
     lesson: "Unterricht", date: "Datum", time: "Uhrzeit", payment: "Zahlung", ticket: "Ticket"
   }
 };
@@ -427,6 +439,15 @@ function applyCancelLang() {
   const ticketSpans = document.querySelectorAll(".ticket-notice .notice-text span");
   if (ticketSpans[0]) ticketSpans[0].textContent = T.ticketNoCancel;
   if (ticketSpans[1]) ticketSpans[1].textContent = T.ticketNotify;
+
+  // 欠席案内（青い枠）
+  const absenceNoticeTitle = document.querySelector(".absence-notice .notice-title");
+  if (absenceNoticeTitle) {
+    absenceNoticeTitle.innerHTML = "12時間を過ぎて欠席される場合" +
+      `<span style="display:block;font-size:11px;font-weight:400;color:#5a8cc7;">${T.absenceTitle}</span>`;
+  }
+  const absenceNoticeText = document.querySelector(".absence-notice .notice-text span");
+  if (absenceNoticeText) absenceNoticeText.textContent = T.absenceMsg;
 
   // 欠席ボタン
   document.querySelectorAll(".absence .en-sub").forEach(el => el.textContent = T.absenceBtn);
@@ -527,9 +548,11 @@ async function loadCancelData() {
 }
 
 async function executeCancel() {
+  const T = window._cancelT || {};
   const ok = confirm(
     "本当にこのレッスンをキャンセルしますか？\n\n" +
-    "※レッスン開始12時間前を過ぎている場合は、キャンセル・返金はできません。"
+    "※レッスン開始12時間前を過ぎている場合は、キャンセル・返金はできません。" +
+    (T.confirmCancelMsg ? "\n\n" + T.confirmCancelMsg : "")
   );
   if (!ok) return;
 
@@ -567,7 +590,8 @@ async function executeCancel() {
 }
 
 async function sendAbsence() {
-  const ok = confirm("先生に欠席連絡を送りますか？");
+  const T = window._cancelT || {};
+  const ok = confirm("先生に欠席連絡を送りますか？" + (T.absenceConfirm ? "\n" + T.absenceConfirm : ""));
   if (!ok) return;
 
   const btn = document.getElementById("absenceBtn");
@@ -575,14 +599,18 @@ async function sendAbsence() {
   if (btn) btn.disabled = true;
   if (btn2) btn2.disabled = true;
 
+  // 処理中オーバーレイ表示
+  document.getElementById("processingOverlay").classList.add("show");
+
   try {
     await fetch(
       GAS_URL + "?action=sendAbsence&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now()
     );
-    alert("✅ 欠席連絡を先生に送りました。");
+    alert("✅ 欠席連絡を先生に送りました。" + (T.absenceSent ? "\n" + T.absenceSent : ""));
   } catch (e) {
     alert("送信に失敗しました。LINEで先生に直接ご連絡ください。");
   } finally {
+    document.getElementById("processingOverlay").classList.remove("show");
     if (btn) btn.disabled = false;
     if (btn2) btn2.disabled = false;
   }
