@@ -552,6 +552,7 @@ function t(key, lang) {
 function applyTranslations(lang) {
   const l = lang || getLang();
   if (l === "ja") return;
+  alert("applyTranslations呼ばれた: " + l); // デバッグ用
 
   const setSubText = (selector, key) => {
     const el = document.querySelector(selector);
@@ -706,7 +707,6 @@ async function selectLesson(minutes) {
 
     // 登録時の言語設定を適用
     if (data.lang && data.lang !== 'ja') {
-      alert("言語: " + data.lang); // デバッグ用
       applyTranslations(data.lang);
     }
   } catch (e) {
