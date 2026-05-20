@@ -179,22 +179,40 @@ function setStatus(msg, isError = false) {
 }
 
 async function saveTicket() {
-  // localStorageから情報取得
-  const lesson = localStorage.getItem("ticketLesson");
-  const count = localStorage.getItem("ticketCount");
-  const userId = localStorage.getItem("ticketUserId");
-  const name = localStorage.getItem("ticketName");
-
-  // 言語適用
-  const urlLang = new URLSearchParams(window.location.search).get("lang");
+  // 言語適用（URLパラメータから）
+  const params = new URLSearchParams(window.location.search);
+  const urlLang = params.get("lang");
   if (urlLang) localStorage.setItem("userLang", urlLang);
-  applySuccessTicketLang(localStorage.getItem("userLang") || "en");
+  applySuccessTicketLang(urlLang || localStorage.getItem("userLang") || "en");
   const T = window._stT || {};
 
+  const sessionId = params.get("session_id");
+
+  // まずStripeセッションからメタデータを取得
+  let lesson = localStorage.getItem("ticketLesson");
+  let count = localStorage.getItem("ticketCount");
+  let userId = localStorage.getItem("ticketUserId");
+  let name = localStorage.getItem("ticketName");
+  let paymentIntentId = "";
+
+  if (sessionId) {
+    try {
+      const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
+      const data = await res.json();
+      paymentIntentId = data.payment_intent || "";
+      // メタデータからも取得（localStorageが使えない場合の代替）
+      if (data.metadata) {
+        lesson = lesson || data.metadata.lessonType;
+        count = count || data.metadata.count;
+        userId = userId || data.metadata.userId;
+      }
+    } catch(e) { console.error(e); }
+  }
+
   // 表示更新
-  const lessonLabel = lesson === "50" ? "50分レッスン" : "25分レッスン";
+  const lessonLabel = String(lesson) === "50" ? "50分レッスン" : "25分レッスン";
   document.getElementById("infoLesson").textContent = lessonLabel;
-  document.getElementById("infoCount").textContent = count + "回";
+  document.getElementById("infoCount").textContent = (count || "--") + "回";
 
   // 有効期限計算（3ヶ月後）
   const expiry = new Date();
@@ -206,18 +224,6 @@ async function saveTicket() {
     setStatus("購入情報が見つかりませんでした。先生にご連絡ください。", true);
     return;
   }
-
-  try {
-    // StripeセッションからpaymentIntentId取得
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get("session_id");
-    let paymentIntentId = "";
-
-    if (sessionId) {
-      const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
-      const data = await res.json();
-      paymentIntentId = data.payment_intent || "";
-    }
 
     // Vercel経由でGASに保存
     const gasRes = await fetch("/api/save-ticket", {
