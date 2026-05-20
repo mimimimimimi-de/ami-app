@@ -36,6 +36,7 @@ module.exports = async function handler(req, res) {
 
     const lessonLabel = lessonMinutes === 50 ? "50分レッスン" : "25分レッスン";
     const langParam = lang && lang !== "ja" ? `&lang=${encodeURIComponent(lang)}` : "";
+    const infoParams = `&lesson=${encodeURIComponent(String(lessonMinutes))}&count=${encodeURIComponent(String(lessonCount))}&uid=${encodeURIComponent(userId)}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -61,7 +62,7 @@ module.exports = async function handler(req, res) {
         unitPrice: String(unitPrice),
         totalPrice: String(totalPrice)
       },
-      success_url: `https://ami-app-eta.vercel.app/success-ticket.html?session_id={CHECKOUT_SESSION_ID}${langParam}`,
+      success_url: `https://ami-app-eta.vercel.app/success-ticket.html?session_id={CHECKOUT_SESSION_ID}${langParam}${infoParams}`,
       cancel_url: `https://ami-app-eta.vercel.app/ticket.html`
     });
 
