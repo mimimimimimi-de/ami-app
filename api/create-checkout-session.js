@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
   try {
-    const { lessonType, selectedDate, selectedTime, userId } = req.body;
+    const { lessonType, selectedDate, selectedTime, userId, lang } = req.body;
     if (!lessonType || !selectedDate || !selectedTime || !userId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -18,6 +18,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: "Price not found" });
     }
     const unitAmount = Number(priceJson.price) * 100;
+    const langParam = lang && lang !== "ja" ? `&lang=${encodeURIComponent(lang)}` : "";
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -41,7 +42,7 @@ module.exports = async function handler(req, res) {
         price: String(priceJson.price)
       },
       allow_promotion_codes: true,
-      success_url: "https://ami-app-eta.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}",
+      success_url: `https://ami-app-eta.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}${langParam}`,
       cancel_url: "https://ami-app-eta.vercel.app/index.html"
     });
     return res.status(200).json({ url: session.url });
