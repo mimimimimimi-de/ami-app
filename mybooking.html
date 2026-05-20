@@ -626,6 +626,104 @@ body::after {
 const LIFF_ID = "2009890655-O8QZVlRf";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+const MYBOOKING_TRANS = {
+  en: {
+    title: "My Bookings", upcoming: "Upcoming", all: "All", past: "Past",
+    upcomingLabel: "Upcoming", bookBtn: "Book a New Lesson",
+    tickets: "Lesson Tickets", ticketsLeft: "left", ticketExpiry: "Until",
+    meetBtn: "Join Lesson via Google Meet", changeBtn: "Change", cancelBtn: "Cancel",
+    cancelled: "Cancelled", soon: "Soon", confirmed: "Confirmed", done: "Done",
+    lesson: "Lesson", fee: "Fee", date: "Date", time: "Time",
+    noUpcoming: "No upcoming lessons.\nBook a new lesson!", noPast: "No past lessons. (Last 3 months)", noAll: "No lessons found.",
+    failedLoad: "Failed to load. / Retry"
+  },
+  zh: {
+    title: "我的预约", upcoming: "即将到来", all: "全部", past: "过去",
+    upcomingLabel: "即将到来", bookBtn: "预约新课程",
+    tickets: "课程次券", ticketsLeft: "剩余", ticketExpiry: "截止",
+    meetBtn: "通过Google Meet参加课程", changeBtn: "更改", cancelBtn: "取消",
+    cancelled: "已取消", soon: "即将开始", confirmed: "已确认", done: "已完成",
+    lesson: "课程", fee: "费用", date: "日期", time: "时间",
+    noUpcoming: "暂无即将到来的课程。\n立即预约！", noPast: "暂无过去的课程。（最近3个月）", noAll: "未找到课程。",
+    failedLoad: "加载失败。/ 重试"
+  },
+  ko: {
+    title: "내 예약", upcoming: "예정", all: "전체", past: "지난",
+    upcomingLabel: "예정", bookBtn: "새 레슨 예약",
+    tickets: "레슨 횟수권", ticketsLeft: "남음", ticketExpiry: "까지",
+    meetBtn: "Google Meet으로 레슨 참여", changeBtn: "변경", cancelBtn: "취소",
+    cancelled: "취소됨", soon: "곧 시작", confirmed: "예약 확정", done: "완료",
+    lesson: "레슨", fee: "요금", date: "날짜", time: "시간",
+    noUpcoming: "예정된 레슨이 없습니다.\n새 레슨을 예약해보세요!", noPast: "지난 레슨이 없습니다. (최근 3개월)", noAll: "레슨을 찾을 수 없습니다.",
+    failedLoad: "불러오기 실패. / 다시 시도"
+  },
+  th: {
+    title: "การจองของฉัน", upcoming: "กำลังจะมาถึง", all: "ทั้งหมด", past: "ที่ผ่านมา",
+    upcomingLabel: "กำลังจะมาถึง", bookBtn: "จองบทเรียนใหม่",
+    tickets: "คูปองบทเรียน", ticketsLeft: "เหลือ", ticketExpiry: "ถึง",
+    meetBtn: "เข้าร่วมบทเรียนผ่าน Google Meet", changeBtn: "เปลี่ยน", cancelBtn: "ยกเลิก",
+    cancelled: "ยกเลิกแล้ว", soon: "เร็วๆนี้", confirmed: "ยืนยันแล้ว", done: "เสร็จสิ้น",
+    lesson: "บทเรียน", fee: "ค่าเรียน", date: "วันที่", time: "เวลา",
+    noUpcoming: "ไม่มีบทเรียนที่กำลังจะมาถึง\nจองบทเรียนใหม่!", noPast: "ไม่มีบทเรียนที่ผ่านมา (3 เดือนล่าสุด)", noAll: "ไม่พบบทเรียน",
+    failedLoad: "โหลดล้มเหลว / ลองใหม่"
+  },
+  fr: {
+    title: "Mes réservations", upcoming: "À venir", all: "Tout", past: "Passé",
+    upcomingLabel: "À venir", bookBtn: "Réserver une nouvelle leçon",
+    tickets: "Tickets de leçon", ticketsLeft: "restant(s)", ticketExpiry: "Jusqu'au",
+    meetBtn: "Rejoindre la leçon via Google Meet", changeBtn: "Modifier", cancelBtn: "Annuler",
+    cancelled: "Annulé", soon: "Bientôt", confirmed: "Confirmé", done: "Terminé",
+    lesson: "Leçon", fee: "Frais", date: "Date", time: "Heure",
+    noUpcoming: "Aucune leçon à venir.\nRéservez une nouvelle leçon!", noPast: "Aucune leçon passée. (3 derniers mois)", noAll: "Aucune leçon trouvée.",
+    failedLoad: "Échec du chargement. / Réessayer"
+  },
+  de: {
+    title: "Meine Buchungen", upcoming: "Bevorstehend", all: "Alle", past: "Vergangen",
+    upcomingLabel: "Bevorstehend", bookBtn: "Neue Unterrichtsstunde buchen",
+    tickets: "Unterrichts-Tickets", ticketsLeft: "verbleibend", ticketExpiry: "Bis",
+    meetBtn: "Unterricht über Google Meet beitreten", changeBtn: "Ändern", cancelBtn: "Stornieren",
+    cancelled: "Storniert", soon: "Bald", confirmed: "Bestätigt", done: "Abgeschlossen",
+    lesson: "Unterricht", fee: "Gebühr", date: "Datum", time: "Uhrzeit",
+    noUpcoming: "Keine bevorstehenden Unterrichtsstunden.\nJetzt buchen!", noPast: "Keine vergangenen Unterrichtsstunden. (Letzte 3 Monate)", noAll: "Keine Unterrichtsstunden gefunden.",
+    failedLoad: "Laden fehlgeschlagen. / Erneut versuchen"
+  }
+};
+
+function getMyBookingLang() {
+  return localStorage.getItem("userLang") || "en";
+}
+
+function applyMyBookingLang() {
+  const l = getMyBookingLang();
+  if (l === "ja") return;
+  const T = MYBOOKING_TRANS[l] || MYBOOKING_TRANS["en"];
+  window._mybookingT = T;
+
+  // タイトル
+  const titleSpan = document.querySelector("h1 span");
+  if (titleSpan) titleSpan.textContent = T.title;
+
+  // タブ
+  const tabs = document.querySelectorAll(".tab");
+  const tabKeys = ["upcoming", "all", "past"];
+  tabs.forEach((tab, i) => {
+    const span = tab.querySelector("span");
+    if (span && tabKeys[i]) span.textContent = T[tabKeys[i]] || "";
+  });
+
+  // 今後のレッスン数表示
+  const upcomingLabel = document.querySelector(".stat-card .label span");
+  if (upcomingLabel) upcomingLabel.textContent = T.upcomingLabel;
+
+  // 予約ボタン
+  const bookBtn = document.querySelector(".book-link span");
+  if (bookBtn) bookBtn.textContent = T.bookBtn;
+
+  // 回数券タイトル
+  const ticketTitle = document.querySelector("#ticketSection > div");
+  if (ticketTitle) ticketTitle.textContent = "🎟️ 回数券 / " + T.tickets;
+}
+
 let allReservations = [];
 let currentTab = "upcoming";
 let userId = null;
@@ -701,10 +799,16 @@ function renderList() {
   });
 
   if (!filtered.length) {
+    const T = window._mybookingT || {};
+    const emptyMsg = currentTab === "upcoming"
+      ? (T.noUpcoming || "今後の予約はありません。\n新しいレッスンを予約しましょう！")
+      : currentTab === "past"
+      ? (T.noPast || "該当する予約がありません。\n(直近3ヶ月の履歴のみ表示)")
+      : (T.noAll || "該当する予約がありません。");
     list.innerHTML = `
       <div class="empty">
         <div class="empty-icon">${currentTab === "upcoming" ? "📭" : "📋"}</div>
-        <p>${currentTab === "upcoming" ? "今後の予約はありません。\n新しいレッスンを予約しましょう！" : "該当する予約がありません。\n(直近3ヶ月の履歴のみ表示)"}</p>
+        <p>${emptyMsg}</p>
       </div>`;
     return;
   }
@@ -724,15 +828,16 @@ function renderCard(r, now, index) {
   const canModify = isUpcoming && hoursUntil > 12;
 
   // ステータスバッジ
+  const T = window._mybookingT || {};
   let statusClass, statusText;
   if (isCancelled) {
-    statusClass = "cancelled"; statusText = "キャンセル済";
+    statusClass = "cancelled"; statusText = "キャンセル済 / " + (T.cancelled || "Cancelled");
   } else if (isUpcoming && hoursUntil <= 24) {
-    statusClass = "upcoming"; statusText = "🔔 まもなく";
+    statusClass = "upcoming"; statusText = "🔔 まもなく / " + (T.soon || "Soon");
   } else if (isUpcoming) {
-    statusClass = "confirmed"; statusText = "予約確定";
+    statusClass = "confirmed"; statusText = "予約確定 / " + (T.confirmed || "Confirmed");
   } else {
-    statusClass = "past"; statusText = "完了";
+    statusClass = "past"; statusText = "完了 / " + (T.done || "Done");
   }
 
   const cardClass = isCancelled ? "cancelled" : isUpcoming ? "upcoming" : "past";
@@ -744,13 +849,13 @@ function renderCard(r, now, index) {
 
   const meetSection = (isUpcoming && r.meetUrl) ? `
     <a class="meet-btn" href="${escHtml(r.meetUrl)}" target="_blank">
-      📹 Google Meet でレッスンに参加
+      📹 Google Meet でレッスンに参加 / ${T.meetBtn || "Join via Google Meet"}
     </a>` : "";
 
   const footerSection = canModify ? `
     <div class="card-footer">
-      <a class="action-btn change" href="${changeUrl}">📝 変更</a>
-      <a class="action-btn cancel" href="${cancelUrl}">🗑 キャンセル</a>
+      <a class="action-btn change" href="${changeUrl}">📝 変更 / ${T.changeBtn || "Change"}</a>
+      <a class="action-btn cancel" href="${cancelUrl}">🗑 キャンセル / ${T.cancelBtn || "Cancel"}</a>
     </div>` : "";
 
   const price = String(r.price || "").replace(/\$/g, "");
@@ -769,7 +874,7 @@ function renderCard(r, now, index) {
         </div>
         ${getLocalTime(r.date, r.time) ? `<div style="font-size:12px;color:#aaa;margin-top:2px;padding-left:2px;">🌍 ${getLocalTime(r.date, r.time)} (${userTzName || ''})</div>` : ''}
         <div class="detail-row">
-          <span>レッスン料金</span>
+          <span>レッスン料金 / ${T.fee || "Fee"}</span>
           <span class="price-text">$${escHtml(price)}</span>
         </div>
         ${meetSection}
@@ -803,9 +908,10 @@ function renderTickets(tickets) {
   }
 
   const html = validTickets.map(t => {
+    const T = window._mybookingT || {};
     const isLow = t.remaining <= 2;
     const expiryParts = t.expiry.split("-");
-    const expiryStr = `${Number(expiryParts[1])}/${Number(expiryParts[2])}まで`;
+    const expiryStr = `${Number(expiryParts[1])}/${Number(expiryParts[2])}まで / ${T.ticketExpiry || "Until"} ${Number(expiryParts[1])}/${Number(expiryParts[2])}`;
 
     return `
       <div style="
@@ -826,7 +932,7 @@ function renderTickets(tickets) {
           <div style="font-size:28px;font-weight:700;font-family:'DM Sans',sans-serif;color:${isLow ? 'var(--yellow)' : 'var(--green)'};line-height:1;">
             ${t.remaining}
           </div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px;">回残り</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">回残り / ${T.ticketsLeft || "left"}</div>
         </div>
       </div>`;
   }).join("");
@@ -866,6 +972,9 @@ async function init() {
 
     const profile = await liff.getProfile();
     userId = profile.userId;
+
+    // 言語適用
+    applyMyBookingLang();
 
     // プロフィール表示
     const profileBar = document.getElementById("profileBar");
