@@ -1012,6 +1012,21 @@ async function init() {
 
     allReservations = data.reservations || [];
 
+    // GASからタイムゾーンを取得して設定
+    if (data.timezone && data.timezone !== '' && data.timezone !== 'Asia/Tokyo') {
+      userTimezone = data.timezone;
+      try {
+        const now2 = new Date();
+        userTzName = now2.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    }
+
+    // GASから言語を取得して設定
+    if (data.lang && data.lang !== 'ja') {
+      localStorage.setItem("userLang", data.lang);
+      applyMyBookingLang();
+    }
+
     updateSummary(allReservations);
 
     // 回数券表示
