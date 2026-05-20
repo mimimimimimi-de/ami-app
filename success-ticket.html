@@ -209,34 +209,26 @@ function setStatus(msg, isError = false) {
 }
 
 async function saveTicket() {
-  // 言語適用（URLパラメータから）
   const params = new URLSearchParams(window.location.search);
+
+  // 言語適用（URLパラメータ優先）
   const urlLang = params.get("lang");
   if (urlLang) localStorage.setItem("userLang", urlLang);
   applySuccessTicketLang(urlLang || localStorage.getItem("userLang") || "en");
   const T = window._stT || {};
 
+  // URLパラメータから取得（localStorage優先）
+  const lesson = localStorage.getItem("ticketLesson") || params.get("lesson");
+  const count = localStorage.getItem("ticketCount") || params.get("count");
+  const userId = localStorage.getItem("ticketUserId") || params.get("uid");
+  const name = localStorage.getItem("ticketName") || "";
   const sessionId = params.get("session_id");
 
-  // まずStripeセッションからメタデータを取得
-  let lesson = localStorage.getItem("ticketLesson");
-  let count = localStorage.getItem("ticketCount");
-  let userId = localStorage.getItem("ticketUserId");
-  let name = localStorage.getItem("ticketName");
-  let paymentIntentId = "";
-
-  if (sessionId) {
-    try {
-      const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
-      const data = await res.json();
-      paymentIntentId = data.payment_intent || "";
-      if (data.metadata) {
-        lesson = lesson || data.metadata.lessonType;
-        count = count || data.metadata.count;
-        userId = userId || data.metadata.userId;
-      }
-    } catch(e) { console.error(e); }
-  }
+  // オーバーレイ表示
+  const overlay = document.getElementById("processingOverlay");
+  const overlayText = document.getElementById("overlayText");
+  if (overlayText) overlayText.innerHTML = `保存中...<br><span style="font-size:13px;color:#888;">${T.saving || "Saving..."}</span>`;
+  if (overlay) overlay.classList.add("show");
 
   // 表示更新
   const lessonLabel = String(lesson) === "50" ? "50分レッスン" : "25分レッスン";
@@ -250,18 +242,22 @@ async function saveTicket() {
     `${expiry.getFullYear()}/${expiry.getMonth()+1}/${expiry.getDate()}まで`;
 
   if (!userId || !lesson || !count) {
+    if (overlay) overlay.classList.remove("show");
     setStatus("購入情報が見つかりませんでした。先生にご連絡ください。", true);
     return;
   }
 
-  // オーバーレイ表示
-  const T = window._stT || {};
-  const overlay = document.getElementById("processingOverlay");
-  const overlayText = document.getElementById("overlayText");
-  if (overlayText) overlayText.innerHTML = `保存中...<br><span style="font-size:13px;color:#888;">${T.saving || "Saving..."}</span>`;
-  if (overlay) overlay.classList.add("show");
-
   try {
+    // StripeセッションからpaymentIntentId取得
+    let paymentIntentId = "";
+    if (sessionId) {
+      try {
+        const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
+        const data = await res.json();
+        paymentIntentId = data.payment_intent || "";
+      } catch(e) { console.error(e); }
+    }
+
     // Vercel経由でGASに保存
     const gasRes = await fetch("/api/save-ticket", {
       method: "POST",
@@ -278,6 +274,7 @@ async function saveTicket() {
     const gasData = await gasRes.json();
 
     if (!gasData.ok) {
+      if (overlay) overlay.classList.remove("show");
       setStatus("保存に失敗しました：" + (gasData.message || "不明なエラー"), true);
       return;
     }
@@ -288,8 +285,8 @@ async function saveTicket() {
     localStorage.removeItem("ticketUserId");
     localStorage.removeItem("ticketName");
 
-    setStatus("✅ 回数券を保存しました！\n" + (T.saved || "Purchase saved!"));
     if (overlay) overlay.classList.remove("show");
+    setStatus("✅ 回数券を保存しました！\n" + (T.saved || "Purchase saved!"));
     document.getElementById("bookBtn").style.display = "block";
     document.getElementById("myBookingBtn").style.display = "block";
 
