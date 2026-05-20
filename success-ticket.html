@@ -117,23 +117,23 @@ p {
 <body>
 <div class="card">
   <div class="icon">🎉</div>
-  <h1>購入完了！</h1>
+  <h1>購入完了！<span id="subTitle" style="display:block;font-size:0.55em;font-weight:400;color:#06C755;margin-top:4px;"></span></h1>
 
   <div class="ticket-info" id="ticketInfo">
-    <div class="row"><span class="key">レッスン</span><span class="val" id="infoLesson">--</span></div>
-    <div class="row"><span class="key">回数</span><span class="val" id="infoCount">--</span></div>
-    <div class="row"><span class="key">有効期限</span><span class="val" id="infoExpiry">3ヶ月</span></div>
+    <div class="row"><span class="key">レッスン<span id="subLesson" style="display:block;font-size:10px;font-weight:400;color:#aaa;"></span></span><span class="val" id="infoLesson">--</span></div>
+    <div class="row"><span class="key">回数<span id="subCount" style="display:block;font-size:10px;font-weight:400;color:#aaa;"></span></span><span class="val" id="infoCount">--</span></div>
+    <div class="row"><span class="key">有効期限<span id="subExpiry" style="display:block;font-size:10px;font-weight:400;color:#aaa;"></span></span><span class="val" id="infoExpiry">3ヶ月</span></div>
   </div>
 
-  <p>回数券の購入ありがとうございます！<br>予約時に「回数券を使う」を選んでご利用ください。</p>
+  <p>回数券の購入ありがとうございます！<br>予約時に「回数券を使う」を選んでご利用ください。<br><span id="subThanks" style="font-size:12px;color:#aaa;"></span></p>
 
   <div class="status" id="status">予約情報を保存しています...</div>
 
   <a class="btn btn-green" href="https://ami-app-eta.vercel.app/" id="bookBtn" style="display:none">
-    📅 さっそく予約する
+    📅 さっそく予約する<span id="subBookBtn" style="display:block;font-size:11px;opacity:0.85;"></span>
   </a>
   <a class="btn btn-gray" href="https://liff.line.me/2009890655-O8QZVlRf" id="myBookingBtn" style="display:none">
-    マイ予約を確認する
+    マイ予約を確認する<span id="subMyBooking" style="display:block;font-size:11px;opacity:0.85;"></span>
   </a>
 </div>
 
@@ -158,18 +158,13 @@ function applySuccessTicketLang(lang) {
 
   const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
-  document.querySelector("h1").textContent = T.title;
-  document.querySelector(".row:nth-child(1) .key").textContent = T.lesson;
-  document.querySelector(".row:nth-child(2) .key").textContent = T.count;
-  document.querySelector(".row:nth-child(3) .key").textContent = T.expiry;
-  set("infoExpiry", T.months);
-  document.querySelector("p").innerHTML = T.thanks.replace("\n", "<br>");
-  setStatus(T.saving);
-
-  const bookBtn = document.getElementById("bookBtn");
-  if (bookBtn) bookBtn.textContent = T.bookBtn;
-  const myBookingBtn = document.getElementById("myBookingBtn");
-  if (myBookingBtn) myBookingBtn.textContent = T.myBookingBtn;
+  set("subTitle", T.title);
+  set("subLesson", T.lesson);
+  set("subCount", T.count);
+  set("subExpiry", T.expiry);
+  set("subThanks", T.thanks.replace("\n", " "));
+  set("subBookBtn", T.bookBtn);
+  set("subMyBooking", T.myBookingBtn);
 }
 
 function setStatus(msg, isError = false) {
