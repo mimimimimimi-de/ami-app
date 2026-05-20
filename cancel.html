@@ -590,6 +590,8 @@ async function executeCancel() {
     const message = await res.text();
 
     const isSuccess = message.includes("キャンセルしました") || message.includes("返金処理も完了しました");
+    const isPastLimit = message.includes("12時間前を過ぎています") || message.includes("キャンセルできません");
+    const T = window._cancelT || {};
 
     if (isSuccess) {
       const T = window._cancelT || {};
@@ -600,7 +602,10 @@ async function executeCancel() {
       const successMsg = `キャンセルが完了しました。\n${T.successMsg || "Cancellation complete."}\n\n【日時 / ${T.time || "Time"}】\n${timeDisplay}\n\n返金処理も完了しました。\n${T.refundDone || "Refund has been processed."}`;
       showResult(true, successMsg);
     } else {
-      showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。" + (T.absenceGuide ? "\n" + T.absenceGuide : ""));
+      const failMsg = isPastLimit
+        ? "この時間はキャンセルできません。\nレッスン開始12時間前を過ぎています。" + (T.pastDeadlineMsg ? "\n\n" + T.pastDeadlineMsg : "")
+        : message;
+      showResult(false, failMsg + "\n\n欠席を希望する場合は下のボタンから連絡できます。" + (T.absenceGuide ? "\n" + T.absenceGuide : ""));
       document.getElementById("absenceBtn2").style.display = "block";
     }
   } catch (e) {
