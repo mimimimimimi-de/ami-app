@@ -483,15 +483,21 @@ function applyCancelLang() {
   setSubText("#resultCard .small span", T.canClose);
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  applyCancelLang();
-});
-
 let reservationId = "";
 let reservationData = null;
 let liffReady = false;
 let userTimezone = null;
 let userTzName = null;
+
+window.addEventListener("DOMContentLoaded", () => {
+  applyCancelLang();
+  document.getElementById("cancelBtn").addEventListener("click", executeCancel);
+  document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
+  document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
+  detectTimezone();
+  initLiffSilent();
+  loadCancelData();
+});
 
 // タイムゾーン自動取得
 function detectTimezone() {
@@ -571,23 +577,36 @@ async function loadCancelData() {
 
 async function executeCancel() {
   const T = window._cancelT || {};
-  const ok = confirm(
-    "本当にこのレッスンをキャンセルしますか？\n\n" +
-    "※レッスン開始12時間前を過ぎている場合は、キャンセル・返金はできません。" +
-    (T.confirmCancelMsg ? "\n\n" + T.confirmCancelMsg : "")
-  );
-  if (!ok) return;
 
-  const btn = document.getElementById("cancelBtn");
-  btn.disabled = true;
+  // confirmの代わりにカスタム確認ダイアログ
+  const existing = document.getElementById("confirmModal");
+  if (existing) existing.remove();
 
-  // 処理中オーバーレイ表示
-  document.getElementById("processingOverlay").classList.add("show");
+  const modal = document.createElement("div");
+  modal.id = "confirmModal";
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;">
+      <p style="font-size:16px;font-weight:700;margin-bottom:8px;">⚠️ 本当にキャンセルしますか？</p>
+      <p style="font-size:13px;color:#666;margin-bottom:20px;">※レッスン開始12時間前を過ぎている場合は、キャンセル・返金はできません。<br><span style="font-size:12px;color:#aaa;">${T.confirmCancelMsg || ""}</span></p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">戻る</button>
+        <button id="confirmCancelOkBtn" style="flex:1;padding:14px;background:#d93025;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">キャンセルする</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
 
-  try {
-    const url = GAS_URL + "?action=cancelExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now();
-    const res = await fetch(url);
-    const message = await res.text();
+  document.getElementById("confirmCancelOkBtn").addEventListener("click", async function() {
+    modal.remove();
+
+    const btn = document.getElementById("cancelBtn");
+    btn.disabled = true;
+    document.getElementById("processingOverlay").classList.add("show");
+
+    try {
+      const url = GAS_URL + "?action=cancelExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now();
+      const res = await fetch(url);
+      const message = await res.text();
 
     const isSuccess = message.includes("キャンセルしました") || message.includes("返金処理も完了しました");
     const isPastLimit = message.includes("12時間前を過ぎています") || message.includes("キャンセルできません");
@@ -613,23 +632,45 @@ async function executeCancel() {
     showResult(false, "キャンセル処理に失敗しました。\n先生にご連絡ください。");
   } finally {
     document.getElementById("processingOverlay").classList.remove("show");
+    const btn2 = document.getElementById("cancelBtn");
+    if (btn2) btn2.disabled = false;
   }
+  }); // confirmModal OK button
 }
 
 async function sendAbsence() {
   const T = window._cancelT || {};
-  const ok = confirm("先生に欠席連絡を送りますか？" + (T.absenceConfirm ? "\n" + T.absenceConfirm : ""));
-  if (!ok) return;
 
-  const btn = document.getElementById("absenceBtn");
-  const btn2 = document.getElementById("absenceBtn2");
-  if (btn) btn.disabled = true;
-  if (btn2) btn2.disabled = true;
+  // confirmの代わりにカスタム確認ダイアログ
+  const existing = document.getElementById("absenceModal");
+  if (existing) existing.remove();
 
-  // 処理中オーバーレイ表示（欠席用テキスト）
-  const overlayText = document.getElementById("overlayText");
-  if (overlayText) overlayText.innerHTML = "送信中...<br><span style='font-size:13px;color:#888;'>" + (T.sending || "Sending...") + "</span>";
-  document.getElementById("processingOverlay").classList.add("show");
+  const modal = document.createElement("div");
+  modal.id = "absenceModal";
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;">
+      <p style="font-size:16px;font-weight:700;margin-bottom:8px;">📨 先生に欠席連絡を送りますか？</p>
+      <p style="font-size:13px;color:#aaa;margin-bottom:20px;">${T.absenceConfirm || "Send absence notification to the teacher?"}</p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('absenceModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">戻る</button>
+        <button id="absenceOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">送る</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById("absenceOkBtn").addEventListener("click", async function() {
+    modal.remove();
+
+    const btn = document.getElementById("absenceBtn");
+    const btn2 = document.getElementById("absenceBtn2");
+    if (btn) btn.disabled = true;
+    if (btn2) btn2.disabled = true;
+
+    // 処理中オーバーレイ表示（欠席用テキスト）
+    const overlayText = document.getElementById("overlayText");
+    if (overlayText) overlayText.innerHTML = "送信中...<br><span style='font-size:13px;color:#888;'>" + (T.sending || "Sending...") + "</span>";
+    document.getElementById("processingOverlay").classList.add("show");
 
   try {
     await fetch(
@@ -643,6 +684,7 @@ async function sendAbsence() {
     if (btn) btn.disabled = false;
     if (btn2) btn2.disabled = false;
   }
+  }); // absenceModal OK button
 }
 
 function showResult(isSuccess, message) {
@@ -666,14 +708,6 @@ function showResult(isSuccess, message) {
 
   msg.textContent = message || "";
 }
-
-document.getElementById("cancelBtn").addEventListener("click", executeCancel);
-document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
-document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
-
-detectTimezone();
-initLiffSilent();
-loadCancelData();
 </script>
 </body>
 </html>
