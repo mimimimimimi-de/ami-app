@@ -401,6 +401,7 @@ const TRANSLATIONS = {
     paymentMethod: "Payment Method",
     ticketLabel: "Ticket", ticketLeft: "left",
     payNow: "Pay now", payByCard: "Pay by card for this session only",
+    bookWithTicket: "Book with Ticket",
     proceed: "Proceed to Payment",
     processing: "Processing..."
   },
@@ -425,6 +426,7 @@ const TRANSLATIONS = {
     paymentMethod: "支付方式",
     ticketLabel: "次券", ticketLeft: "剩余",
     payNow: "立即付款", payByCard: "仅本次用信用卡支付",
+    bookWithTicket: "用次券预约",
     proceed: "前往付款",
     processing: "处理中..."
   },
@@ -449,6 +451,7 @@ const TRANSLATIONS = {
     paymentMethod: "결제 방법",
     ticketLabel: "횟수권", ticketLeft: "남음",
     payNow: "즉시 결제", payByCard: "이번 회만 카드로 결제",
+    bookWithTicket: "횟수권으로 예약",
     proceed: "결제 진행",
     processing: "처리 중..."
   },
@@ -473,6 +476,7 @@ const TRANSLATIONS = {
     paymentMethod: "วิธีการชำระเงิน",
     ticketLabel: "คูปอง", ticketLeft: "เหลือ",
     payNow: "ชำระเงินทันที", payByCard: "ชำระด้วยบัตรครั้งนี้เท่านั้น",
+    bookWithTicket: "จองด้วยคูปอง",
     proceed: "ดำเนินการชำระเงิน",
     processing: "กำลังดำเนินการ..."
   },
@@ -497,6 +501,7 @@ const TRANSLATIONS = {
     paymentMethod: "Mode de paiement",
     ticketLabel: "Ticket", ticketLeft: "restant(s)",
     payNow: "Payer maintenant", payByCard: "Payer par carte pour cette session",
+    bookWithTicket: "Réserver avec ticket",
     proceed: "Procéder au paiement",
     processing: "Traitement en cours..."
   },
@@ -521,6 +526,7 @@ const TRANSLATIONS = {
     paymentMethod: "Zahlungsmethode",
     ticketLabel: "Ticket", ticketLeft: "verbleibend",
     payNow: "Jetzt bezahlen", payByCard: "Nur diese Sitzung per Karte bezahlen",
+    bookWithTicket: "Mit Ticket buchen",
     proceed: "Zur Zahlung",
     processing: "Wird verarbeitet..."
   }
@@ -1034,7 +1040,7 @@ async function loadPaymentOptions(lessonLabel) {
 
     optionsEl.innerHTML = html;
     selectedPayment = validTickets[0].ticketId;
-    checkoutBtn.innerHTML = `回数券で予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Book with Ticket</span>`;
+    checkoutBtn.innerHTML = `回数券で予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookWithTicket || "Book with Ticket"}</span>`;
 
   } catch (e) { console.error(e); }
 }
@@ -1044,10 +1050,11 @@ function selectPayment(value, el) {
   document.querySelectorAll(".payment-option").forEach(o => o.classList.remove("selected"));
   el.classList.add("selected");
   const checkoutBtn = document.getElementById("checkoutBtn");
+  const T = window._currentT || {};
   if (value === "stripe") {
-    checkoutBtn.innerHTML = '決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">Proceed to Payment</span>';
+    checkoutBtn.innerHTML = `決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.proceed || "Proceed to Payment"}</span>`;
   } else {
-    checkoutBtn.innerHTML = '回数券で予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Book with Ticket</span>';
+    checkoutBtn.innerHTML = `回数券で予約する<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookWithTicket || "Book with Ticket"}</span>`;
   }
 }
 
