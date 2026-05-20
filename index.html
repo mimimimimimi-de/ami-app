@@ -543,19 +543,19 @@ function getLang() {
   return localStorage.getItem("userLang") || "en";
 }
 
-function t(key) {
-  const lang = getLang();
-  if (lang === "ja") return "";
-  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS["en"][key] || "";
+function t(key, lang) {
+  const l = lang || getLang();
+  if (l === "ja") return "";
+  return (TRANSLATIONS[l] && TRANSLATIONS[l][key]) || TRANSLATIONS["en"][key] || "";
 }
 
-function applyTranslations() {
-  const lang = getLang();
-  if (lang === "ja") return;
+function applyTranslations(lang) {
+  const l = lang || getLang();
+  if (l === "ja") return;
 
   const setSubText = (selector, key) => {
     const el = document.querySelector(selector);
-    if (el) el.textContent = t(key);
+    if (el) el.textContent = t(key, l);
   };
 
   setSubText("#top .en-title", "selectLesson");
@@ -565,13 +565,13 @@ function applyTranslations() {
   setSubText(".scroll-hint", "scrollHint");
 
   const btn25 = document.getElementById("btn25");
-  if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = t("btn25"); }
+  if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = t("btn25", l); }
   const btn50 = document.getElementById("btn50");
-  if (btn50) { const sub = btn50.querySelector(".en-sub"); if (sub) sub.textContent = t("btn50"); }
+  if (btn50) { const sub = btn50.querySelector(".en-sub"); if (sub) sub.textContent = t("btn50", l); }
   const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = t("proceed"); }
+  if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = t("proceed", l); }
   const procText = document.getElementById("processingText");
-  if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = t("processing"); }
+  if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = t("processing", l); }
 }
 
 let userId = null;
@@ -706,8 +706,7 @@ async function selectLesson(minutes) {
 
     // 登録時の言語設定を適用
     if (data.lang && data.lang !== 'ja') {
-      localStorage.setItem("userLang", data.lang);
-      applyTranslations();
+      applyTranslations(data.lang);
     }
   } catch (e) {
     console.error(e);
