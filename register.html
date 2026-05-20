@@ -146,6 +146,24 @@ body {
 .step-text .title { font-size: 14px; font-weight: 700; color: var(--text); }
 .step-text .desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.6; }
 
+.lang-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  color: var(--text2);
+}
+.lang-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
 /* タイムゾーン選択 */
 .tz-section {
   margin-bottom: 20px;
@@ -418,6 +436,21 @@ body {
         </div>
       </div>
 
+      <!-- 言語選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="tz-label">🌐 言語を選んでください</div>
+        <div class="tz-label-en">Select your language</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
+          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
+          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
+          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
+          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
+          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
+        </div>
+      </div>
+
       <!-- タイムゾーン選択 -->
       <div class="tz-section">
         <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
@@ -480,6 +513,15 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1gr
 
 let userId = null;
 let displayName = null;
+let selectedLang = "ja";
+
+function selectLang(lang, btn) {
+  selectedLang = lang;
+  document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  localStorage.setItem("userLang", lang);
+}
+
 let selectedTimezone = "";
 
 // タイムゾーン一覧
@@ -606,6 +648,7 @@ async function register() {
       "&userId=" + encodeURIComponent(userId) +
       "&name=" + encodeURIComponent(displayName) +
       "&timezone=" + encodeURIComponent(selectedTimezone) +
+      "&lang=" + encodeURIComponent(selectedLang) +
       "&t=" + Date.now()
     );
 
