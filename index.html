@@ -551,8 +551,8 @@ function t(key, lang) {
 
 function applyTranslations(lang) {
   const l = lang || getLang();
+  alert("applyTranslations: l=" + l); // デバッグ用
   if (l === "ja") return;
-  alert("applyTranslations呼ばれた: " + l); // デバッグ用
 
   const setSubText = (selector, key) => {
     const el = document.querySelector(selector);
