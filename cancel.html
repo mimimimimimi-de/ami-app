@@ -297,6 +297,153 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 const LIFF_ID = "2009890655-jIJpN1Ya";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+const CANCEL_TRANS = {
+  en: {
+    title: "Cancel Reservation", leadText: "Are you sure you want to cancel this lesson? Please review the details below.",
+    refundPolicy: "Refund Policy", refundLine1: "Up to 12 hours before the lesson: Cancellation and refund available.",
+    refundLine2: "Payment processing fees are non-refundable.", refundLine3: "After 12 hours before the lesson: No cancellation or refund.",
+    confirmCancel: "Confirm Cancellation", ticketTitle: "Ticket Reservation",
+    ticketNoCancel: "Ticket bookings cannot be cancelled or refunded.",
+    ticketNotify: "If you cannot attend, please notify the teacher directly via LINE in advance.",
+    pastDeadline: "Past the cancellation deadline", pastDeadlineMsg: "If you cannot attend, please contact the teacher directly via LINE as soon as possible.",
+    absenceTitle: "If past the cancellation deadline", absenceMsg: "Please notify the teacher directly via LINE as soon as possible.",
+    absenceBtn: "Notify Teacher of Absence", close: "Close",
+    canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
+    successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
+    absenceSent: "Absence notification sent to the teacher.",
+    lesson: "Lesson", date: "Date", time: "Time", payment: "Payment", ticket: "Ticket"
+  },
+  zh: {
+    title: "取消预约", leadText: "确定要取消此课程吗？请确认以下内容。",
+    refundPolicy: "退款政策", refundLine1: "课程开始12小时前：可取消和退款。",
+    refundLine2: "手续费不退款。", refundLine3: "12小时后：不可取消和退款。",
+    confirmCancel: "确认取消", ticketTitle: "次券预约",
+    ticketNoCancel: "次券预约不可取消或退款。",
+    ticketNotify: "如无法出席，请提前通过LINE直接通知老师。",
+    pastDeadline: "已超过取消期限", pastDeadlineMsg: "如无法出席，请尽快通过LINE直接联系老师。",
+    absenceTitle: "超过取消期限后缺席", absenceMsg: "请尽快通过LINE直接联系老师。",
+    absenceBtn: "通知老师缺席", close: "关闭",
+    canClose: "可以关闭此页面。", cancelled: "已取消", cannotCancel: "无法取消",
+    successMsg: "取消完成。", refundDone: "退款处理完成。",
+    absenceSent: "缺席通知已发送给老师。",
+    lesson: "课程", date: "日期", time: "时间", payment: "支付", ticket: "次券"
+  },
+  ko: {
+    title: "예약 취소", leadText: "이 레슨을 취소하시겠습니까? 아래 내용을 확인해주세요.",
+    refundPolicy: "환불 정책", refundLine1: "레슨 시작 12시간 전까지: 취소 및 환불 가능.",
+    refundLine2: "결제 수수료는 환불되지 않습니다.", refundLine3: "12시간 후: 취소 및 환불 불가.",
+    confirmCancel: "취소 확정", ticketTitle: "횟수권 예약",
+    ticketNoCancel: "횟수권 예약은 취소 및 환불이 불가합니다.",
+    ticketNotify: "참석하지 못하는 경우 미리 LINE으로 선생님께 직접 연락해주세요.",
+    pastDeadline: "취소 기한이 지났습니다", pastDeadlineMsg: "참석하지 못하는 경우 가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
+    absenceTitle: "취소 기한 이후 결석하는 경우", absenceMsg: "가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
+    absenceBtn: "선생님께 결석 연락하기", close: "닫기",
+    canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
+    successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
+    absenceSent: "결석 알림이 선생님께 전송되었습니다.",
+    lesson: "레슨", date: "날짜", time: "시간", payment: "결제", ticket: "횟수권"
+  },
+  th: {
+    title: "ยกเลิกการจอง", leadText: "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกบทเรียนนี้? กรุณาตรวจสอบรายละเอียดด้านล่าง",
+    refundPolicy: "นโยบายการคืนเงิน", refundLine1: "ก่อน 12 ชั่วโมง: สามารถยกเลิกและคืนเงินได้",
+    refundLine2: "ค่าธรรมเนียมการชำระเงินไม่สามารถคืนได้", refundLine3: "หลัง 12 ชั่วโมง: ไม่สามารถยกเลิกหรือคืนเงินได้",
+    confirmCancel: "ยืนยันการยกเลิก", ticketTitle: "การจองด้วยคูปอง",
+    ticketNoCancel: "การจองด้วยคูปองไม่สามารถยกเลิกหรือคืนเงินได้",
+    ticketNotify: "หากไม่สามารถเข้าร่วมได้ กรุณาแจ้งครูโดยตรงผ่าน LINE ล่วงหน้า",
+    pastDeadline: "เกินกำหนดการยกเลิก", pastDeadlineMsg: "หากไม่สามารถเข้าร่วมได้ กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
+    absenceTitle: "หากขาดเรียนหลังเกินกำหนด", absenceMsg: "กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
+    absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด",
+    canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
+    successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
+    absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
+    lesson: "บทเรียน", date: "วันที่", time: "เวลา", payment: "การชำระเงิน", ticket: "คูปอง"
+  },
+  fr: {
+    title: "Annuler la réservation", leadText: "Êtes-vous sûr de vouloir annuler cette leçon ? Veuillez vérifier les détails ci-dessous.",
+    refundPolicy: "Politique de remboursement", refundLine1: "Jusqu'à 12h avant la leçon : annulation et remboursement disponibles.",
+    refundLine2: "Les frais de traitement ne sont pas remboursables.", refundLine3: "Après 12h avant la leçon : aucune annulation ou remboursement.",
+    confirmCancel: "Confirmer l'annulation", ticketTitle: "Réservation avec ticket",
+    ticketNoCancel: "Les réservations avec ticket ne peuvent pas être annulées ou remboursées.",
+    ticketNotify: "Si vous ne pouvez pas assister, veuillez notifier le professeur directement via LINE à l'avance.",
+    pastDeadline: "Délai d'annulation dépassé", pastDeadlineMsg: "Si vous ne pouvez pas assister, veuillez contacter le professeur directement via LINE dès que possible.",
+    absenceTitle: "Si absence après le délai", absenceMsg: "Veuillez notifier le professeur directement via LINE dès que possible.",
+    absenceBtn: "Notifier le professeur de l'absence", close: "Fermer",
+    canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
+    successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
+    absenceSent: "Notification d'absence envoyée au professeur.",
+    lesson: "Leçon", date: "Date", time: "Heure", payment: "Paiement", ticket: "Ticket"
+  },
+  de: {
+    title: "Buchung stornieren", leadText: "Möchten Sie diese Unterrichtsstunde wirklich stornieren? Bitte überprüfen Sie die Details unten.",
+    refundPolicy: "Rückerstattungsrichtlinie", refundLine1: "Bis 12h vor der Unterrichtsstunde: Stornierung und Rückerstattung möglich.",
+    refundLine2: "Bearbeitungsgebühren werden nicht erstattet.", refundLine3: "Nach 12h: Keine Stornierung oder Rückerstattung.",
+    confirmCancel: "Stornierung bestätigen", ticketTitle: "Ticket-Buchung",
+    ticketNoCancel: "Ticket-Buchungen können nicht storniert oder erstattet werden.",
+    ticketNotify: "Wenn Sie nicht teilnehmen können, benachrichtigen Sie den Lehrer bitte im Voraus direkt über LINE.",
+    pastDeadline: "Stornierungsfrist überschritten", pastDeadlineMsg: "Wenn Sie nicht teilnehmen können, kontaktieren Sie den Lehrer so schnell wie möglich direkt über LINE.",
+    absenceTitle: "Bei Abwesenheit nach der Frist", absenceMsg: "Bitte benachrichtigen Sie den Lehrer so schnell wie möglich direkt über LINE.",
+    absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen",
+    canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
+    successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
+    absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
+    lesson: "Unterricht", date: "Datum", time: "Uhrzeit", payment: "Zahlung", ticket: "Ticket"
+  }
+};
+
+function getCancelLang() {
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
+  if (urlLang) localStorage.setItem("userLang", urlLang);
+  return localStorage.getItem("userLang") || "en";
+}
+
+function applyCancelLang() {
+  const l = getCancelLang();
+  if (l === "ja") return;
+  const T = CANCEL_TRANS[l] || CANCEL_TRANS["en"];
+  window._cancelT = T;
+
+  const setSubText = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
+
+  // タイトル・リード
+  setSubText("#confirmCard h2 .en-sub", T.title);
+  setSubText("#confirmCard .lead .en-sub", T.leadText);
+
+  // 返金ポリシー
+  const warningBox = document.querySelector("#normalSection .warning-box");
+  if (warningBox) {
+    const spans = warningBox.querySelectorAll(".en-sub");
+    if (spans[0]) spans[0].textContent = "・" + T.refundLine1;
+    if (spans[1]) spans[1].textContent = "・" + T.refundLine2;
+    if (spans[2]) spans[2].textContent = "・" + T.refundLine3;
+  }
+
+  // キャンセルボタン
+  const cancelBtn = document.getElementById("cancelBtn");
+  if (cancelBtn) { const sub = cancelBtn.querySelector(".en-sub"); if (sub) sub.textContent = T.confirmCancel; }
+
+  // 回数券セクション
+  const ticketTitle = document.querySelector(".ticket-notice .notice-title span");
+  if (ticketTitle) ticketTitle.textContent = T.ticketTitle;
+  const ticketSpans = document.querySelectorAll(".ticket-notice .notice-text span");
+  if (ticketSpans[0]) ticketSpans[0].textContent = T.ticketNoCancel;
+  if (ticketSpans[1]) ticketSpans[1].textContent = T.ticketNotify;
+
+  // 欠席ボタン
+  document.querySelectorAll(".absence .en-sub").forEach(el => el.textContent = T.absenceBtn);
+
+  // 閉じるボタン
+  document.querySelectorAll("button[onclick='closePage()']").forEach(btn => {
+    btn.textContent = "閉じる / " + T.close;
+  });
+
+  // 結果カード
+  setSubText("#resultCard .small span", T.canClose);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  applyCancelLang();
+});
+
 let reservationId = "";
 let reservationData = null;
 let liffReady = false;
@@ -358,13 +505,14 @@ async function loadCancelData() {
     }
 
     reservationData = data.reservation;
+    const T = window._cancelT || {};
 
     const lessonCard = document.getElementById("reservationInfo");
     const timeDisplay = formatTimeDisplay(reservationData.date, reservationData.time);
     lessonCard.innerHTML =
-      "<strong>レッスン：</strong>" + reservationData.lesson + "<br>" +
-      "<strong>日時：</strong>" + reservationData.date + " " + timeDisplay + "<br>" +
-      "<strong>料金：</strong>" + (data.isTicket ? "回数券" : reservationData.price);
+      "<strong>レッスン / " + (T.lesson || "Lesson") + "：</strong>" + reservationData.lesson + "<br>" +
+      "<strong>日時 / " + (T.date || "Date") + "：</strong>" + reservationData.date + " " + timeDisplay + "<br>" +
+      "<strong>料金 / " + (T.payment || "Payment") + "：</strong>" + (data.isTicket ? "回数券 / " + (T.ticket || "Ticket") : reservationData.price);
 
     if (data.isTicket) {
       lessonCard.classList.add("ticket");
@@ -399,11 +547,12 @@ async function executeCancel() {
     const isSuccess = message.includes("キャンセルしました") || message.includes("返金処理も完了しました");
 
     if (isSuccess) {
+      const T = window._cancelT || {};
       const localTime = reservationData ? getLocalTimeLabel(reservationData.date, reservationData.time) : '';
       const timeDisplay = reservationData
         ? `${reservationData.date} ${reservationData.time} (JST)` + (localTime ? ` / ${localTime} (${userTzName || ''})` : '')
         : '';
-      const successMsg = `キャンセルが完了しました。\nCancellation complete.\n\n【日時 / Time】\n${timeDisplay}\n\n返金処理も完了しました。\nRefund has been processed.`;
+      const successMsg = `キャンセルが完了しました。\n${T.successMsg || "Cancellation complete."}\n\n【日時 / ${T.time || "Time"}】\n${timeDisplay}\n\n返金処理も完了しました。\n${T.refundDone || "Refund has been processed."}`;
       showResult(true, successMsg);
     } else {
       showResult(false, message + "\n\n欠席を希望する場合は下のボタンから連絡できます。");
@@ -443,17 +592,18 @@ function showResult(isSuccess, message) {
   document.getElementById("confirmCard").classList.add("hidden");
   document.getElementById("resultCard").classList.remove("hidden");
 
+  const T = window._cancelT || {};
   const icon = document.getElementById("resultIcon");
   const title = document.getElementById("resultTitle");
   const msg = document.getElementById("resultMessage");
 
   if (isSuccess) {
     icon.textContent = "✅";
-    title.textContent = "キャンセルしました / Cancelled";
+    title.textContent = "キャンセルしました / " + (T.cancelled || "Cancelled");
     title.className = "green";
   } else {
     icon.textContent = "⚠️";
-    title.textContent = "キャンセルできません / Cannot Cancel";
+    title.textContent = "キャンセルできません / " + (T.cannotCancel || "Cannot Cancel");
     title.className = "red";
   }
 
