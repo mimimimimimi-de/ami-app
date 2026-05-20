@@ -616,16 +616,44 @@ function handleSlotTap(date, time) {
   const localTime = getLocalTimeLabel(date, time);
   const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
   const T = window._changeT || {};
-  const ok = confirm(displayDate + " " + timeDisplay + "\nに変更しますか？\n" + (T.confirmMsg || "Change to this time?"));
-  if (!ok) return;
-  executeChange(date, time);
+
+  // confirmの代わりにカスタム確認ダイアログを表示
+  const existing = document.getElementById("confirmModal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "confirmModal";
+  modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;">
+      <p style="font-size:16px;font-weight:700;margin-bottom:8px;">📅 ${displayDate} ${timeDisplay}</p>
+      <p style="font-size:14px;color:#666;margin-bottom:20px;">に変更しますか？<br><span style="font-size:12px;color:#aaa;">${T.confirmMsg || "Change to this time?"}</span></p>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">キャンセル</button>
+        <button id="confirmOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">OK</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById("confirmOkBtn").addEventListener("click", function() {
+    modal.remove();
+    executeChange(date, time);
+  });
 }
 
 async function executeChange(date, time) {
   document.getElementById("processingOverlay").classList.add("show");
   try {
     const url = GAS_URL + "?action=changeExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&date=" + encodeURIComponent(date) + "&time=" + encodeURIComponent(time) + "&t=" + Date.now();
-    await fetch(url, { mode: "no-cors" });
+    const res = await fetch(url);
+    const message = await res.text();
+
+    if (message.includes("変更できません") || message.includes("見つかりません") || message.includes("キャンセル済")) {
+      const T = window._changeT || {};
+      alert(message + "\n\n" + (T.changeFailMsg || "Change failed. Please contact the teacher."));
+      document.getElementById("processingOverlay").classList.remove("show");
+      return;
+    }
 
     const localTime = getLocalTimeLabel(date, time);
     const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
