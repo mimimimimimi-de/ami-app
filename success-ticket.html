@@ -142,12 +142,12 @@ const LIFF_ID = "2009890655-LQDDtX3w";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
 const SUCCESS_TICKET_TRANS = {
-  en: { title: "Purchase Complete!", lesson: "Lesson", count: "Lessons", expiry: "Validity", months: "3 months", thanks: "Thank you for purchasing lesson tickets!\nSelect \"Use Ticket\" when booking to use them.", saving: "Saving ticket info...", saved: "✅ Purchase saved!", bookBtn: "📅 Book a Lesson Now", myBookingBtn: "View My Bookings" },
+  en: { title: "Purchase Complete!", lesson: "Lesson", count: "Lessons", expiry: "Validity", months: "3 months", thanks: "Thank you for purchasing lesson tickets!\nSelect 'Use Ticket' when booking to use them.", saving: "Saving ticket info...", saved: "✅ Purchase saved!", bookBtn: "📅 Book a Lesson Now", myBookingBtn: "View My Bookings" },
   zh: { title: "购买完成！", lesson: "课程", count: "次数", expiry: "有效期", months: "3个月", thanks: "感谢您购买课程次券！\n预约时选择「使用次券」即可使用。", saving: "正在保存次券信息...", saved: "✅ 购买已保存！", bookBtn: "📅 立即预约", myBookingBtn: "查看我的预约" },
   ko: { title: "구매 완료！", lesson: "레슨", count: "횟수", expiry: "유효기간", months: "3개월", thanks: "레슨 횟수권을 구매해 주셔서 감사합니다！\n예약 시 「횟수권 사용」을 선택하여 이용해 주세요。", saving: "횟수권 정보를 저장하고 있습니다...", saved: "✅ 구매가 저장되었습니다！", bookBtn: "📅 바로 예약하기", myBookingBtn: "내 예약 확인" },
   th: { title: "ซื้อสำเร็จ！", lesson: "บทเรียน", count: "ครั้ง", expiry: "อายุการใช้งาน", months: "3 เดือน", thanks: "ขอบคุณที่ซื้อคูปองบทเรียน！\nเลือก「ใช้คูปอง」เมื่อจองเพื่อใช้งาน。", saving: "กำลังบันทึกข้อมูลคูปอง...", saved: "✅ บันทึกการซื้อแล้ว！", bookBtn: "📅 จองทันที", myBookingBtn: "ดูการจองของฉัน" },
-  fr: { title: "Achat terminé !", lesson: "Leçon", count: "Leçons", expiry: "Validité", months: "3 mois", thanks: "Merci d'avoir acheté des tickets de leçon !\nSélectionnez « Utiliser un ticket » lors de la réservation.", saving: "Sauvegarde des informations...", saved: "✅ Achat sauvegardé !", bookBtn: "📅 Réserver maintenant", myBookingBtn: "Voir mes réservations" },
-  de: { title: "Kauf abgeschlossen!", lesson: "Unterricht", count: "Stunden", expiry: "Gültigkeit", months: "3 Monate", thanks: "Danke für den Kauf der Unterrichts-Tickets!\nWählen Sie beim Buchen „Ticket verwenden".", saving: "Ticket-Informationen werden gespeichert...", saved: "✅ Kauf gespeichert!", bookBtn: "📅 Jetzt buchen", myBookingBtn: "Meine Buchungen ansehen" }
+  fr: { title: "Achat termine !", lesson: "Lecon", count: "Lecons", expiry: "Validite", months: "3 mois", thanks: "Merci d'avoir achete des tickets de lecon !\nSelectionnez 'Utiliser un ticket' lors de la reservation.", saving: "Sauvegarde des informations...", saved: "✅ Achat sauvegarde !", bookBtn: "📅 Reserver maintenant", myBookingBtn: "Voir mes reservations" },
+  de: { title: "Kauf abgeschlossen!", lesson: "Unterricht", count: "Stunden", expiry: "Gueltigkeit", months: "3 Monate", thanks: "Danke fuer den Kauf der Unterrichts-Tickets!\nWaehlen Sie beim Buchen 'Ticket verwenden'.", saving: "Ticket-Informationen werden gespeichert...", saved: "✅ Kauf gespeichert!", bookBtn: "📅 Jetzt buchen", myBookingBtn: "Meine Buchungen ansehen" }
 };
 
 function applySuccessTicketLang(lang) {
@@ -200,7 +200,6 @@ async function saveTicket() {
       const res = await fetch(`/api/get-checkout-session?session_id=${sessionId}`);
       const data = await res.json();
       paymentIntentId = data.payment_intent || "";
-      // メタデータからも取得（localStorageが使えない場合の代替）
       if (data.metadata) {
         lesson = lesson || data.metadata.lessonType;
         count = count || data.metadata.count;
@@ -225,6 +224,7 @@ async function saveTicket() {
     return;
   }
 
+  try {
     // Vercel経由でGASに保存
     const gasRes = await fetch("/api/save-ticket", {
       method: "POST",
