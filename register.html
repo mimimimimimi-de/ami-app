@@ -511,6 +511,148 @@ body {
 const LIFF_ID = "2009890655-FUaCCVJb";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
+const LANG_TEXT = {
+  ja: {
+    title: "登録完了！",
+    titleSub: "Registration Complete!",
+    doneMsg: "登録が完了しました。<br>先生が料金を設定したら<br><span class='highlight'>LINEでお知らせします</span>ので<br>しばらくお待ちください。",
+    doneMsgSub: "Registration complete!<br>We'll notify you via LINE once the teacher sets your fee.",
+    alreadyTitle: "すでに登録済みです",
+    alreadyTitleSub: "Already Registered",
+    bookBtn: "📅 レッスンを予約する",
+    bookBtnSub: "Book a Lesson",
+    registerBtn: "登録する",
+    registerBtnSub: "Register",
+    tzLabel: "🌍 あなたのタイムゾーンを選んでください",
+    tzLabelSub: "Select your timezone",
+    tzPlaceholder: "タイムゾーンを選択 / Select timezone",
+    langLabel: "🌐 言語を選んでください",
+    langLabelSub: "Select your language"
+  },
+  en: {
+    title: "Registration Complete!",
+    titleSub: "",
+    doneMsg: "You're all set!<br>We'll notify you via LINE<br><span class='highlight'>once the teacher sets your fee.</span>",
+    doneMsgSub: "",
+    alreadyTitle: "Already Registered",
+    alreadyTitleSub: "",
+    bookBtn: "📅 Book a Lesson",
+    bookBtnSub: "",
+    registerBtn: "Register",
+    registerBtnSub: "",
+    tzLabel: "🌍 Select your timezone",
+    tzLabelSub: "",
+    langLabel: "🌐 Select your language",
+    langLabelSub: ""
+  },
+  zh: {
+    title: "注册完成！",
+    titleSub: "",
+    doneMsg: "注册已完成。<br>老师设置费用后，<br><span class='highlight'>我们将通过LINE通知您。</span>",
+    doneMsgSub: "",
+    alreadyTitle: "已经注册",
+    alreadyTitleSub: "",
+    bookBtn: "📅 预约课程",
+    bookBtnSub: "",
+    registerBtn: "注册",
+    registerBtnSub: "",
+    tzLabel: "🌍 请选择您的时区",
+    tzLabelSub: "",
+    langLabel: "🌐 请选择语言",
+    langLabelSub: ""
+  },
+  ko: {
+    title: "등록 완료！",
+    titleSub: "",
+    doneMsg: "등록이 완료되었습니다.<br>선생님이 요금을 설정하면<br><span class='highlight'>LINE으로 알려드립니다.</span>",
+    doneMsgSub: "",
+    alreadyTitle: "이미 등록되어 있습니다",
+    alreadyTitleSub: "",
+    bookBtn: "📅 레슨 예약하기",
+    bookBtnSub: "",
+    registerBtn: "등록하기",
+    registerBtnSub: "",
+    tzLabel: "🌍 시간대를 선택해주세요",
+    tzLabelSub: "",
+    langLabel: "🌐 언어를 선택해주세요",
+    langLabelSub: ""
+  },
+  th: {
+    title: "ลงทะเบียนเสร็จสมบูรณ์！",
+    titleSub: "",
+    doneMsg: "การลงทะเบียนเสร็จสมบูรณ์<br>เมื่อครูตั้งค่าค่าเรียนแล้ว<br><span class='highlight'>เราจะแจ้งให้ทราบผ่าน LINE</span>",
+    doneMsgSub: "",
+    alreadyTitle: "ลงทะเบียนแล้ว",
+    alreadyTitleSub: "",
+    bookBtn: "📅 จองบทเรียน",
+    bookBtnSub: "",
+    registerBtn: "ลงทะเบียน",
+    registerBtnSub: "",
+    tzLabel: "🌍 กรุณาเลือกเขตเวลา",
+    tzLabelSub: "",
+    langLabel: "🌐 กรุณาเลือกภาษา",
+    langLabelSub: ""
+  },
+  fr: {
+    title: "Inscription terminée！",
+    titleSub: "",
+    doneMsg: "Inscription réussie！<br>Nous vous informerons via LINE<br><span class='highlight'>dès que le professeur fixe vos frais.</span>",
+    doneMsgSub: "",
+    alreadyTitle: "Déjà inscrit",
+    alreadyTitleSub: "",
+    bookBtn: "📅 Réserver une leçon",
+    bookBtnSub: "",
+    registerBtn: "S'inscrire",
+    registerBtnSub: "",
+    tzLabel: "🌍 Sélectionnez votre fuseau horaire",
+    tzLabelSub: "",
+    langLabel: "🌐 Sélectionnez votre langue",
+    langLabelSub: ""
+  },
+  de: {
+    title: "Registrierung abgeschlossen！",
+    titleSub: "",
+    doneMsg: "Registrierung erfolgreich！<br>Wir benachrichtigen Sie über LINE,<br><span class='highlight'>sobald der Lehrer Ihre Gebühren festlegt.</span>",
+    doneMsgSub: "",
+    alreadyTitle: "Bereits registriert",
+    alreadyTitleSub: "",
+    bookBtn: "📅 Unterricht buchen",
+    bookBtnSub: "",
+    registerBtn: "Registrieren",
+    registerBtnSub: "",
+    tzLabel: "🌍 Wählen Sie Ihre Zeitzone",
+    tzLabelSub: "",
+    langLabel: "🌐 Sprache wählen",
+    langLabelSub: ""
+  }
+};
+
+function applyLang(lang) {
+  const T = LANG_TEXT[lang] || LANG_TEXT["ja"];
+
+  // 登録完了画面
+  const doneH2 = document.querySelector("#doneView h2");
+  if (doneH2) doneH2.innerHTML = T.title + (T.titleSub ? `<span class="en-sub">${T.titleSub}</span>` : "");
+  const doneP = document.querySelector("#doneView p");
+  if (doneP) doneP.innerHTML = T.doneMsg + (T.doneMsgSub ? `<br><span class="en-sub">${T.doneMsgSub}</span>` : "");
+
+  // 登録済み画面
+  const alreadyH2 = document.querySelector("#alreadyView h2");
+  if (alreadyH2) alreadyH2.innerHTML = T.alreadyTitle + (T.alreadyTitleSub ? `<span class="en-sub">${T.alreadyTitleSub}</span>` : "");
+  const bookBtn = document.querySelector("#alreadyView .book-link");
+  if (bookBtn) bookBtn.innerHTML = T.bookBtn + (T.bookBtnSub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookBtnSub}</span>` : "");
+
+  // 登録ボタン
+  const regBtn = document.getElementById("registerBtn");
+  if (regBtn) regBtn.innerHTML = `📝 ${T.registerBtn}` + (T.registerBtnSub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.registerBtnSub}</span>` : "");
+
+  // タイムゾーンラベル
+  const tzLabel = document.querySelector(".tz-label");
+  if (tzLabel) tzLabel.textContent = T.tzLabel;
+  const tzLabelEn = document.querySelector(".tz-label-en");
+  if (tzLabelEn) tzLabelEn.textContent = T.tzLabelSub;
+}
+
 let userId = null;
 let displayName = null;
 let selectedLang = "ja";
@@ -519,7 +661,7 @@ function selectLang(lang, btn) {
   selectedLang = lang;
   document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
-  localStorage.setItem("userLang", lang);
+  applyLang(lang);
 }
 
 let selectedTimezone = "";
