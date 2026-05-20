@@ -378,242 +378,200 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 const LIFF_ID = "2009890655-9G9Ve0wB";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
 
-// ===== 多言語対応 =====
+// ===== 多言語サブテキスト =====
 const TRANSLATIONS = {
-  ja: {
-    selectLesson: "レッスンを選んでください",
-    selectLessonSub: "Select Your Lesson Type",
-    checking: "LINE情報を確認しています...",
-    btn25: "25分レッスン",
-    btn25sub: "25-min Lesson",
-    btn50: "50分レッスン",
-    btn50sub: "50-min Lesson",
-    confirmFee: "料金の確認",
-    confirmFeeSub: "Confirm Lesson Fee",
-    back: "← 戻る",
-    next: "次へ →",
-    nextSub: "日時を選択",
-    selectDateTime: "日時を選んでください",
-    selectDateTimeSub: "Select Date & Time",
-    tapToSelect: "○をタップして予約する時間を選んでください",
-    prevWeek: "← 前の週",
-    nextWeek: "次の週 →",
-    scrollHint: "← 横にスクロールして他の日を確認 →",
-    confirmBooking: "予約内容の最終確認",
-    confirmBookingSub: "Confirm Your Booking",
-    paymentMethod: "💳 支払い方法を選んでください",
-    proceed: "決済に進む",
-    proceedSub: "Proceed to Payment",
-    processing: "処理中..."
-  },
   en: {
     selectLesson: "Select Your Lesson Type",
-    selectLessonSub: "",
     checking: "Checking LINE info...",
     btn25: "25-min Lesson",
-    btn25sub: "",
     btn50: "50-min Lesson",
-    btn50sub: "",
     confirmFee: "Confirm Lesson Fee",
-    confirmFeeSub: "",
-    back: "← Back",
-    next: "Next →",
-    nextSub: "Select date & time",
+    back: "Back",
+    next: "Select date & time",
     selectDateTime: "Select Date & Time",
-    selectDateTimeSub: "",
     tapToSelect: "Tap ○ to select your preferred time slot",
-    prevWeek: "← Prev",
-    nextWeek: "Next →",
-    scrollHint: "← Scroll to see more days →",
+    prevWeek: "Prev",
+    nextWeek: "Next",
+    scrollHint: "Scroll to see more days →",
     confirmBooking: "Confirm Your Booking",
-    confirmBookingSub: "",
-    paymentMethod: "💳 Payment Method",
+    paymentMethod: "Please select payment method",
     proceed: "Proceed to Payment",
-    proceedSub: "",
     processing: "Processing..."
   },
   zh: {
-    selectLesson: "请选择课程",
-    selectLessonSub: "",
+    selectLesson: "请选择课程类型",
     checking: "正在确认LINE信息...",
     btn25: "25分钟课程",
-    btn25sub: "",
     btn50: "50分钟课程",
-    btn50sub: "",
     confirmFee: "确认费用",
-    confirmFeeSub: "",
-    back: "← 返回",
-    next: "下一步 →",
-    nextSub: "选择日期和时间",
+    back: "返回",
+    next: "选择日期和时间",
     selectDateTime: "请选择日期和时间",
-    selectDateTimeSub: "",
     tapToSelect: "点击○选择您的课程时间",
-    prevWeek: "← 上一周",
-    nextWeek: "下一周 →",
-    scrollHint: "← 横向滚动查看更多日期 →",
+    prevWeek: "上一周",
+    nextWeek: "下一周",
+    scrollHint: "横向滚动查看更多日期 →",
     confirmBooking: "确认预约内容",
-    confirmBookingSub: "",
-    paymentMethod: "💳 请选择支付方式",
+    paymentMethod: "请选择支付方式",
     proceed: "前往付款",
-    proceedSub: "",
     processing: "处理中..."
   },
   ko: {
-    selectLesson: "레슨을 선택해주세요",
-    selectLessonSub: "",
+    selectLesson: "레슨 유형을 선택해주세요",
     checking: "LINE 정보를 확인하고 있습니다...",
     btn25: "25분 레슨",
-    btn25sub: "",
     btn50: "50분 레슨",
-    btn50sub: "",
     confirmFee: "요금 확인",
-    confirmFeeSub: "",
-    back: "← 뒤로",
-    next: "다음 →",
-    nextSub: "날짜 및 시간 선택",
+    back: "뒤로",
+    next: "날짜 및 시간 선택",
     selectDateTime: "날짜와 시간을 선택해주세요",
-    selectDateTimeSub: "",
     tapToSelect: "○을 탭하여 수업 시간을 선택해주세요",
-    prevWeek: "← 이전 주",
-    nextWeek: "다음 주 →",
-    scrollHint: "← 옆으로 스크롤하여 다른 날짜 확인 →",
+    prevWeek: "이전 주",
+    nextWeek: "다음 주",
+    scrollHint: "옆으로 스크롤하여 다른 날짜 확인 →",
     confirmBooking: "예약 내용 최종 확인",
-    confirmBookingSub: "",
-    paymentMethod: "💳 결제 방법을 선택해주세요",
+    paymentMethod: "결제 방법을 선택해주세요",
     proceed: "결제 진행",
-    proceedSub: "",
     processing: "처리 중..."
   },
   th: {
     selectLesson: "กรุณาเลือกประเภทบทเรียน",
-    selectLessonSub: "",
     checking: "กำลังตรวจสอบข้อมูล LINE...",
     btn25: "บทเรียน 25 นาที",
-    btn25sub: "",
     btn50: "บทเรียน 50 นาที",
-    btn50sub: "",
     confirmFee: "ยืนยันค่าเรียน",
-    confirmFeeSub: "",
-    back: "← ย้อนกลับ",
-    next: "ถัดไป →",
-    nextSub: "เลือกวันและเวลา",
+    back: "ย้อนกลับ",
+    next: "เลือกวันและเวลา",
     selectDateTime: "กรุณาเลือกวันและเวลา",
-    selectDateTimeSub: "",
     tapToSelect: "แตะ ○ เพื่อเลือกเวลาบทเรียน",
-    prevWeek: "← สัปดาห์ก่อน",
-    nextWeek: "สัปดาห์ถัดไป →",
-    scrollHint: "← เลื่อนเพื่อดูวันอื่น →",
+    prevWeek: "สัปดาห์ก่อน",
+    nextWeek: "สัปดาห์ถัดไป",
+    scrollHint: "เลื่อนเพื่อดูวันอื่น →",
     confirmBooking: "ยืนยันการจอง",
-    confirmBookingSub: "",
-    paymentMethod: "💳 กรุณาเลือกวิธีการชำระเงิน",
+    paymentMethod: "กรุณาเลือกวิธีการชำระเงิน",
     proceed: "ดำเนินการชำระเงิน",
-    proceedSub: "",
     processing: "กำลังดำเนินการ..."
   },
   fr: {
-    selectLesson: "Choisissez votre leçon",
-    selectLessonSub: "",
+    selectLesson: "Choisissez votre type de leçon",
     checking: "Vérification des informations LINE...",
     btn25: "Leçon de 25 min",
-    btn25sub: "",
     btn50: "Leçon de 50 min",
-    btn50sub: "",
     confirmFee: "Confirmation des frais",
-    confirmFeeSub: "",
-    back: "← Retour",
-    next: "Suivant →",
-    nextSub: "Choisir date et heure",
+    back: "Retour",
+    next: "Choisir date et heure",
     selectDateTime: "Choisissez la date et l'heure",
-    selectDateTimeSub: "",
     tapToSelect: "Appuyez sur ○ pour sélectionner un créneau",
-    prevWeek: "← Semaine précédente",
-    nextWeek: "Semaine suivante →",
-    scrollHint: "← Faites défiler pour voir plus de jours →",
+    prevWeek: "Semaine précédente",
+    nextWeek: "Semaine suivante",
+    scrollHint: "Faites défiler pour voir plus de jours →",
     confirmBooking: "Confirmation de la réservation",
-    confirmBookingSub: "",
-    paymentMethod: "💳 Choisissez votre mode de paiement",
+    paymentMethod: "Choisissez votre mode de paiement",
     proceed: "Procéder au paiement",
-    proceedSub: "",
     processing: "Traitement en cours..."
   },
   de: {
-    selectLesson: "Wählen Sie Ihre Unterrichtsstunde",
-    selectLessonSub: "",
+    selectLesson: "Wählen Sie Ihren Unterrichtstyp",
     checking: "LINE-Informationen werden überprüft...",
     btn25: "25-Minuten-Unterricht",
-    btn25sub: "",
     btn50: "50-Minuten-Unterricht",
-    btn50sub: "",
     confirmFee: "Gebühren bestätigen",
-    confirmFeeSub: "",
-    back: "← Zurück",
-    next: "Weiter →",
-    nextSub: "Datum und Uhrzeit wählen",
+    back: "Zurück",
+    next: "Datum und Uhrzeit wählen",
     selectDateTime: "Wählen Sie Datum und Uhrzeit",
-    selectDateTimeSub: "",
     tapToSelect: "Tippen Sie auf ○, um einen Zeitslot auszuwählen",
-    prevWeek: "← Vorherige Woche",
-    nextWeek: "Nächste Woche →",
-    scrollHint: "← Scrollen Sie, um mehr Tage zu sehen →",
+    prevWeek: "Vorherige Woche",
+    nextWeek: "Nächste Woche",
+    scrollHint: "Scrollen Sie, um mehr Tage zu sehen →",
     confirmBooking: "Buchung bestätigen",
-    confirmBookingSub: "",
-    paymentMethod: "💳 Zahlungsmethode wählen",
+    paymentMethod: "Zahlungsmethode wählen",
     proceed: "Zur Zahlung",
-    proceedSub: "",
     processing: "Wird verarbeitet..."
   }
 };
 
 function getLang() {
-  return localStorage.getItem("userLang") || "ja";
+  return localStorage.getItem("userLang") || "en";
 }
 
 function t(key) {
   const lang = getLang();
-  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS["ja"][key] || key;
+  if (lang === "ja") return "";
+  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS["en"][key] || "";
 }
 
 function applyTranslations() {
   const lang = getLang();
-  const T = TRANSLATIONS[lang] || TRANSLATIONS["ja"];
+  if (lang === "ja") return; // 日本語はそのまま
 
-  document.querySelector("#top h2").textContent = T.selectLesson;
-  const topSub = document.querySelector("#top .en-title");
-  if (topSub) topSub.textContent = T.selectLessonSub;
+  // 各サブテキストを切り替え
+  const setSubText = (selector, key) => {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = t(key);
+  };
+
+  setSubText("#top .en-title", "selectLesson");
+  setSubText("#price .en-title", "confirmFee");
+  setSubText("#calendarPage .en-title", "selectDateTime");
+  setSubText("#confirmPage .en-title", "confirmBooking");
+  setSubText(".scroll-hint", "scrollHint");
+
+  // ボタンのサブテキスト
+  const btn25 = document.getElementById("btn25");
+  if (btn25) {
+    const sub = btn25.querySelector(".en-sub");
+    if (sub) sub.textContent = t("btn25");
+  }
+  const btn50 = document.getElementById("btn50");
+  if (btn50) {
+    const sub = btn50.querySelector(".en-sub");
+    if (sub) sub.textContent = t("btn50");
+  }
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  if (checkoutBtn) {
+    const sub = checkoutBtn.querySelector(".en-sub");
+    if (sub) sub.textContent = t("proceed");
+  }
+  const procText = document.getElementById("processingText");
+  if (procText) {
+    const sub = procText.querySelector("span");
+    if (sub) sub.textContent = t("processing");
+  }
+}
+
+function getLang() {
+  return localStorage.getItem("userLang") || "en";
+}
+
+function t(key) {
+  const lang = getLang();
+  if (lang === "ja") return "";
+  return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS["en"][key] || "";
+}
+
+function applyTranslations() {
+  const lang = getLang();
+  if (lang === "ja") return;
+
+  const setSubText = (selector, key) => {
+    const el = document.querySelector(selector);
+    if (el) el.textContent = t(key);
+  };
+
+  setSubText("#top .en-title", "selectLesson");
+  setSubText("#price .en-title", "confirmFee");
+  setSubText("#calendarPage .en-title", "selectDateTime");
+  setSubText("#confirmPage .en-title", "confirmBooking");
+  setSubText(".scroll-hint", "scrollHint");
 
   const btn25 = document.getElementById("btn25");
-  if (btn25) btn25.innerHTML = T.btn25 + (T.btn25sub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.btn25sub}</span>` : "");
-
+  if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = t("btn25"); }
   const btn50 = document.getElementById("btn50");
-  if (btn50) btn50.innerHTML = T.btn50 + (T.btn50sub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.btn50sub}</span>` : "");
-
-  document.querySelector("#price h2").textContent = T.confirmFee;
-  const priceSub = document.querySelector("#price .en-title");
-  if (priceSub) priceSub.textContent = T.confirmFeeSub;
-
-  document.querySelector("#calendarPage h2").textContent = T.selectDateTime;
-  const calSub = document.querySelector("#calendarPage .en-title");
-  if (calSub) calSub.textContent = T.selectDateTimeSub;
-
-  const scrollHint = document.querySelector(".scroll-hint");
-  if (scrollHint) scrollHint.textContent = T.scrollHint;
-
-  document.querySelector("#confirmPage h2").textContent = T.confirmBooking;
-  const confirmSub = document.querySelector("#confirmPage .en-title");
-  if (confirmSub) confirmSub.textContent = T.confirmBookingSub;
-
+  if (btn50) { const sub = btn50.querySelector(".en-sub"); if (sub) sub.textContent = t("btn50"); }
   const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) checkoutBtn.innerHTML = T.proceed + (T.proceedSub ? `<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.proceedSub}</span>` : "");
-
+  if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = t("proceed"); }
   const procText = document.getElementById("processingText");
-  if (procText) procText.innerHTML = T.processing + `<br><span style="font-size:13px;color:#888;">Processing...</span>`;
-
-  // 戻るボタン
-  document.querySelectorAll(".sub").forEach(btn => {
-    if (btn.textContent.includes("戻る") || btn.textContent.includes("Back") || btn.textContent.includes("Zurück") || btn.textContent.includes("Retour") || btn.textContent.includes("뒤로") || btn.textContent.includes("ย้อนกลับ") || btn.textContent.includes("返回")) {
-      btn.textContent = T.back;
-    }
-  });
+  if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = t("processing"); }
 }
 
 let userId = null;
@@ -1200,6 +1158,10 @@ window.onload = function() {
   applyTranslations();
   init();
 };
+
+function applyTranslations() {
+  // 日本語はそのまま、サブテキスト（英語部分）だけ言語切り替え
+}
 </script>
 </body>
 </html>
