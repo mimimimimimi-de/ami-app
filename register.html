@@ -525,157 +525,173 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1gr
 
 const LANG_TEXT = {
   ja: {
-    title: "登録完了！",
-    titleSub: "Registration Complete!",
+    step1title: "まず登録する", step1desc: "下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。",
+    step2title: "先生が料金を設定", step2desc: "登録後、先生があなたの料金を設定します。",
+    step3title: "予約スタート！", step3desc: "先生からLINEが届いたら予約できるようになります。",
+    tzLabel: "🌍 あなたのタイムゾーンを選んでください", tzLabelSub: "Select your timezone",
+    langLabel: "🌐 言語を選んでください", langLabelSub: "Select your language",
+    registerBtn: "登録する", registerBtnSub: "Register",
+    note: "LINEのお名前が自動で登録されます。<br>個人情報は予約管理のみに使用します。",
+    noteSub: "Your LINE display name will be registered automatically.<br>Personal info is used for booking purposes only.",
+    doneTitle: "登録完了！", doneTitleSub: "Registration Complete!",
     doneMsg: "登録が完了しました。<br>先生が料金を設定したら<br><span class='highlight'>LINEでお知らせします</span>ので<br>しばらくお待ちください。",
     doneMsgSub: "Registration complete!<br>We'll notify you via LINE once the teacher sets your fee.",
-    alreadyTitle: "すでに登録済みです",
-    alreadyTitleSub: "Already Registered",
-    bookBtn: "📅 レッスンを予約する",
-    bookBtnSub: "Book a Lesson",
-    registerBtn: "登録する",
-    registerBtnSub: "Register",
-    tzLabel: "🌍 あなたのタイムゾーンを選んでください",
-    tzLabelSub: "Select your timezone",
-    tzPlaceholder: "タイムゾーンを選択 / Select timezone",
-    langLabel: "🌐 言語を選んでください",
-    langLabelSub: "Select your language"
+    alreadyTitle: "すでに登録済みです", alreadyTitleSub: "Already Registered",
+    bookBtn: "📅 レッスンを予約する", bookBtnSub: "Book a Lesson"
   },
   en: {
-    title: "Registration Complete!",
-    titleSub: "",
-    doneMsg: "You're all set!<br>We'll notify you via LINE<br><span class='highlight'>once the teacher sets your fee.</span>",
-    doneMsgSub: "",
-    alreadyTitle: "Already Registered",
-    alreadyTitleSub: "",
-    bookBtn: "📅 Book a Lesson",
-    bookBtnSub: "",
-    registerBtn: "Register",
-    registerBtnSub: "",
-    tzLabel: "🌍 Select your timezone",
-    tzLabelSub: "",
-    langLabel: "🌐 Select your language",
-    langLabelSub: ""
+    step1title: "Register first", step1desc: "Just tap the button below!<br>Auto-registered with your LINE account.",
+    step2title: "Teacher sets your price", step2desc: "After registration, the teacher will set your lesson fee.",
+    step3title: "Start booking!", step3desc: "Once the teacher contacts you via LINE, you can start booking.",
+    tzLabel: "🌍 Select your timezone", tzLabelSub: "",
+    langLabel: "🌐 Select your language", langLabelSub: "",
+    registerBtn: "Register", registerBtnSub: "",
+    note: "Your LINE display name will be registered automatically.<br>Personal info is used for booking purposes only.", noteSub: "",
+    doneTitle: "Registration Complete!", doneTitleSub: "",
+    doneMsg: "You're all set!<br>We'll notify you via LINE<br><span class='highlight'>once the teacher sets your fee.</span>", doneMsgSub: "",
+    alreadyTitle: "Already Registered", alreadyTitleSub: "",
+    bookBtn: "📅 Book a Lesson", bookBtnSub: ""
   },
   zh: {
-    title: "注册完成！",
-    titleSub: "",
-    doneMsg: "注册已完成。<br>老师设置费用后，<br><span class='highlight'>我们将通过LINE通知您。</span>",
-    doneMsgSub: "",
-    alreadyTitle: "已经注册",
-    alreadyTitleSub: "",
-    bookBtn: "📅 预约课程",
-    bookBtnSub: "",
-    registerBtn: "注册",
-    registerBtnSub: "",
-    tzLabel: "🌍 请选择您的时区",
-    tzLabelSub: "",
-    langLabel: "🌐 请选择语言",
-    langLabelSub: ""
+    step1title: "首先注册", step1desc: "只需点击下面的按钮！<br>使用LINE账户自动注册。",
+    step2title: "老师设置费用", step2desc: "注册后，老师将为您设置课程费用。",
+    step3title: "开始预约！", step3desc: "收到老师的LINE通知后即可开始预约。",
+    tzLabel: "🌍 请选择您的时区", tzLabelSub: "",
+    langLabel: "🌐 请选择语言", langLabelSub: "",
+    registerBtn: "注册", registerBtnSub: "",
+    note: "您的LINE显示名称将自动注册。<br>个人信息仅用于预约管理。", noteSub: "",
+    doneTitle: "注册完成！", doneTitleSub: "",
+    doneMsg: "注册已完成。<br>老师设置费用后，<br><span class='highlight'>我们将通过LINE通知您。</span>", doneMsgSub: "",
+    alreadyTitle: "已经注册", alreadyTitleSub: "",
+    bookBtn: "📅 预约课程", bookBtnSub: ""
   },
   ko: {
-    title: "등록 완료！",
-    titleSub: "",
-    doneMsg: "등록이 완료되었습니다.<br>선생님이 요금을 설정하면<br><span class='highlight'>LINE으로 알려드립니다.</span>",
-    doneMsgSub: "",
-    alreadyTitle: "이미 등록되어 있습니다",
-    alreadyTitleSub: "",
-    bookBtn: "📅 레슨 예약하기",
-    bookBtnSub: "",
-    registerBtn: "등록하기",
-    registerBtnSub: "",
-    tzLabel: "🌍 시간대를 선택해주세요",
-    tzLabelSub: "",
-    langLabel: "🌐 언어를 선택해주세요",
-    langLabelSub: ""
+    step1title: "먼저 등록하기", step1desc: "아래 버튼을 누르기만 하면 됩니다！<br>LINE 계정으로 자동 등록됩니다。",
+    step2title: "선생님이 요금 설정", step2desc: "등록 후 선생님이 레슨 요금을 설정합니다。",
+    step3title: "예약 시작！", step3desc: "선생님으로부터 LINE 연락이 오면 예약할 수 있습니다。",
+    tzLabel: "🌍 시간대를 선택해주세요", tzLabelSub: "",
+    langLabel: "🌐 언어를 선택해주세요", langLabelSub: "",
+    registerBtn: "등록하기", registerBtnSub: "",
+    note: "LINE 표시 이름이 자동으로 등록됩니다。<br>개인정보는 예약 관리에만 사용됩니다。", noteSub: "",
+    doneTitle: "등록 완료！", doneTitleSub: "",
+    doneMsg: "등록이 완료되었습니다。<br>선생님이 요금을 설정하면<br><span class='highlight'>LINE으로 알려드립니다。</span>", doneMsgSub: "",
+    alreadyTitle: "이미 등록되어 있습니다", alreadyTitleSub: "",
+    bookBtn: "📅 레슨 예약하기", bookBtnSub: ""
   },
   th: {
-    title: "ลงทะเบียนเสร็จสมบูรณ์！",
-    titleSub: "",
-    doneMsg: "การลงทะเบียนเสร็จสมบูรณ์<br>เมื่อครูตั้งค่าค่าเรียนแล้ว<br><span class='highlight'>เราจะแจ้งให้ทราบผ่าน LINE</span>",
-    doneMsgSub: "",
-    alreadyTitle: "ลงทะเบียนแล้ว",
-    alreadyTitleSub: "",
-    bookBtn: "📅 จองบทเรียน",
-    bookBtnSub: "",
-    registerBtn: "ลงทะเบียน",
-    registerBtnSub: "",
-    tzLabel: "🌍 กรุณาเลือกเขตเวลา",
-    tzLabelSub: "",
-    langLabel: "🌐 กรุณาเลือกภาษา",
-    langLabelSub: ""
+    step1title: "ลงทะเบียนก่อน", step1desc: "แตะปุ่มด้านล่างเท่านั้น！<br>ลงทะเบียนอัตโนมัติด้วยบัญชี LINE。",
+    step2title: "ครูตั้งค่าค่าเรียน", step2desc: "หลังจากลงทะเบียน ครูจะตั้งค่าค่าเรียนให้คุณ。",
+    step3title: "เริ่มจอง！", step3desc: "เมื่อครูติดต่อผ่าน LINE คุณสามารถเริ่มจองได้。",
+    tzLabel: "🌍 กรุณาเลือกเขตเวลา", tzLabelSub: "",
+    langLabel: "🌐 กรุณาเลือกภาษา", langLabelSub: "",
+    registerBtn: "ลงทะเบียน", registerBtnSub: "",
+    note: "ชื่อแสดงผล LINE ของคุณจะถูกลงทะเบียนโดยอัตโนมัติ。<br>ข้อมูลส่วนตัวใช้สำหรับการจัดการการจองเท่านั้น。", noteSub: "",
+    doneTitle: "ลงทะเบียนเสร็จสมบูรณ์！", doneTitleSub: "",
+    doneMsg: "การลงทะเบียนเสร็จสมบูรณ์。<br>เมื่อครูตั้งค่าค่าเรียนแล้ว<br><span class='highlight'>เราจะแจ้งให้ทราบผ่าน LINE。</span>", doneMsgSub: "",
+    alreadyTitle: "ลงทะเบียนแล้ว", alreadyTitleSub: "",
+    bookBtn: "📅 จองบทเรียน", bookBtnSub: ""
   },
   fr: {
-    title: "Inscription terminée！",
-    titleSub: "",
-    doneMsg: "Inscription réussie！<br>Nous vous informerons via LINE<br><span class='highlight'>dès que le professeur fixe vos frais.</span>",
-    doneMsgSub: "",
-    alreadyTitle: "Déjà inscrit",
-    alreadyTitleSub: "",
-    bookBtn: "📅 Réserver une leçon",
-    bookBtnSub: "",
-    registerBtn: "S'inscrire",
-    registerBtnSub: "",
-    tzLabel: "🌍 Sélectionnez votre fuseau horaire",
-    tzLabelSub: "",
-    langLabel: "🌐 Sélectionnez votre langue",
-    langLabelSub: ""
+    step1title: "S'inscrire d'abord", step1desc: "Appuyez simplement sur le bouton ci-dessous！<br>Inscription automatique avec votre compte LINE。",
+    step2title: "Le professeur fixe vos frais", step2desc: "Apres inscription, le professeur fixera vos frais de cours。",
+    step3title: "Commencer a reserver！", step3desc: "Une fois que le professeur vous contacte via LINE, vous pouvez commencer a reserver。",
+    tzLabel: "🌍 Selectionnez votre fuseau horaire", tzLabelSub: "",
+    langLabel: "🌐 Selectionnez votre langue", langLabelSub: "",
+    registerBtn: "S'inscrire", registerBtnSub: "",
+    note: "Votre nom LINE sera enregistre automatiquement。<br>Les informations personnelles sont utilisees uniquement pour la gestion des reservations。", noteSub: "",
+    doneTitle: "Inscription terminee！", doneTitleSub: "",
+    doneMsg: "Inscription reussie！<br>Nous vous informerons via LINE<br><span class='highlight'>des que le professeur fixe vos frais。</span>", doneMsgSub: "",
+    alreadyTitle: "Deja inscrit", alreadyTitleSub: "",
+    bookBtn: "📅 Reserver une lecon", bookBtnSub: ""
   },
   de: {
-    title: "Registrierung abgeschlossen！",
-    titleSub: "",
-    doneMsg: "Registrierung erfolgreich！<br>Wir benachrichtigen Sie über LINE,<br><span class='highlight'>sobald der Lehrer Ihre Gebühren festlegt.</span>",
-    doneMsgSub: "",
-    alreadyTitle: "Bereits registriert",
-    alreadyTitleSub: "",
-    bookBtn: "📅 Unterricht buchen",
-    bookBtnSub: "",
-    registerBtn: "Registrieren",
-    registerBtnSub: "",
-    tzLabel: "🌍 Wählen Sie Ihre Zeitzone",
-    tzLabelSub: "",
-    langLabel: "🌐 Sprache wählen",
-    langLabelSub: ""
+    step1title: "Zuerst registrieren", step1desc: "Tippen Sie einfach auf die Schaltflache unten！<br>Automatische Registrierung mit Ihrem LINE-Konto。",
+    step2title: "Lehrer legt Gebuhr fest", step2desc: "Nach der Registrierung legt der Lehrer Ihre Unterrichtsgebuhr fest。",
+    step3title: "Buchung starten！", step3desc: "Sobald der Lehrer Sie uber LINE kontaktiert, konnen Sie mit der Buchung beginnen。",
+    tzLabel: "🌍 Wahlen Sie Ihre Zeitzone", tzLabelSub: "",
+    langLabel: "🌐 Sprache wahlen", langLabelSub: "",
+    registerBtn: "Registrieren", registerBtnSub: "",
+    note: "Ihr LINE-Anzeigename wird automatisch registriert。<br>Personliche Informationen werden nur fur die Buchungsverwaltung verwendet。", noteSub: "",
+    doneTitle: "Registrierung abgeschlossen！", doneTitleSub: "",
+    doneMsg: "Registrierung erfolgreich！<br>Wir benachrichtigen Sie uber LINE,<br><span class='highlight'>sobald der Lehrer Ihre Gebuhr festlegt。</span>", doneMsgSub: "",
+    alreadyTitle: "Bereits registriert", alreadyTitleSub: "",
+    bookBtn: "📅 Unterricht buchen", bookBtnSub: ""
   }
 };
 
 function applyLang(lang) {
-  if (lang === "ja") {
-    // 日本語の場合はサブテキストをデフォルトに戻す
-    const subs = document.querySelectorAll(".en-sub");
-    const defaults = {
-      0: "Registration Complete!",
-      1: "Registration complete!<br>We'll notify you via LINE once the teacher sets your fee.",
-      2: "Already Registered",
-      3: "Book a Lesson",
-      4: "Register"
-    };
-    return;
-  }
+  const T = LANG_TEXT[lang] || LANG_TEXT["ja"];
+  const isJa = lang === "ja";
 
-  const T = LANG_TEXT[lang] || LANG_TEXT["en"];
+  const setSubText = (selector, text) => {
+    const el = document.querySelector(selector);
+    if (el) el.innerHTML = text;
+  };
+  const setEl = (id, html) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  };
 
-  // サブテキストのみ変更（日本語テキストはそのまま）
-  const doneH2Sub = document.querySelector("#doneView h2 .en-sub");
-  if (doneH2Sub) doneH2Sub.textContent = T.titleSub || T.title;
-  const donePSub = document.querySelector("#doneView p .en-sub");
-  if (donePSub) donePSub.innerHTML = T.doneMsgSub || T.doneMsg;
+  // ステップ1〜3
+  const stepTitles = document.querySelectorAll(".step .title");
+  const stepDescs = document.querySelectorAll(".step .desc");
+  const steps = [
+    { title: "step1title", titleJa: "まず登録する", desc: "step1desc", descJa: "下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。" },
+    { title: "step2title", titleJa: "先生が料金を設定", desc: "step2desc", descJa: "登録後、先生があなたの料金を設定します。" },
+    { title: "step3title", titleJa: "予約スタート！", desc: "step3desc", descJa: "先生からLINEが届いたら予約できるようになります。" }
+  ];
+  steps.forEach((s, i) => {
+    if (stepTitles[i]) stepTitles[i].innerHTML = isJa
+      ? `${LANG_TEXT.ja[s.title]}<span class="en-sub">${LANG_TEXT.en[s.title]}</span>`
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub">${T[s.title]}</span>`;
+    if (stepDescs[i]) stepDescs[i].innerHTML = isJa
+      ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${LANG_TEXT.en[s.desc]}</span>`
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${T[s.desc]}</span>`;
+  });
 
-  const alreadyH2Sub = document.querySelector("#alreadyView h2 .en-sub");
-  if (alreadyH2Sub) alreadyH2Sub.textContent = T.alreadyTitleSub || T.alreadyTitle;
-  const bookBtnSub = document.querySelector("#alreadyView .book-link .en-sub");
-  if (bookBtnSub) bookBtnSub.textContent = T.bookBtnSub || T.bookBtn;
-
-  const regBtnSub = document.querySelector("#registerBtn .en-sub");
-  if (regBtnSub) regBtnSub.textContent = T.registerBtnSub || T.registerBtn;
-
-  // タイムゾーンラベルのサブテキスト
+  // タイムゾーンラベル
+  const tzLabel = document.querySelector(".tz-label");
+  if (tzLabel) tzLabel.textContent = LANG_TEXT.ja.tzLabel;
   const tzLabelEn = document.querySelector(".tz-label-en");
-  if (tzLabelEn) tzLabelEn.textContent = T.tzLabelSub || T.tzLabel;
+  if (tzLabelEn) tzLabelEn.textContent = isJa ? LANG_TEXT.en.tzLabel : T.tzLabel;
 
-  // 言語ラベルのサブテキスト
+  // 言語ラベル
+  const langLabel = document.querySelector(".lang-label");
+  if (langLabel) langLabel.textContent = LANG_TEXT.ja.langLabel;
   const langLabelSub = document.querySelector(".lang-label-sub");
-  if (langLabelSub) langLabelSub.textContent = T.langLabelSub || T.langLabel;
+  if (langLabelSub) langLabelSub.textContent = isJa ? LANG_TEXT.en.langLabel : T.langLabel;
+
+  // 登録ボタン
+  const regBtn = document.getElementById("registerBtn");
+  if (regBtn) regBtn.innerHTML = isJa
+    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${LANG_TEXT.en.registerBtn}</span>`
+    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.registerBtn}</span>`;
+
+  // 注意書き
+  const note = document.querySelector(".note");
+  if (note) note.innerHTML = isJa
+    ? `${LANG_TEXT.ja.note}<br><span class="en-sub">${LANG_TEXT.en.note}</span>`
+    : `${LANG_TEXT.ja.note}<br><span class="en-sub">${T.note}</span>`;
+
+  // 登録完了画面
+  const doneH2 = document.querySelector("#doneView h2");
+  if (doneH2) doneH2.innerHTML = isJa
+    ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${LANG_TEXT.en.doneTitle}</span>`
+    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${T.doneTitle}</span>`;
+  const doneP = document.querySelector("#doneView p");
+  if (doneP) doneP.innerHTML = isJa
+    ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${LANG_TEXT.en.doneMsg}</span>`
+    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${T.doneMsg}</span>`;
+
+  // 登録済み画面
+  const alreadyH2 = document.querySelector("#alreadyView h2");
+  if (alreadyH2) alreadyH2.innerHTML = isJa
+    ? `${LANG_TEXT.ja.alreadyTitle}<span class="en-sub">${LANG_TEXT.en.alreadyTitle}</span>`
+    : `${LANG_TEXT.ja.alreadyTitle}<span class="en-sub">${T.alreadyTitle}</span>`;
+  const bookLink = document.querySelector("#alreadyView .book-link");
+  if (bookLink) bookLink.innerHTML = isJa
+    ? `${LANG_TEXT.ja.bookBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${LANG_TEXT.en.bookBtn}</span>`
+    : `${LANG_TEXT.ja.bookBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.bookBtn}</span>`;
 }
 
 let userId = null;
