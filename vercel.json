@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/guide", "dest": "/guide.html" },
+    { "src": "/change.html", "dest": "/change.html" },
+    { "src": "/cancel.html", "dest": "/cancel.html" },
+    { "src": "/index.html", "dest": "/index.html" },
+    { "src": "/mybooking.html", "dest": "/mybooking.html" },
+    { "src": "/register.html", "dest": "/register.html" },
+    { "src": "/success.html", "dest": "/success.html" },
+    { "src": "/ticket.html", "dest": "/ticket.html" },
+    { "src": "/admin.html", "dest": "/admin.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
