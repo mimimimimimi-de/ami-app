@@ -518,9 +518,15 @@ function getLocalTimeLabel(dateStr, timeStr) {
   if (!userTimezone || userTimezone === 'Asia/Tokyo') return '';
   try {
     const jstDate = new Date(`${dateStr}T${timeStr}:00+09:00`);
-    return jstDate.toLocaleTimeString('en-US', {
+    const localTime = jstDate.toLocaleTimeString('en-US', {
       hour: '2-digit', minute: '2-digit', hour12: false, timeZone: userTimezone
     });
+    const localDate = jstDate.toLocaleDateString('en-CA', { timeZone: userTimezone });
+    if (localDate !== dateStr) {
+      const parts = localDate.split('-');
+      return `${Number(parts[1])}/${Number(parts[2])} ${localTime}`;
+    }
+    return localTime;
   } catch (e) { return ''; }
 }
 
