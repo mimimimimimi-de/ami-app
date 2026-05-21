@@ -748,8 +748,7 @@ async function selectLesson(minutes) {
   go("price");
   document.getElementById("nextBtn").disabled = true;
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + minutes + "-min Lesson";
-  const T1 = window._currentT || {};
-  document.getElementById("priceText").textContent = "取得中... / " + (T1.loading || "Loading...");
+  document.getElementById("priceText").textContent = "取得中... / Loading...";
   const ok = await ensureUserId();
   if (!ok) {
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
@@ -760,6 +759,17 @@ async function selectLesson(minutes) {
   try {
     const res = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=" + encodeURIComponent(minutes) + "&name=" + encodeURIComponent(displayName));
     const data = await res.json();
+
+    // 言語取得後にまず翻訳を適用
+    if (data.lang && data.lang !== 'ja') {
+      applyTranslations(data.lang);
+    }
+
+    const TL = window._currentT || {};
+
+    // 取得中テキストを言語に合わせて更新
+    document.getElementById("priceText").textContent = "取得中... / " + (TL.loading || "Loading...");
+
     if (!data.ok || !data.price) {
       document.getElementById("priceText").textContent = "料金未設定 / Not Set";
       alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
@@ -778,10 +788,6 @@ async function selectLesson(minutes) {
       } catch (e) {}
     }
 
-    // 登録時の言語設定を適用
-    if (data.lang && data.lang !== 'ja') {
-      applyTranslations(data.lang);
-    }
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
