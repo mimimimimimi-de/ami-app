@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
             currency: "usd",
             product_data: {
               name: `${lessonLabel} × ${lessonCount}回券${discountLabel}`,
-              description: `有効期限：購入から3ヶ月 / 返金不可${discountRate > 0 ? ` / ${discountRate * 100}%OFFまとめ買い割引適用` : ''}`
+              description: `有効期限：購入から2ヶ月 / 返金不可${discountRate > 0 ? ` / ${discountRate * 100}%OFFまとめ買い割引適用` : ''}`
             },
             unit_amount: unitAmount
           },
