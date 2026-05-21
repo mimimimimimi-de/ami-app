@@ -712,8 +712,7 @@ function setLessonButtons(enabled) {
 async function init() {
   try {
     setLessonButtons(false);
-    const T2 = window._currentT || {};
-    document.getElementById("loginStatus").innerHTML = 'LINE情報を確認しています...<span class="en-sub">' + (T2.checking || "Checking LINE info...") + '</span>';
+    document.getElementById("loginStatus").innerHTML = 'LINE情報を確認しています...<span class="en-sub">Checking LINE info...</span>';
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login({ redirectUri: window.location.href }); return; }
     const profile = await liff.getProfile();
@@ -722,7 +721,25 @@ async function init() {
     displayName = profile.displayName || "未設定";
     liffReady = true;
     detectTimezone();
-    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + ((window._currentT || {}).selectLesson || "Select your lesson type below.") + '</span>';
+
+    // GASからlang・timezoneを早期取得して翻訳を適用
+    try {
+      const langRes = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName));
+      const langData = await langRes.json();
+      if (langData.lang && langData.lang !== 'ja') {
+        applyTranslations(langData.lang);
+      }
+      if (langData.timezone && langData.timezone !== '' && langData.timezone !== 'Asia/Tokyo') {
+        userTimezone = langData.timezone;
+        try {
+          const now = new Date();
+          userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+        } catch(e) {}
+      }
+    } catch(e) {}
+
+    const TInit = window._currentT || {};
+    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
   } catch (e) {
@@ -747,8 +764,9 @@ async function selectLesson(minutes) {
   selectedPrice = null;
   go("price");
   document.getElementById("nextBtn").disabled = true;
-  document.getElementById("lesson").textContent = minutes + "分レッスン / " + minutes + "-min Lesson";
-  document.getElementById("priceText").textContent = "取得中... / Loading...";
+  const TL = window._currentT || {};
+  document.getElementById("lesson").textContent = minutes + "分レッスン / " + (minutes === 25 ? (TL.btn25 || "25-min Lesson") : (TL.btn50 || "50-min Lesson"));
+  document.getElementById("priceText").textContent = "取得中... / " + (TL.loading || "Loading...");
   const ok = await ensureUserId();
   if (!ok) {
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
