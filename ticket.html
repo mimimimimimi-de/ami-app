@@ -614,10 +614,27 @@ function updateTotal() {
     return;
   }
 
-  const total = price * count;
-  document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`;
-  document.getElementById("totalDetail").textContent =
-    `$${price} × ${count}回 / 有効期限3ヶ月 (${T.policy1 || "Valid for 3 months"})`;
+  // 割引計算
+  let discountRate = 0;
+  let discountLabel = '';
+  if (count >= 10) { discountRate = 0.10; discountLabel = '🎉 10% OFF'; }
+  else if (count >= 5) { discountRate = 0.05; discountLabel = '🎉 5% OFF'; }
+
+  const totalBefore = price * count;
+  const discountAmount = Math.floor(totalBefore * discountRate * 100) / 100;
+  const total = Math.round((totalBefore - discountAmount) * 100) / 100;
+
+  if (discountRate > 0) {
+    document.getElementById("totalPrice").innerHTML =
+      `<span style="font-size:14px;text-decoration:line-through;color:#aaa;margin-right:8px;">$${totalBefore}</span><span>$</span>${total} <span style="font-size:14px;color:#e74c3c;font-weight:700;">${discountLabel}</span>`;
+    document.getElementById("totalDetail").textContent =
+      `$${price} × ${count}回 - ${discountRate * 100}%OFF / 有効期限3ヶ月`;
+  } else {
+    document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`;
+    document.getElementById("totalDetail").textContent =
+      `$${price} × ${count}回 / 有効期限3ヶ月 (${T.policy1 || "Valid for 3 months"})`;
+  }
+
   buyBtn.disabled = false;
 }
 
