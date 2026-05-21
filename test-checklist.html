@@ -676,6 +676,7 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbykZj8mcVkw-p3e8CIlJc06
 
 // GASから状態を読み込む
 async function loadStateFromGAS() {
+  renderSections(); // まず先にチェックリストを表示
   try {
     document.getElementById('saveStatus').textContent = '🔄 データを読み込み中...';
     const res = await fetch(GAS_URL + '?action=load&t=' + Date.now());
@@ -683,13 +684,14 @@ async function loadStateFromGAS() {
     if (data.ok) {
       state = data.data || {};
       document.getElementById('saveStatus').textContent = '✅ データを読み込みました（' + new Date().toLocaleTimeString() + '）';
+      renderSections(); // 読み込み後に再描画
     }
   } catch(e) {
     console.error(e);
-    document.getElementById('saveStatus').textContent = '⚠️ 読み込み失敗。ローカルデータを使用中。';
+    document.getElementById('saveStatus').textContent = '⚠️ GAS接続失敗。ローカルデータを使用中。';
     state = loadStateLocal();
+    renderSections();
   }
-  renderSections();
 }
 
 // GASに状態を保存する
