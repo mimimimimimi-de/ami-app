@@ -669,6 +669,7 @@ function hideProcessing() {
 function go(id) {
   document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function setLessonButtons(enabled) {
