@@ -420,8 +420,8 @@ function getCancelLang() {
   return localStorage.getItem("userLang") || "en";
 }
 
-function applyCancelLang() {
-  const l = getCancelLang();
+function applyCancelLang(forceLang) {
+  const l = forceLang || getCancelLang();
   if (l === "ja") return;
   const T = CANCEL_TRANS[l] || CANCEL_TRANS["en"];
   window._cancelT = T;
@@ -554,6 +554,13 @@ async function loadCancelData() {
     }
 
     reservationData = data.reservation;
+
+    // GASから言語を取得して適用
+    if (data.lang && data.lang !== 'ja') {
+      localStorage.setItem("userLang", data.lang);
+      applyCancelLang(data.lang);
+    }
+
     const T = window._cancelT || {};
 
     const lessonCard = document.getElementById("reservationInfo");

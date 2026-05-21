@@ -509,6 +509,12 @@ async function loadChangeData() {
 
     optionsData = data;
 
+    // GASから言語を取得して適用
+    if (data.lang && data.lang !== 'ja') {
+      localStorage.setItem("userLang", data.lang);
+      applyChangeLang(data.lang);
+    }
+
     const jstTime = data.reservation.time;
     const localTime = getLocalTimeLabel(data.reservation.date, jstTime);
     const timeDisplay = localTime ? `${jstTime} (JST) / ${localTime} (${userTzName || ''})` : jstTime;
