@@ -314,7 +314,7 @@ const CANCEL_TRANS = {
     absenceSent: "Absence notification sent to the teacher.",
     absenceConfirm: "Send absence notification to the teacher?",
     confirmCancelMsg: "No cancellation or refund after 12 hours before the lesson.",
-    sending: "Sending...",
+    sending: "Sending...", processingCancel: "Processing cancellation...",
     absenceGuide: "You can notify the teacher using the button below.",
     lesson: "Lesson", date: "Date", time: "Time", payment: "Payment", ticket: "Ticket"
   },
@@ -354,7 +354,7 @@ const CANCEL_TRANS = {
     absenceSent: "결석 알림이 선생님께 전송되었습니다.",
     absenceConfirm: "선생님께 결석 알림을 보내시겠습니까?",
     confirmCancelMsg: "레슨 시작 12시간 후에는 취소 및 환불이 불가합니다.",
-    sending: "전송 중...",
+    sending: "전송 중...", processingCancel: "취소 처리 중...",
     absenceGuide: "아래 버튼으로 선생님께 연락할 수 있습니다.",
     lesson: "레슨", date: "날짜", time: "시간", payment: "결제", ticket: "횟수권"
   },
@@ -374,7 +374,7 @@ const CANCEL_TRANS = {
     absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
     absenceConfirm: "ส่งการแจ้งขาดเรียนให้ครูหรือไม่?",
     confirmCancelMsg: "หลัง 12 ชั่วโมง ไม่สามารถยกเลิกหรือคืนเงินได้",
-    sending: "กำลังส่ง...",
+    sending: "กำลังส่ง...", processingCancel: "กำลังดำเนินการยกเลิก...",
     absenceGuide: "คุณสามารถแจ้งครูได้โดยใช้ปุ่มด้านล่าง",
     lesson: "บทเรียน", date: "วันที่", time: "เวลา", payment: "การชำระเงิน", ticket: "คูปอง"
   },
@@ -394,7 +394,7 @@ const CANCEL_TRANS = {
     absenceSent: "Notification d'absence envoyée au professeur.",
     absenceConfirm: "Envoyer une notification d'absence au professeur ?",
     confirmCancelMsg: "Pas d'annulation ou de remboursement après 12h avant la leçon.",
-    sending: "Envoi en cours...",
+    sending: "Envoi en cours...", processingCancel: "Traitement de l'annulation...",
     absenceGuide: "Vous pouvez notifier le professeur en utilisant le bouton ci-dessous.",
     lesson: "Leçon", date: "Date", time: "Heure", payment: "Paiement", ticket: "Ticket"
   },
@@ -414,7 +414,7 @@ const CANCEL_TRANS = {
     absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
     absenceConfirm: "Abwesenheitsbenachrichtigung an den Lehrer senden?",
     confirmCancelMsg: "Keine Stornierung oder Rückerstattung nach 12h vor der Unterrichtsstunde.",
-    sending: "Wird gesendet...",
+    sending: "Wird gesendet...", processingCancel: "Stornierung wird verarbeitet...",
     absenceGuide: "Sie können den Lehrer über die Schaltfläche unten benachrichtigen.",
     lesson: "Unterricht", date: "Datum", time: "Uhrzeit", payment: "Zahlung", ticket: "Ticket"
   }
@@ -629,6 +629,9 @@ async function executeCancel() {
 
     const btn = document.getElementById("cancelBtn");
     btn.disabled = true;
+    const T2 = window._cancelT || {};
+    const overlayEl = document.getElementById("overlayText");
+    if (overlayEl) overlayEl.innerHTML = "キャンセル中...<br><span style='font-size:13px;color:#888;'>" + (T2.processingCancel || "Processing cancellation...") + "</span>";
     document.getElementById("processingOverlay").classList.add("show");
 
     try {

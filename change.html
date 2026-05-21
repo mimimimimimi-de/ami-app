@@ -230,9 +230,9 @@ button {
 
 <div class="processing-overlay" id="processingOverlay">
   <div class="spinner"></div>
-  <div class="processing-text">
+  <div class="processing-text" id="overlayText">
     変更中...<br>
-    <span style="font-size:13px;color:#888;">Processing change...</span>
+    <span id="overlaySubText" style="font-size:13px;color:#888;">Processing change...</span>
   </div>
 </div>
 
@@ -246,7 +246,7 @@ button {
     <div class="info-box" id="reservationInfo">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
-        <div class="cal-loading-text">読み込み中...<br><span style="font-size:12px;color:#bbb;">Loading...</span></div>
+        <div class="cal-loading-text" id="calLoadingText">読み込み中...<br><span style="font-size:12px;color:#bbb;">Loading...</span></div>
       </div>
     </div>
 
@@ -313,7 +313,7 @@ const CHANGE_TRANS = {
     confirmMsg: "Change to this time?", status: "Changed", statusLabel: "Status", newTime: "New Time",
     addCalendar: "Add to Calendar", currentLesson: "Current Lesson", currentTime: "Current Time",
     back: "Back",
-    changeFailMsg: "Change failed. Please contact the teacher."
+    changeFailMsg: "Change failed. Please contact the teacher.", processingChange: "Processing change...", loadingSlots: "Loading available slots..."
   },
   zh: {
     title: "更改预约", tapToSelect: "点击○选择新时间",
@@ -326,7 +326,7 @@ const CHANGE_TRANS = {
     confirmMsg: "更改为此时间？", status: "已更改", statusLabel: "状态", newTime: "新时间",
     addCalendar: "添加到Google日历", currentLesson: "当前课程", currentTime: "当前时间",
     back: "返回",
-    changeFailMsg: "更改失败，请联系老师."
+    changeFailMsg: "更改失败，请联系老师.", processingChange: "正在处理更改...", loadingSlots: "正在加载可用时段..."
   },
   ko: {
     title: "예약 변경", tapToSelect: "○을 탭하여 새 시간을 선택해주세요",
@@ -339,7 +339,7 @@ const CHANGE_TRANS = {
     confirmMsg: "이 시간으로 변경할까요?", status: "변경 완료", statusLabel: "상태", newTime: "새 일시",
     addCalendar: "Google 캘린더에 추가", currentLesson: "현재 레슨", currentTime: "현재 일시",
     back: "뒤로",
-    changeFailMsg: "변경에 실패했습니다. 선생님께 연락해주세요."
+    changeFailMsg: "변경에 실패했습니다. 선생님께 연락해주세요.", processingChange: "변경 처리 중...", loadingSlots: "가능한 시간대를 불러오는 중..."
   },
   th: {
     title: "เปลี่ยนการจอง", tapToSelect: "แตะ ○ เพื่อเลือกเวลาใหม่",
@@ -352,7 +352,7 @@ const CHANGE_TRANS = {
     confirmMsg: "เปลี่ยนเป็นเวลานี้ใช่ไหม?", status: "เปลี่ยนแล้ว", statusLabel: "สถานะ", newTime: "เวลาใหม่",
     addCalendar: "เพิ่มใน Google Calendar", currentLesson: "บทเรียนปัจจุบัน", currentTime: "เวลาปัจจุบัน",
     back: "ย้อนกลับ",
-    changeFailMsg: "การเปลี่ยนล้มเหลว กรุณาติดต่อครู"
+    changeFailMsg: "การเปลี่ยนล้มเหลว กรุณาติดต่อครู", processingChange: "กำลังดำเนินการเปลี่ยน...", loadingSlots: "กำลังโหลดเวลาว่าง..."
   },
   fr: {
     title: "Modifier la réservation", tapToSelect: "Appuyez sur ○ pour sélectionner un nouveau créneau",
@@ -365,7 +365,7 @@ const CHANGE_TRANS = {
     confirmMsg: "Changer pour ce créneau ?", status: "Modifié", statusLabel: "Statut", newTime: "Nouvel horaire",
     addCalendar: "Ajouter à Google Agenda", currentLesson: "Leçon actuelle", currentTime: "Heure actuelle",
     back: "Retour",
-    changeFailMsg: "Échec de la modification. Veuillez contacter le professeur."
+    changeFailMsg: "Échec de la modification. Veuillez contacter le professeur.", processingChange: "Traitement en cours...", loadingSlots: "Chargement des créneaux disponibles..."
   },
   de: {
     title: "Buchung ändern", tapToSelect: "Tippen Sie auf ○, um einen neuen Zeitslot zu wählen",
@@ -378,7 +378,7 @@ const CHANGE_TRANS = {
     confirmMsg: "Zu diesem Zeitslot wechseln?", status: "Geändert", statusLabel: "Status", newTime: "Neue Zeit",
     addCalendar: "Zu Google Kalender hinzufügen", currentLesson: "Aktueller Unterricht", currentTime: "Aktuelle Zeit",
     back: "Zurück",
-    changeFailMsg: "Änderung fehlgeschlagen. Bitte kontaktieren Sie den Lehrer."
+    changeFailMsg: "Änderung fehlgeschlagen. Bitte kontaktieren Sie den Lehrer.", processingChange: "Wird verarbeitet...", loadingSlots: "Verfügbare Zeitslots werden geladen..."
   }
 };
 
@@ -671,6 +671,11 @@ function handleSlotTap(date, time) {
 
 async function executeChange(date, time) {
   document.getElementById("processingOverlay").classList.add("show");
+  const overlaySubText = document.getElementById("overlaySubText");
+  if (overlaySubText) {
+    const T = window._changeT || {};
+    overlaySubText.textContent = T.processingChange || "Processing change...";
+  }
   try {
     const url = GAS_URL + "?action=changeExecute&mode=raw&id=" + encodeURIComponent(reservationId) + "&date=" + encodeURIComponent(date) + "&time=" + encodeURIComponent(time) + "&t=" + Date.now();
     const res = await fetch(url);

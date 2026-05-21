@@ -615,7 +615,7 @@ body::after {
   <div class="list" id="listEl">
     <div class="loading">
       <div class="spinner"></div>
-      <div>読み込み中... / Loading...</div>
+      <div>読み込み中... / <span id="loadingSubText">Loading...</span></div>
     </div>
   </div>
 
@@ -639,7 +639,7 @@ const MYBOOKING_TRANS = {
     cancelled: "Cancelled", soon: "Soon", confirmed: "Confirmed", done: "Done",
     lesson: "Lesson", fee: "Fee", date: "Date", time: "Time",
     noUpcoming: "No upcoming lessons.\nBook a new lesson!", noPast: "No past lessons. (Last 3 months)", noAll: "No lessons found.",
-    failedLoad: "Failed to load. / Retry",
+    failedLoad: "Failed to load. / Retry", loading: "Loading...",
     historyNote: "Showing history from the last 3 months only."
   },
   zh: {
@@ -650,7 +650,7 @@ const MYBOOKING_TRANS = {
     cancelled: "已取消", soon: "即将开始", confirmed: "已确认", done: "已完成",
     lesson: "课程", fee: "费用", date: "日期", time: "时间",
     noUpcoming: "暂无即将到来的课程.\n立即预约！", noPast: "暂无过去的课程.（最近3个月）", noAll: "未找到课程.",
-    failedLoad: "加载失败./ 重试",
+    failedLoad: "加载失败./ 重试", loading: "加载中...",
     historyNote: "仅显示最近3个月的历史记录。"
   },
   ko: {
@@ -661,7 +661,7 @@ const MYBOOKING_TRANS = {
     cancelled: "취소됨", soon: "곧 시작", confirmed: "예약 확정", done: "완료",
     lesson: "레슨", fee: "요금", date: "날짜", time: "시간",
     noUpcoming: "예정된 레슨이 없습니다.\n새 레슨을 예약해보세요!", noPast: "지난 레슨이 없습니다. (최근 3개월)", noAll: "레슨을 찾을 수 없습니다.",
-    failedLoad: "불러오기 실패. / 다시 시도",
+    failedLoad: "불러오기 실패. / 다시 시도", loading: "불러오는 중...",
     historyNote: "최근 3개월 이내의 기록만 표시됩니다."
   },
   th: {
@@ -672,7 +672,7 @@ const MYBOOKING_TRANS = {
     cancelled: "ยกเลิกแล้ว", soon: "เร็วๆนี้", confirmed: "ยืนยันแล้ว", done: "เสร็จสิ้น",
     lesson: "บทเรียน", fee: "ค่าเรียน", date: "วันที่", time: "เวลา",
     noUpcoming: "ไม่มีบทเรียนที่กำลังจะมาถึง\nจองบทเรียนใหม่!", noPast: "ไม่มีบทเรียนที่ผ่านมา (3 เดือนล่าสุด)", noAll: "ไม่พบบทเรียน",
-    failedLoad: "โหลดล้มเหลว / ลองใหม่",
+    failedLoad: "โหลดล้มเหลว / ลองใหม่", loading: "กำลังโหลด...",
     historyNote: "แสดงประวัติเฉพาะ 3 เดือนล่าสุดเท่านั้น"
   },
   fr: {
@@ -737,7 +737,9 @@ function applyMyBookingLang() {
   const ticketTitle = document.querySelector("#ticketSection > div");
   if (ticketTitle) ticketTitle.textContent = "🎟️ 回数券 / " + T.tickets;
 
-  // 3ヶ月注意書きサブテキスト
+  // ローディングサブテキスト
+  const loadingSubText = document.getElementById("loadingSubText");
+  if (loadingSubText) loadingSubText.textContent = T.loading || "Loading...";
   const historyNoteSub = document.getElementById("historyNoteSub");
   if (historyNoteSub) historyNoteSub.textContent = T.historyNote || "Showing history from the last 3 months only.";
 }
