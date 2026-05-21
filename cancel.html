@@ -567,6 +567,15 @@ async function loadCancelData() {
       applyCancelLang(data.lang);
     }
 
+    // GASからタイムゾーンを取得して適用
+    if (data.timezone && data.timezone !== '' && data.timezone !== 'Asia/Tokyo') {
+      userTimezone = data.timezone;
+      try {
+        const now = new Date();
+        userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    }
+
     const T = window._cancelT || {};
 
     const lessonCard = document.getElementById("reservationInfo");
