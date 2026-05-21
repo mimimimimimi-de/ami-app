@@ -312,6 +312,7 @@ const CHANGE_TRANS = {
     close: "Close", loading: "Loading...", checkingSlots: "Checking available slots...",
     confirmMsg: "Change to this time?", status: "Changed", statusLabel: "Status", newTime: "New Time",
     addCalendar: "Add to Calendar", currentLesson: "Current Lesson", currentTime: "Current Time",
+    back: "Back",
     changeFailMsg: "Change failed. Please contact the teacher."
   },
   zh: {
@@ -324,6 +325,7 @@ const CHANGE_TRANS = {
     close: "关闭", loading: "加载中...", checkingSlots: "正在检查可用时段...",
     confirmMsg: "更改为此时间？", status: "已更改", statusLabel: "状态", newTime: "新时间",
     addCalendar: "添加到Google日历", currentLesson: "当前课程", currentTime: "当前时间",
+    back: "返回",
     changeFailMsg: "更改失败，请联系老师."
   },
   ko: {
@@ -336,6 +338,7 @@ const CHANGE_TRANS = {
     close: "닫기", loading: "불러오는 중...", checkingSlots: "가능한 시간대를 확인하고 있습니다...",
     confirmMsg: "이 시간으로 변경할까요?", status: "변경 완료", statusLabel: "상태", newTime: "새 일시",
     addCalendar: "Google 캘린더에 추가", currentLesson: "현재 레슨", currentTime: "현재 일시",
+    back: "뒤로",
     changeFailMsg: "변경에 실패했습니다. 선생님께 연락해주세요."
   },
   th: {
@@ -348,6 +351,7 @@ const CHANGE_TRANS = {
     close: "ปิด", loading: "กำลังโหลด...", checkingSlots: "กำลังตรวจสอบเวลาว่าง...",
     confirmMsg: "เปลี่ยนเป็นเวลานี้ใช่ไหม?", status: "เปลี่ยนแล้ว", statusLabel: "สถานะ", newTime: "เวลาใหม่",
     addCalendar: "เพิ่มใน Google Calendar", currentLesson: "บทเรียนปัจจุบัน", currentTime: "เวลาปัจจุบัน",
+    back: "ย้อนกลับ",
     changeFailMsg: "การเปลี่ยนล้มเหลว กรุณาติดต่อครู"
   },
   fr: {
@@ -360,6 +364,7 @@ const CHANGE_TRANS = {
     close: "Fermer", loading: "Chargement...", checkingSlots: "Vérification des créneaux disponibles...",
     confirmMsg: "Changer pour ce créneau ?", status: "Modifié", statusLabel: "Statut", newTime: "Nouvel horaire",
     addCalendar: "Ajouter à Google Agenda", currentLesson: "Leçon actuelle", currentTime: "Heure actuelle",
+    back: "Retour",
     changeFailMsg: "Échec de la modification. Veuillez contacter le professeur."
   },
   de: {
@@ -372,6 +377,7 @@ const CHANGE_TRANS = {
     close: "Schließen", loading: "Wird geladen...", checkingSlots: "Verfügbare Zeitslots werden überprüft...",
     confirmMsg: "Zu diesem Zeitslot wechseln?", status: "Geändert", statusLabel: "Status", newTime: "Neue Zeit",
     addCalendar: "Zu Google Kalender hinzufügen", currentLesson: "Aktueller Unterricht", currentTime: "Aktuelle Zeit",
+    back: "Zurück",
     changeFailMsg: "Änderung fehlgeschlagen. Bitte kontaktieren Sie den Lehrer."
   }
 };
@@ -635,8 +641,8 @@ function handleSlotTap(date, time) {
       <p style="font-size:16px;font-weight:700;margin-bottom:8px;">📅 ${displayDate} ${timeDisplay}</p>
       <p style="font-size:14px;color:#666;margin-bottom:20px;">に変更しますか？<br><span style="font-size:12px;color:#aaa;">${T.confirmMsg || "Change to this time?"}</span></p>
       <div style="display:flex;gap:10px;">
-        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">キャンセル</button>
-        <button id="confirmOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">OK</button>
+        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">戻る<span style="display:block;font-size:11px;font-weight:400;color:#888;">${T.back || "Back"}</span></button>
+        <button id="confirmOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">変更する<span style="display:block;font-size:11px;font-weight:400;color:rgba(255,255,255,0.8);">${T.confirmMsg || "Change"}</span></button>
       </div>
     </div>`;
   document.body.appendChild(modal);

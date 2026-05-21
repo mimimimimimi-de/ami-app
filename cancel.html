@@ -308,6 +308,7 @@ const CANCEL_TRANS = {
     pastDeadline: "Past the cancellation deadline", pastDeadlineMsg: "If you cannot attend, please contact the teacher directly via LINE as soon as possible.",
     absenceTitle: "If past the cancellation deadline", absenceMsg: "Please notify the teacher directly via LINE as soon as possible.",
     absenceBtn: "Notify Teacher of Absence", close: "Close",
+    back: "Back",
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
     absenceSent: "Absence notification sent to the teacher.",
@@ -327,6 +328,7 @@ const CANCEL_TRANS = {
     pastDeadline: "已超过取消期限", pastDeadlineMsg: "如无法出席，请尽快通过LINE直接联系老师.",
     absenceTitle: "超过取消期限后缺席", absenceMsg: "请尽快通过LINE直接联系老师.",
     absenceBtn: "通知老师缺席", close: "关闭",
+    back: "返回",
     canClose: "可以关闭此页面.", cancelled: "已取消", cannotCancel: "无法取消",
     successMsg: "取消完成.", refundDone: "退款处理完成.",
     absenceSent: "缺席通知已发送给老师.",
@@ -346,6 +348,7 @@ const CANCEL_TRANS = {
     pastDeadline: "취소 기한이 지났습니다", pastDeadlineMsg: "참석하지 못하는 경우 가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
     absenceTitle: "취소 기한 이후 결석하는 경우", absenceMsg: "가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
     absenceBtn: "선생님께 결석 연락하기", close: "닫기",
+    back: "뒤로",
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
     absenceSent: "결석 알림이 선생님께 전송되었습니다.",
@@ -365,6 +368,7 @@ const CANCEL_TRANS = {
     pastDeadline: "เกินกำหนดการยกเลิก", pastDeadlineMsg: "หากไม่สามารถเข้าร่วมได้ กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
     absenceTitle: "หากขาดเรียนหลังเกินกำหนด", absenceMsg: "กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
     absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด",
+    back: "ย้อนกลับ",
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
     absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
@@ -384,6 +388,7 @@ const CANCEL_TRANS = {
     pastDeadline: "Délai d'annulation dépassé", pastDeadlineMsg: "Si vous ne pouvez pas assister, veuillez contacter le professeur directement via LINE dès que possible.",
     absenceTitle: "Si absence après le délai", absenceMsg: "Veuillez notifier le professeur directement via LINE dès que possible.",
     absenceBtn: "Notifier le professeur de l'absence", close: "Fermer",
+    back: "Retour",
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
     absenceSent: "Notification d'absence envoyée au professeur.",
@@ -403,6 +408,7 @@ const CANCEL_TRANS = {
     pastDeadline: "Stornierungsfrist überschritten", pastDeadlineMsg: "Wenn Sie nicht teilnehmen können, kontaktieren Sie den Lehrer so schnell wie möglich direkt über LINE.",
     absenceTitle: "Bei Abwesenheit nach der Frist", absenceMsg: "Bitte benachrichtigen Sie den Lehrer so schnell wie möglich direkt über LINE.",
     absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen",
+    back: "Zurück",
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
     absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
@@ -597,8 +603,8 @@ async function executeCancel() {
       <p style="font-size:16px;font-weight:700;margin-bottom:8px;">⚠️ 本当にキャンセルしますか？</p>
       <p style="font-size:13px;color:#666;margin-bottom:20px;">※レッスン開始12時間前を過ぎている場合は、キャンセル・返金はできません。<br><span style="font-size:12px;color:#aaa;">${T.confirmCancelMsg || ""}</span></p>
       <div style="display:flex;gap:10px;">
-        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">戻る</button>
-        <button id="confirmCancelOkBtn" style="flex:1;padding:14px;background:#d93025;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">キャンセルする</button>
+        <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">戻る<span style="display:block;font-size:11px;font-weight:400;color:#888;">${T.back || "Back"}</span></button>
+        <button id="confirmCancelOkBtn" style="flex:1;padding:14px;background:#d93025;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">キャンセルする<span style="display:block;font-size:11px;font-weight:400;color:rgba(255,255,255,0.8);">${T.confirmCancel || "Confirm"}</span></button>
       </div>
     </div>`;
   document.body.appendChild(modal);
@@ -660,8 +666,8 @@ async function sendAbsence() {
       <p style="font-size:16px;font-weight:700;margin-bottom:8px;">📨 先生に欠席連絡を送りますか？</p>
       <p style="font-size:13px;color:#aaa;margin-bottom:20px;">${T.absenceConfirm || "Send absence notification to the teacher?"}</p>
       <div style="display:flex;gap:10px;">
-        <button onclick="document.getElementById('absenceModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">戻る</button>
-        <button id="absenceOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">送る</button>
+        <button onclick="document.getElementById('absenceModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">戻る<span style="display:block;font-size:11px;font-weight:400;color:#888;">${T.back || "Back"}</span></button>
+        <button id="absenceOkBtn" style="flex:1;padding:14px;background:#06C755;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">送る<span style="display:block;font-size:11px;font-weight:400;color:rgba(255,255,255,0.8);">${T.absenceBtn || "Send"}</span></button>
       </div>
     </div>`;
   document.body.appendChild(modal);
