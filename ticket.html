@@ -342,8 +342,12 @@ body {
 <div class="content">
 
   <div class="info-banner">
-    <h2>まとめて買ってお得に！<span style="display:block;font-size:13px;font-weight:400;opacity:0.9;">Save more by buying in bulk!</span></h2>
-    <p>有効期限3ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.85;">Valid for 3 months · Non-refundable · Auto-deducted when booking</span></p>
+    <h2 id="bannerTitle">まとめて買ってお得に！<span id="bannerTitleSub" style="display:block;font-size:13px;font-weight:400;opacity:0.9;">Save more by buying in bulk!</span></h2>
+    <p id="bannerDesc">有効期限2ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.85;">Valid for 2 months · Non-refundable · Auto-deducted when booking</span></p>
+    <div style="margin-top:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;">
+      🎉 5回以上で5%OFF / 10回以上で10%OFF<br>
+      <span id="discountSubText" style="font-size:11px;font-weight:400;opacity:0.9;">5+ lessons: 5% OFF · 10+ lessons: 10% OFF</span>
+    </div>
   </div>
 
   <!-- レッスン選択 -->
@@ -382,7 +386,7 @@ body {
   <!-- 注意事項 -->
   <div class="policy-card">
     <strong>📋 ご購入前にご確認ください / Please read before purchasing</strong>
-    ・有効期限：購入日から3ヶ月 / Valid for 3 months from purchase date<br>
+    ・有効期限：購入日から2ヶ月 / Valid for 2 months from purchase date<br>
     ・期限切れ・途中解約による返金はできません / No refunds for expired or unused tickets<br>
     ・予約時に残り回数が自動で1回減ります / 1 ticket is automatically deducted per booking<br>
     ・回数券がある場合、予約時に使用方法を選べます / You can choose to use tickets when booking
@@ -405,14 +409,15 @@ const TICKET_TRANS = {
   en: {
     title: "Buy Lesson Tickets",
     bannerTitle: "Save more by buying in bulk!",
-    bannerDesc: "Valid for 3 months · Non-refundable · Auto-deducted when booking",
+    bannerDesc: "Valid for 2 months · Non-refundable · Auto-deducted when booking",
+    discountSub: "5+ lessons: 5% OFF · 10+ lessons: 10% OFF",
     lessonType: "Lesson Type",
     countLabel: "Number of Lessons (min. 2)",
     countNote: "Minimum 2 lessons required",
     total: "Total",
     selectLesson: "Please select a lesson",
     policyTitle: "Please read before purchasing",
-    policy1: "Valid for 3 months from purchase date",
+    policy1: "Valid for 2 months from purchase date",
     policy2: "No refunds for expired or unused tickets",
     policy3: "1 ticket is automatically deducted per booking",
     policy4: "You can choose to use tickets when booking",
@@ -423,7 +428,8 @@ const TICKET_TRANS = {
   zh: {
     title: "购买课程次券",
     bannerTitle: "批量购买更划算！",
-    bannerDesc: "有效期3个月 · 不可退款 · 预约时自动扣减",
+    bannerDesc: "有效期2个月 · 不可退款 · 预约时自动扣减",
+    discountSub: "5次以上: 5% OFF · 10次以上: 10% OFF",
     lessonType: "课程类型",
     countLabel: "次数（最少2次）",
     countNote: "最少需要2次",
@@ -441,14 +447,15 @@ const TICKET_TRANS = {
   ko: {
     title: "레슨 횟수권 구매",
     bannerTitle: "묶음 구매로 더 저렴하게!",
-    bannerDesc: "유효기간 3개월 · 환불 불가 · 예약 시 자동 차감",
+    bannerDesc: "유효기간 2개월 · 환불 불가 · 예약 시 자동 차감",
+    discountSub: "5회 이상: 5% OFF · 10회 이상: 10% OFF",
     lessonType: "레슨 종류",
     countLabel: "횟수 선택 (최소 2회)",
     countNote: "최소 2회 이상 구매 가능",
     total: "합계 금액",
     selectLesson: "레슨을 선택해주세요",
     policyTitle: "구매 전 확인해주세요",
-    policy1: "유효기간：구매일로부터 3개월",
+    policy1: "유효기간：구매일로부터 2개월",
     policy2: "기간 만료 또는 중도 해지 환불 불가",
     policy3: "예약 시 잔여 횟수가 자동으로 1회 차감됩니다",
     policy4: "횟수권이 있는 경우 예약 시 사용 방법을 선택할 수 있습니다",
@@ -459,14 +466,15 @@ const TICKET_TRANS = {
   th: {
     title: "ซื้อคูปองบทเรียน",
     bannerTitle: "ซื้อแพ็คเกจประหยัดกว่า!",
-    bannerDesc: "อายุ 3 เดือน · ไม่สามารถคืนเงินได้ · หักอัตโนมัติเมื่อจอง",
+    bannerDesc: "อายุ 2 เดือน · ไม่สามารถคืนเงินได้ · หักอัตโนมัติเมื่อจอง",
+    discountSub: "5 ครั้งขึ้นไป: 5% OFF · 10 ครั้งขึ้นไป: 10% OFF"",
     lessonType: "ประเภทบทเรียน",
     countLabel: "จำนวนครั้ง (ขั้นต่ำ 2 ครั้ง)",
     countNote: "ซื้อได้ตั้งแต่ 2 ครั้งขึ้นไป",
     total: "ยอดรวม",
     selectLesson: "กรุณาเลือกบทเรียน",
     policyTitle: "กรุณาอ่านก่อนซื้อ",
-    policy1: "อายุการใช้งาน：3 เดือนนับจากวันที่ซื้อ",
+    policy1: "อายุการใช้งาน：2 เดือนนับจากวันที่ซื้อ",
     policy2: "ไม่สามารถคืนเงินได้เมื่อหมดอายุหรือยกเลิก",
     policy3: "จำนวนคูปองจะถูกหัก 1 ครั้งโดยอัตโนมัติเมื่อจอง",
     policy4: "หากมีคูปอง สามารถเลือกใช้ได้เมื่อจอง",
@@ -477,14 +485,15 @@ const TICKET_TRANS = {
   fr: {
     title: "Acheter des tickets de leçon",
     bannerTitle: "Économisez en achetant en lots !",
-    bannerDesc: "Valable 3 mois · Non remboursable · Déduit automatiquement lors de la réservation",
+    bannerDesc: "Valable 2 mois · Non remboursable · Déduit automatiquement lors de la réservation",
+    discountSub: "5 leçons+: 5% OFF · 10 leçons+: 10% OFF",
     lessonType: "Type de leçon",
     countLabel: "Nombre de leçons (min. 2)",
     countNote: "Minimum 2 leçons requises",
     total: "Montant total",
     selectLesson: "Veuillez sélectionner une leçon",
     policyTitle: "Veuillez lire avant d'acheter",
-    policy1: "Valable 3 mois à partir de la date d'achat",
+    policy1: "Valable 2 mois à partir de la date d'achat",
     policy2: "Pas de remboursement pour les tickets expirés ou inutilisés",
     policy3: "1 ticket est automatiquement déduit par réservation",
     policy4: "Vous pouvez choisir d'utiliser des tickets lors de la réservation",
@@ -495,14 +504,15 @@ const TICKET_TRANS = {
   de: {
     title: "Unterrichts-Tickets kaufen",
     bannerTitle: "Mehr sparen beim Kauf im Paket!",
-    bannerDesc: "3 Monate gültig · Nicht erstattungsfähig · Automatisch abgezogen bei Buchung",
+    bannerDesc: "2 Monate gültig · Nicht erstattungsfähig · Automatisch abgezogen bei Buchung",
+    discountSub: "Ab 5 Stunden: 5% OFF · Ab 10 Stunden: 10% OFF",
     lessonType: "Unterrichtstyp",
     countLabel: "Anzahl der Unterrichtsstunden (min. 2)",
     countNote: "Mindestens 2 Unterrichtsstunden erforderlich",
     total: "Gesamtbetrag",
     selectLesson: "Bitte wählen Sie einen Unterricht",
     policyTitle: "Bitte vor dem Kauf lesen",
-    policy1: "Gültig für 3 Monate ab Kaufdatum",
+    policy1: "Gültig für 2 Monate ab Kaufdatum",
     policy2: "Keine Rückerstattung für abgelaufene oder ungenutzte Tickets",
     policy3: "1 Ticket wird automatisch pro Buchung abgezogen",
     policy4: "Sie können wählen, Tickets bei der Buchung zu verwenden",
@@ -527,6 +537,10 @@ function applyTicketLang() {
   // タイトル
   const titleSpan = document.querySelector("h1 span");
   if (titleSpan) titleSpan.textContent = T.title;
+
+  // 割引サブテキスト
+  const discountSubText = document.getElementById("discountSubText");
+  if (discountSubText) discountSubText.textContent = T.discountSub || "5+ lessons: 5% OFF · 10+ lessons: 10% OFF";
 
   // バナー
   const bannerTitle = document.querySelector(".info-banner h2 span");
@@ -628,11 +642,11 @@ function updateTotal() {
     document.getElementById("totalPrice").innerHTML =
       `<span style="font-size:14px;text-decoration:line-through;color:#aaa;margin-right:8px;">$${totalBefore}</span><span>$</span>${total} <span style="font-size:14px;color:#e74c3c;font-weight:700;">${discountLabel}</span>`;
     document.getElementById("totalDetail").textContent =
-      `$${price} × ${count}回 - ${discountRate * 100}%OFF / 有効期限3ヶ月`;
+      `$${price} × ${count}回 - ${discountRate * 100}%OFF / 有効期限2ヶ月`;
   } else {
     document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`;
     document.getElementById("totalDetail").textContent =
-      `$${price} × ${count}回 / 有効期限3ヶ月 (${T.policy1 || "Valid for 3 months"})`;
+      `$${price} × ${count}回 / 有効期限2ヶ月 (${T.policy1 || "Valid for 2 months"})`;
   }
 
   buyBtn.disabled = false;
