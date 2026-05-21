@@ -403,7 +403,12 @@ const TRANSLATIONS = {
     payNow: "Pay now", payByCard: "Pay by card for this session only",
     bookWithTicket: "Book with Ticket",
     proceed: "Proceed to Payment",
-    processing: "Processing..."
+    processing: "Processing...",
+    checkingTime: "Checking selected time...",
+    checkingTicket: "Checking ticket...",
+    savingReservation: "Saving reservation...",
+    preparingPayment: "Preparing payment page...",
+    loading: "Loading..."
   },
   zh: {
     selectLesson: "请选择课程类型",
@@ -428,7 +433,12 @@ const TRANSLATIONS = {
     payNow: "立即付款", payByCard: "仅本次用信用卡支付",
     bookWithTicket: "用次券预约",
     proceed: "前往付款",
-    processing: "处理中..."
+    processing: "处理中...",
+    checkingTime: "正在确认所选时间...",
+    checkingTicket: "正在确认次券...",
+    savingReservation: "正在保存预约...",
+    preparingPayment: "正在准备支付页面...",
+    loading: "获取中..."
   },
   ko: {
     selectLesson: "레슨 유형을 선택해주세요",
@@ -453,7 +463,12 @@ const TRANSLATIONS = {
     payNow: "즉시 결제", payByCard: "이번 회만 카드로 결제",
     bookWithTicket: "횟수권으로 예약",
     proceed: "결제 진행",
-    processing: "처리 중..."
+    processing: "처리 중...",
+    checkingTime: "선택한 시간을 확인하고 있습니다...",
+    checkingTicket: "횟수권을 확인하고 있습니다...",
+    savingReservation: "예약을 저장하고 있습니다...",
+    preparingPayment: "결제 페이지를 준비하고 있습니다...",
+    loading: "불러오는 중..."
   },
   th: {
     selectLesson: "กรุณาเลือกประเภทบทเรียน",
@@ -478,7 +493,12 @@ const TRANSLATIONS = {
     payNow: "ชำระเงินทันที", payByCard: "ชำระด้วยบัตรครั้งนี้เท่านั้น",
     bookWithTicket: "จองด้วยคูปอง",
     proceed: "ดำเนินการชำระเงิน",
-    processing: "กำลังดำเนินการ..."
+    processing: "กำลังดำเนินการ...",
+    checkingTime: "กำลังตรวจสอบเวลาที่เลือก...",
+    checkingTicket: "กำลังตรวจสอบคูปอง...",
+    savingReservation: "กำลังบันทึกการจอง...",
+    preparingPayment: "กำลังเตรียมหน้าชำระเงิน...",
+    loading: "กำลังโหลด..."
   },
   fr: {
     selectLesson: "Choisissez votre type de leçon",
@@ -503,7 +523,12 @@ const TRANSLATIONS = {
     payNow: "Payer maintenant", payByCard: "Payer par carte pour cette session",
     bookWithTicket: "Réserver avec ticket",
     proceed: "Procéder au paiement",
-    processing: "Traitement en cours..."
+    processing: "Traitement en cours...",
+    checkingTime: "Vérification de l'heure sélectionnée...",
+    checkingTicket: "Vérification du ticket...",
+    savingReservation: "Sauvegarde de la réservation...",
+    preparingPayment: "Préparation de la page de paiement...",
+    loading: "Chargement..."
   },
   de: {
     selectLesson: "Wählen Sie Ihren Unterrichtstyp",
@@ -528,7 +553,12 @@ const TRANSLATIONS = {
     payNow: "Jetzt bezahlen", payByCard: "Nur diese Sitzung per Karte bezahlen",
     bookWithTicket: "Mit Ticket buchen",
     proceed: "Zur Zahlung",
-    processing: "Wird verarbeitet..."
+    processing: "Wird verarbeitet...",
+    checkingTime: "Ausgewählte Zeit wird überprüft...",
+    checkingTicket: "Ticket wird überprüft...",
+    savingReservation: "Buchung wird gespeichert...",
+    preparingPayment: "Zahlungsseite wird vorbereitet...",
+    loading: "Wird geladen..."
   }
 };
 
@@ -657,8 +687,10 @@ function formatTimeWithTz(dateStr, timeStr) {
   }
 }
 
-function showProcessing(msg) {
-  document.getElementById("processingText").innerHTML = msg + '<br><span style="font-size:13px;color:#888;">Please wait...</span>';
+function showProcessing(msgJa, msgSub) {
+  const T = window._currentT || {};
+  const sub = msgSub || (T.processing ? T.processing : "Processing...");
+  document.getElementById("processingText").innerHTML = msgJa + '<br><span style="font-size:13px;color:#888;">' + sub + '</span>';
   document.getElementById("processingOverlay").classList.add("show");
 }
 
@@ -680,7 +712,8 @@ function setLessonButtons(enabled) {
 async function init() {
   try {
     setLessonButtons(false);
-    document.getElementById("loginStatus").innerHTML = 'LINE情報を確認しています...<span class="en-sub">Checking LINE info...</span>';
+    const T2 = window._currentT || {};
+    document.getElementById("loginStatus").innerHTML = 'LINE情報を確認しています...<span class="en-sub">' + (T2.checking || "Checking LINE info...") + '</span>';
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login({ redirectUri: window.location.href }); return; }
     const profile = await liff.getProfile();
@@ -689,7 +722,7 @@ async function init() {
     displayName = profile.displayName || "未設定";
     liffReady = true;
     detectTimezone();
-    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">Select your lesson type below.</span>';
+    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + ((window._currentT || {}).selectLesson || "Select your lesson type below.") + '</span>';
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
   } catch (e) {
@@ -715,7 +748,8 @@ async function selectLesson(minutes) {
   go("price");
   document.getElementById("nextBtn").disabled = true;
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + minutes + "-min Lesson";
-  document.getElementById("priceText").textContent = "取得中... / Loading...";
+  const T1 = window._currentT || {};
+  document.getElementById("priceText").textContent = "取得中... / " + (T1.loading || "Loading...");
   const ok = await ensureUserId();
   if (!ok) {
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
@@ -967,7 +1001,8 @@ async function generateCalendar() {
 }
 
 async function pickSlot(date, time) {
-  showProcessing("日時を確認しています...\nChecking selected time...");
+  const T0 = window._currentT || {};
+  showProcessing("日時を確認しています...", T0.checkingTime || "Checking selected time...");
 
   selectedDate = date;
   selectedTime = time;
@@ -1070,7 +1105,7 @@ async function checkout() {
   statusEl.className = "status";
 
   if (selectedPayment !== "stripe") {
-    showProcessing("回数券を確認しています...\nChecking ticket...");
+    showProcessing("回数券を確認しています...", (window._currentT || {}).checkingTicket || "Checking ticket...");
     try {
       const ok = await ensureUserId();
       if (!ok) {
@@ -1092,7 +1127,7 @@ async function checkout() {
         return;
       }
 
-      showProcessing("予約を保存しています...\nSaving reservation...");
+      showProcessing("予約を保存しています...", (window._currentT || {}).savingReservation || "Saving reservation...");
       const lessonLabel = selectedMinutes + "分レッスン";
 
       await fetch(GAS_URL, {
@@ -1161,7 +1196,7 @@ async function checkout() {
     return;
   }
 
-  showProcessing("決済ページを準備しています...\nPreparing payment page...");
+  showProcessing("決済ページを準備しています...", (window._currentT || {}).preparingPayment || "Preparing payment page...");
 
   try {
     const ok = await ensureUserId();
