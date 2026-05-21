@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ご利用ガイド | Ami's Japanese Lesson</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=DM+Sans:wght@400;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f7f2;
+    font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: #06C755;
+    padding: 32px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .header-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-title-en {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-desc {
+    margin-top: 14px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* コンテンツ */
+  .content {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* 画像カード */
+  .guide-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .guide-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .guide-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .guide-card-label {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #06C755;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* プレースホルダー（画像が未アップロードの場合） */
+  .img-placeholder {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    aspect-ratio: 9/16;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #06C755;
+  }
+
+  .img-placeholder .placeholder-icon {
+    font-size: 48px;
+  }
+
+  .img-placeholder .placeholder-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #06C755;
+  }
+
+  .img-placeholder .placeholder-sub {
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  .back-btn {
+    display: block;
+    max-width: 500px;
+    margin: 0 auto 12px;
+    padding: 14px;
+    background: #06C755;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .scroll-hint {
+    text-align: center;
+    padding: 12px;
+    font-size: 12px;
+    color: #888;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">📖</span>
+  <div class="header-title">ご利用ガイド</div>
+  <div class="header-title-en">How to Use</div>
+  <div class="header-desc">
+    登録・予約・変更・回数券・欠席連絡の方法をまとめています。<br>
+    下にスクロールしてご確認ください。
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="scroll-hint">↓ スクロールして確認 / Scroll down</div>
+
+  <!-- 表紙 -->
+  <div class="guide-card">
+    <img src="/images/guide-cover.png" alt="ご利用ガイド 表紙"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">📖</span>
+      <span class="placeholder-text">表紙</span>
+      <span class="placeholder-sub">guide-cover.png</span>
+    </div>
+    <div class="guide-card-label">📖 表紙 / Cover</div>
+  </div>
+
+  <!-- STEP1 -->
+  <div class="guide-card">
+    <img src="/images/guide-step1.png" alt="STEP1 登録する"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">1️⃣</span>
+      <span class="placeholder-text">STEP 1 - 登録する</span>
+      <span class="placeholder-sub">guide-step1.png</span>
+    </div>
+    <div class="guide-card-label">1️⃣ STEP 1 / 登録する / Register</div>
+  </div>
+
+  <!-- STEP2 -->
+  <div class="guide-card">
+    <img src="/images/guide-step2.png" alt="STEP2 予約する"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">2️⃣</span>
+      <span class="placeholder-text">STEP 2 - 予約する</span>
+      <span class="placeholder-sub">guide-step2.png</span>
+    </div>
+    <div class="guide-card-label">2️⃣ STEP 2 / 予約する / Book a Lesson</div>
+  </div>
+
+  <!-- STEP3 -->
+  <div class="guide-card">
+    <img src="/images/guide-step3.png" alt="STEP3 変更・キャンセル"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">3️⃣</span>
+      <span class="placeholder-text">STEP 3 - 変更・キャンセル</span>
+      <span class="placeholder-sub">guide-step3.png</span>
+    </div>
+    <div class="guide-card-label">3️⃣ STEP 3 / 変更・キャンセル / Change & Cancel</div>
+  </div>
+
+  <!-- STEP4 -->
+  <div class="guide-card">
+    <img src="/images/guide-step4.png" alt="STEP4 回数券"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">4️⃣</span>
+      <span class="placeholder-text">STEP 4 - 回数券</span>
+      <span class="placeholder-sub">guide-step4.png</span>
+    </div>
+    <div class="guide-card-label">4️⃣ STEP 4 / 回数券 / Lesson Tickets</div>
+  </div>
+
+  <!-- STEP5 -->
+  <div class="guide-card">
+    <img src="/images/guide-step5.png" alt="STEP5 欠席連絡"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">5️⃣</span>
+      <span class="placeholder-text">STEP 5 - 欠席連絡</span>
+      <span class="placeholder-sub">guide-step5.png</span>
+    </div>
+    <div class="guide-card-label">5️⃣ STEP 5 / 欠席連絡 / Absence Notice</div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="guide-card">
+    <img src="/images/guide-faq.png" alt="よくある質問"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div class="img-placeholder" style="display:none;">
+      <span class="placeholder-icon">❓</span>
+      <span class="placeholder-text">FAQ / よくある質問</span>
+      <span class="placeholder-sub">guide-faq.png</span>
+    </div>
+    <div class="guide-card-label">❓ FAQ / よくある質問</div>
+  </div>
+
+  <a class="back-btn" href="https://liff.line.me/2009890655-9G9Ve0wB">
+    📅 レッスンを予約する / Book a Lesson
+  </a>
+
+</div>
+
+<div class="footer">
+  Ami's Japanese Lesson © 2025
+</div>
+
+<script>
+// スクロールアニメーション
+const cards = document.querySelectorAll('.guide-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+cards.forEach(card => observer.observe(card));
+</script>
+
+</body>
+</html>
