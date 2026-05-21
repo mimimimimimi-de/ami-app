@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ami Lesson - テストチェックリスト</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --green: #06C755;
+    --green-light: #e8faf0;
+    --green-dark: #059144;
+    --red: #e74c3c;
+    --red-light: #fdf0ef;
+    --orange: #f39c12;
+    --orange-light: #fef9e7;
+    --blue: #3498db;
+    --blue-light: #eaf4fd;
+    --gray: #f5f6f7;
+    --border: #e8e8e8;
+    --text: #1a1a2e;
+    --text2: #666;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f0f4f8;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: var(--green);
+    padding: 20px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(6,199,85,0.3);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .header-title span {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.85;
+    display: block;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-bar {
+    width: 180px;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .reset-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  /* メイン */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* 凡例 */
+  .legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-red { background: var(--red); color: #fff; }
+  .badge-orange { background: var(--orange); color: #fff; }
+  .badge-blue { background: var(--blue); color: #fff; }
+
+  /* セクション */
+  .section {
+    background: #fff;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+
+  .section-header {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header:hover { background: #fafafa; }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .section-icon { font-size: 20px; }
+
+  .section-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-count {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .section-toggle {
+    font-size: 18px;
+    color: var(--text2);
+    transition: transform 0.2s;
+  }
+
+  .section.collapsed .section-toggle { transform: rotate(-90deg); }
+  .section.collapsed .section-body { display: none; }
+
+  /* テスト項目 */
+  .test-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .test-item:last-child { border-bottom: none; }
+  .test-item.checked { background: var(--green-light); }
+  .test-item.has-bug { background: var(--red-light); }
+
+  .item-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .item-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: all 0.15s;
+    background: #fff;
+  }
+
+  .test-item.checked .item-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .item-checkbox-mark {
+    color: #fff;
+    font-size: 13px;
+    display: none;
+  }
+
+  .test-item.checked .item-checkbox-mark { display: block; }
+
+  .item-content { flex: 1; }
+
+  .item-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .item-title {
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .item-priority {
+    flex-shrink: 0;
+  }
+
+  .item-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .item-expected {
+    font-size: 12px;
+    color: #059144;
+    background: var(--green-light);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border-left: 3px solid var(--green);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  /* バグメモ */
+  .bug-section {
+    margin-top: 8px;
+  }
+
+  .bug-toggle {
+    font-size: 12px;
+    color: var(--red);
+    cursor: pointer;
+    font-weight: 700;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Noto Sans JP', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .bug-toggle:hover { opacity: 0.8; }
+
+  .bug-memo {
+    margin-top: 6px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #f5a5a0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    resize: vertical;
+    min-height: 60px;
+    background: #fff8f8;
+    color: var(--text);
+  }
+
+  .bug-memo:focus {
+    outline: none;
+    border-color: var(--red);
+  }
+
+  .bug-memo-wrap { display: none; }
+  .bug-memo-wrap.open { display: block; }
+
+  /* バグありマーク */
+  .bug-mark {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 700;
+    background: var(--red-light);
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  /* サマリー */
+  .summary {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  }
+
+  .summary-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text2);
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .summary-card {
+    background: var(--gray);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .summary-num {
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .summary-label {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .summary-card.green .summary-num { color: var(--green); }
+  .summary-card.red .summary-num { color: var(--red); }
+  .summary-card.orange .summary-num { color: var(--orange); }
+
+  /* 保存状態 */
+  .save-status {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text2);
+    padding: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-title">
+      🧪 Ami Lesson テストチェックリスト
+      <span>Test Checklist</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 / 0</div>
+      <button class="reset-btn" onclick="resetAll()">リセット</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- サマリー -->
+  <div class="summary">
+    <div class="summary-title">📊 テスト進捗</div>
+    <div class="summary-grid">
+      <div class="summary-card green">
+        <div class="summary-num" id="statDone">0</div>
+        <div class="summary-label">完了</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num" id="statTotal">0</div>
+        <div class="summary-label">合計</div>
+      </div>
+      <div class="summary-card red">
+        <div class="summary-num" id="statBug">0</div>
+        <div class="summary-label">バグあり</div>
+      </div>
+      <div class="summary-card orange">
+        <div class="summary-num" id="statRemain">0</div>
+        <div class="summary-label">未完了</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 凡例 -->
+  <div class="legend">
+    <div class="legend-item"><span class="badge badge-red">🔴 必須</span> お金・予約に関わる重要な機能</div>
+    <div class="legend-item"><span class="badge badge-orange">🟡 重要</span> 通知・表示など</div>
+    <div class="legend-item"><span class="badge badge-blue">🔵 確認</span> UI・多言語など</div>
+  </div>
+
+  <!-- テストセクション -->
+  <div id="sections"></div>
+
+  <!-- 項目追加フォーム -->
+  <div class="section" id="addSection">
+    <div class="section-header" onclick="toggleSection('addForm')">
+      <div class="section-title">
+        <span class="section-icon">➕</span>
+        テスト項目を追加する
+      </div>
+      <div class="section-meta">
+        <span class="section-toggle">▾</span>
+      </div>
+    </div>
+    <div class="section-body" id="body_addForm">
+      <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">カテゴリ</label>
+          <select id="addCategory" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans JP',sans-serif;background:#fff;">
+            <option value="">選択してください</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">テスト項目名 <span style="color:var(--red);">*</span></label>
+          <input id="addTitle" type="text" placeholder="例：ログイン後にトップページが表示される" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans JP',sans-serif;">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">テスト手順</label>
+          <input id="addDesc" type="text" placeholder="例：トップページを開く" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans JP',sans-serif;">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">期待する結果</label>
+          <input id="addExpected" type="text" placeholder="例：トップページが正常に表示される" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans JP',sans-serif;">
+        </div>
+        <div>
+          <label style="font-size:13px;font-weight:700;display:block;margin-bottom:6px;">優先度</label>
+          <div style="display:flex;gap:10px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+              <input type="radio" name="addPriority" value="🔴" checked> <span class="badge badge-red">🔴 必須</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+              <input type="radio" name="addPriority" value="🟡"> <span class="badge badge-orange">🟡 重要</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+              <input type="radio" name="addPriority" value="🔵"> <span class="badge badge-blue">🔵 確認</span>
+            </label>
+          </div>
+        </div>
+        <button onclick="addCustomItem()" style="background:var(--green);color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">
+          ➕ テスト項目を追加する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="save-status" id="saveStatus">💾 データはブラウザに自動保存されます</div>
+
+</div>
+
+<script>
+const TEST_DATA = [
+  {
+    id: 'register',
+    icon: '📝',
+    title: '登録',
+    items: [
+      { id: 'r1', priority: '🔴', title: 'LINEリッチメニューから登録ページが開く', desc: 'LINEのリッチメニュー「登録」をタップ', expected: '登録ページが正常に開く' },
+      { id: 'r2', priority: '🔴', title: 'タイムゾーンの選択ができる', desc: 'プルダウンからタイムゾーンを選択', expected: 'タイムゾーンが選択できる' },
+      { id: 'r3', priority: '🔴', title: '言語の選択ができる', desc: '言語（英語・韓国語・タイ語など）を選択', expected: '言語が選択できる' },
+      { id: 'r4', priority: '🔴', title: '登録ボタンを押すと完了する', desc: '「登録する」ボタンをタップ', expected: '登録完了画面が表示される' },
+      { id: 'r5', priority: '🔴', title: '登録完了LINEメッセージが届く', desc: '登録直後にLINEを確認', expected: '「登録が完了しました！」メッセージ＋翻訳が届く' },
+      { id: 'r6', priority: '🟡', title: '先生にLINE通知が届く', desc: '先生のLINEグループを確認', expected: '「新しい生徒が登録しました！」通知が届く' },
+      { id: 'r7', priority: '🔵', title: '登録済みの場合「すでに登録済みです」が表示される', desc: '同じアカウントで再度登録ページを開く', expected: '「すでに登録済みです」画面が表示される' },
+      { id: 'r8', priority: '🔵', title: '言語設定が翻訳に反映される', desc: '言語を選んで登録後、各ページを確認', expected: '選択した言語でサブテキストが表示される' },
+    ]
+  },
+  {
+    id: 'price',
+    icon: '💰',
+    title: '料金設定',
+    items: [
+      { id: 'p1', priority: '🔴', title: '管理画面から料金を設定できる', desc: '管理画面で生徒を選び料金を入力して保存', expected: '料金が保存される' },
+      { id: 'p2', priority: '🔴', title: '料金設定後にLINEメッセージが届く', desc: '料金設定後に生徒のLINEを確認', expected: '「料金が設定されました！」FlexMessageが届く' },
+      { id: 'p3', priority: '🔴', title: 'クーポン案内メッセージが届く', desc: '料金設定後のLINEを確認', expected: 'FIRST10クーポンのテキスト＋画像が届く' },
+      { id: 'p4', priority: '🟡', title: '料金設定メッセージに翻訳が入っている', desc: '韓国語など日本語以外の生徒のLINEを確認', expected: '登録言語のサブテキストが表示される' },
+    ]
+  },
+  {
+    id: 'booking',
+    icon: '📅',
+    title: '予約（単回決済）',
+    items: [
+      { id: 'b1', priority: '🔴', title: '25分レッスンを選択できる', desc: '予約ページで「25分レッスン」をタップ', expected: '料金が表示され次へ進める' },
+      { id: 'b2', priority: '🔴', title: '50分レッスンを選択できる', desc: '予約ページで「50分レッスン」をタップ', expected: '料金が表示され次へ進める' },
+      { id: 'b3', priority: '🔴', title: 'カレンダーで日時を選択できる', desc: 'カレンダーから予約したい日時をタップ', expected: '日時が選択できる' },
+      { id: 'b4', priority: '🔴', title: '確認画面が正しく表示される', desc: '選択後の確認画面を確認', expected: 'レッスン・日時・料金・タイムゾーン表示が正確' },
+      { id: 'b5', priority: '🔴', title: 'Stripe決済ページに進める', desc: '「単回決済」を選んで決済へ進む', expected: 'Stripeの決済画面が開く' },
+      { id: 'b6', priority: '🔴', title: 'クーポンコードFIRST10が使える', desc: 'Stripe決済画面でFIRST10を入力', expected: '10%割引が適用される' },
+      { id: 'b7', priority: '🔴', title: '決済完了後に予約確定LINEが届く', desc: '決済完了後にLINEを確認', expected: '予約確定FlexMessage（変更・キャンセルボタン付き）が届く' },
+      { id: 'b8', priority: '🔴', title: 'Googleカレンダーに予定が追加される', desc: 'Googleカレンダーを確認', expected: 'レッスンの予定＋Google Meetリンクが追加されている' },
+      { id: 'b9', priority: '🟡', title: 'ダブルブッキングができない', desc: '同じ日時に2件予約しようとする', expected: '「この時間はすでに予定があります」と表示される' },
+      { id: 'b10', priority: '🟡', title: '満席の時間は選択できない', desc: 'カレンダーで×がついている時間をタップ', expected: '選択できない' },
+      { id: 'b11', priority: '🔵', title: 'タイムゾーンが設定されている場合、現地時間が表示される', desc: '日本以外のタイムゾーンで確認画面を確認', expected: 'JST＋現地時間の両方が表示される' },
+    ]
+  },
+  {
+    id: 'ticket_booking',
+    icon: '🎟️',
+    title: '予約（回数券使用）',
+    items: [
+      { id: 'tb1', priority: '🔴', title: '回数券がある場合、使用オプションが表示される', desc: '回数券保有時に予約確認画面を確認', expected: '「回数券を使う」選択肢が表示される' },
+      { id: 'tb2', priority: '🔴', title: '回数券を使って予約できる', desc: '「回数券を使う」を選択して予約', expected: '決済なしで予約確定される' },
+      { id: 'tb3', priority: '🔴', title: '回数券を使うと残り回数が1減る', desc: '予約後にマイ予約の回数券残数を確認', expected: '残り回数が1減っている' },
+      { id: 'tb4', priority: '🔴', title: '残り2回以下で通知が届く', desc: '残り2回以下になるまで使用する', expected: '「回数券の残りが少なくなっています」LINEが届く' },
+      { id: 'tb5', priority: '🟡', title: '期限切れ回数券は使えない', desc: '期限切れの回数券で予約を試みる', expected: 'エラーメッセージが表示される' },
+    ]
+  },
+  {
+    id: 'ticket_purchase',
+    icon: '🛒',
+    title: '回数券購入',
+    items: [
+      { id: 'tp1', priority: '🔴', title: '回数券購入ページが開く', desc: 'LINEリッチメニューから回数券ページへ', expected: '回数券購入ページが正常に開く' },
+      { id: 'tp2', priority: '🔴', title: '25分・50分レッスンを選択できる', desc: 'レッスン種別を選択', expected: '料金が正しく表示される' },
+      { id: 'tp3', priority: '🔴', title: '2回から購入できる（1回は不可）', desc: '回数を1に設定して購入を試みる', expected: 'ボタンが非活性のまま' },
+      { id: 'tp4', priority: '🔴', title: '5回以上で5%OFFが表示・適用される', desc: '5回以上に設定して合計金額を確認', expected: '取り消し線＋5%OFF表示、割引後の金額になる' },
+      { id: 'tp5', priority: '🔴', title: '10回以上で10%OFFが表示・適用される', desc: '10回以上に設定して合計金額を確認', expected: '取り消し線＋10%OFF表示、割引後の金額になる' },
+      { id: 'tp6', priority: '🔴', title: 'Stripe決済が完了する', desc: '決済へ進んでカード情報を入力', expected: '購入完了画面が表示される' },
+      { id: 'tp7', priority: '🔴', title: '購入完了LINEメッセージが届く', desc: '決済完了後にLINEを確認', expected: '回数券購入完了FlexMessageが届く' },
+      { id: 'tp8', priority: '🔴', title: '有効期限が購入日から2ヶ月になっている', desc: '購入完了画面・LINEメッセージを確認', expected: '購入日から2ヶ月後の日付が表示される' },
+      { id: 'tp9', priority: '🟡', title: '購入完了画面にレッスン・回数・期限が表示される', desc: '購入完了画面を確認', expected: '正確な情報が表示される' },
+    ]
+  },
+  {
+    id: 'change',
+    icon: '✏️',
+    title: '予約変更',
+    items: [
+      { id: 'c1', priority: '🔴', title: 'マイ予約から変更ページが開く', desc: 'マイ予約の「変更」ボタンをタップ', expected: '変更ページが正常に開く' },
+      { id: 'c2', priority: '🔴', title: 'LINEメッセージの「変更はこちら」から開く', desc: 'LINEメッセージのボタンをタップ', expected: '変更ページが正常に開く' },
+      { id: 'c3', priority: '🔴', title: '変更可能な日時が表示される', desc: 'カレンダーを確認', expected: '○と×が正しく表示される（7時〜の全スロット表示）' },
+      { id: 'c4', priority: '🔴', title: '○をタップするとモーダルが表示される', desc: '変更したい時間の○をタップ', expected: '確認モーダルが表示される（日本語＋翻訳）' },
+      { id: 'c5', priority: '🔴', title: '変更が確定されLINEが届く', desc: 'モーダルでOKをタップ', expected: '変更完了LINEメッセージが届く' },
+      { id: 'c6', priority: '🔴', title: '新しいGoogle Meetリンクが発行される', desc: '変更後のLINEメッセージを確認', expected: '新しいMeetリンクが含まれている' },
+      { id: 'c7', priority: '🔴', title: '12時間前を過ぎると変更できない', desc: 'レッスン12時間前以内の予約で変更を試みる', expected: 'エラーメッセージが表示される' },
+      { id: 'c8', priority: '🔵', title: '現地時間が表示される（タイムゾーン設定時）', desc: 'タイムゾーン設定済みのアカウントで確認', expected: 'JST＋現地時間が表示される' },
+    ]
+  },
+  {
+    id: 'cancel',
+    icon: '❌',
+    title: 'キャンセル・欠席',
+    items: [
+      { id: 'ca1', priority: '🔴', title: 'マイ予約からキャンセルページが開く', desc: 'マイ予約の「キャンセル」ボタンをタップ', expected: 'キャンセルページが正常に開く' },
+      { id: 'ca2', priority: '🔴', title: 'LINEメッセージの「キャンセルはこちら」から開く', desc: 'LINEメッセージのボタンをタップ', expected: 'キャンセルページが正常に開く' },
+      { id: 'ca3', priority: '🔴', title: 'キャンセルボタンを押すとモーダルが表示される', desc: 'キャンセルボタンをタップ', expected: '確認モーダルが表示される（翻訳付き）' },
+      { id: 'ca4', priority: '🔴', title: 'キャンセルが完了し返金される', desc: 'モーダルで「キャンセルする」をタップ', expected: 'キャンセル完了メッセージ＋返金処理完了' },
+      { id: 'ca5', priority: '🔴', title: '12時間前を過ぎるとキャンセルできない', desc: '12時間前以内の予約でキャンセルを試みる', expected: 'エラーメッセージが表示される' },
+      { id: 'ca6', priority: '🔴', title: '回数券予約はキャンセル・返金できない', desc: '回数券で予約したレッスンをキャンセルしようとする', expected: 'キャンセル不可のメッセージが表示される' },
+      { id: 'ca7', priority: '🟡', title: '欠席連絡ボタンが動く', desc: '欠席連絡ボタンをタップ', expected: 'モーダルが表示され、送信後に先生へ通知される' },
+      { id: 'ca8', priority: '🟡', title: 'キャンセル後に先生への通知が届く', desc: '先生のLINEグループを確認', expected: 'キャンセル通知が届く' },
+    ]
+  },
+  {
+    id: 'mybooking',
+    icon: '📋',
+    title: 'マイ予約',
+    items: [
+      { id: 'mb1', priority: '🔴', title: 'マイ予約ページが開く', desc: 'LINEリッチメニューから「マイ予約」をタップ', expected: 'マイ予約ページが正常に開く' },
+      { id: 'mb2', priority: '🔴', title: '今後の予約が表示される', desc: '「今後」タブを確認', expected: '予約日時・レッスン・ステータスが表示される' },
+      { id: 'mb3', priority: '🟡', title: '過去・すべてタブで3ヶ月以内の注意書きが表示される', desc: '「過去」または「すべて」タブを開く', expected: '「直近3ヶ月以内の履歴のみ表示」の注意書きが表示される' },
+      { id: 'mb4', priority: '🟡', title: '回数券の残り回数が表示される', desc: 'マイ予約ページの回数券セクションを確認', expected: '回数券の残り回数と有効期限が表示される' },
+      { id: 'mb5', priority: '🟡', title: 'Googleカレンダー追加ボタンが動く', desc: 'カレンダー追加ボタンをタップ', expected: 'Googleカレンダーに予定が追加される' },
+      { id: 'mb6', priority: '🔵', title: '現地時間が表示される（タイムゾーン設定時）', desc: 'タイムゾーン設定済みのアカウントで確認', expected: 'JST＋現地時間が表示される' },
+      { id: 'mb7', priority: '🔵', title: '累計レッスン数が正しい', desc: 'マイ予約の統計を確認', expected: '完了済みのレッスン数が正しく表示される' },
+    ]
+  },
+  {
+    id: 'reminder',
+    icon: '🔔',
+    title: 'リマインド通知',
+    items: [
+      { id: 'rm1', priority: '🟡', title: '前日20時にリマインドが届く', desc: '前日の20時にLINEを確認', expected: '「明日のレッスンのお知らせ」FlexMessageが届く' },
+      { id: 'rm2', priority: '🟡', title: '当日9時にリマインドが届く', desc: '当日の9時にLINEを確認', expected: '「本日のレッスンのお知らせ」FlexMessageが届く' },
+      { id: 'rm3', priority: '🔵', title: 'リマインドメッセージに変更・キャンセルボタンがある', desc: 'リマインドメッセージを確認', expected: '変更・キャンセルボタンが含まれている' },
+    ]
+  },
+  {
+    id: 'multilang',
+    icon: '🌐',
+    title: '多言語対応',
+    items: [
+      { id: 'ml1', priority: '🔵', title: '英語ユーザーで全ページのサブテキストが英語', desc: '英語で登録したアカウントで各ページを確認', expected: '全ページで英語サブテキストが表示される' },
+      { id: 'ml2', priority: '🔵', title: '韓国語ユーザーで全ページのサブテキストが韓国語', desc: '韓국語で登録したアカウントで各ページを確認', expected: '全ページで韓国語サブテキストが表示される' },
+      { id: 'ml3', priority: '🔵', title: 'タイ語ユーザーのLINEメッセージに翻訳がある', desc: 'タイ語ユーザーへのLINEメッセージを確認', expected: 'タイ語翻訳が含まれている' },
+      { id: 'ml4', priority: '🔵', title: 'LINEメッセージのボタンに翻訳が入っている', desc: 'LINEのFlexMessageボタンを確認', expected: '「変更はこちら / Change」のように翻訳が入っている' },
+      { id: 'ml5', priority: '🔵', title: '変更ページで言語をスプレッドシートで変えるとすぐ反映される', desc: 'スプレッドシートで言語を変更して変更ページを開く', expected: '変更後の言語で表示される' },
+    ]
+  },
+  {
+    id: 'admin',
+    icon: '⚙️',
+    title: '管理画面',
+    items: [
+      { id: 'ad1', priority: '🔴', title: '予約一覧が表示される', desc: '管理画面を開く', expected: '全予約が正しく表示される' },
+      { id: 'ad2', priority: '🔴', title: '管理画面から予約変更ができる', desc: '管理画面で予約を選んで日時を変更', expected: '変更が反映され生徒にLINE通知が届く' },
+      { id: 'ad3', priority: '🔴', title: '生徒の料金設定ができる', desc: '管理画面で生徒を選んで料金を入力', expected: '料金が保存される' },
+      { id: 'ad4', priority: '🟡', title: '生徒一覧・回数券残数が表示される', desc: '管理画面の生徒一覧を確認', expected: '各生徒の情報と回数券残数が表示される' },
+    ]
+  },
+  {
+    id: 'guide',
+    icon: '📖',
+    title: 'ガイドページ',
+    items: [
+      { id: 'g1', priority: '🔵', title: 'ガイドページが開く', desc: 'https://ami-app-eta.vercel.app/guide にアクセス', expected: 'ガイドページが正常に表示される' },
+      { id: 'g2', priority: '🔵', title: '全7枚の画像が表示される', desc: 'ガイドページをスクロール', expected: '表紙・STEP1〜5・FAQの7枚が表示される' },
+      { id: 'g3', priority: '🔵', title: 'スマホで見やすいレイアウト', desc: 'スマホでガイドページを確認', expected: '横幅いっぱいに画像が表示される' },
+    ]
+  },
+  {
+    id: 'error',
+    icon: '⚠️',
+    title: 'エラー・異常系',
+    items: [
+      { id: 'e1', priority: '🔴', title: 'LINEアプリ外で開いた場合のエラー表示', desc: 'ブラウザで予約ページを直接開く', expected: 'エラーメッセージが表示される' },
+      { id: 'e2', priority: '🔴', title: '未登録ユーザーが予約しようとした場合', desc: '未登録のLINEアカウントで予約を試みる', expected: '登録を促すメッセージが表示される' },
+      { id: 'e3', priority: '🔴', title: '料金未設定で予約しようとした場合', desc: '料金未設定のアカウントで予約を試みる', expected: '「料金がまだ設定されていません」メッセージが表示される' },
+      { id: 'e4', priority: '🔴', title: 'Stripe決済をキャンセルした場合', desc: 'Stripe決済画面で「戻る」をタップ', expected: '回数券購入ページに戻る' },
+      { id: 'e5', priority: '🟡', title: '同じ予約IDで2回キャンセルしようとした場合', desc: 'すでにキャンセル済みの予約でキャンセルを試みる', expected: '「すでにキャンセル済みです」メッセージが表示される' },
+    ]
+  }
+];
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbykZj8mcVkw-p3e8CIlJc06rtJKZJ4aXKDPS7BL-fWd83yZiZBtjER6ci0L7I_CxjVSRA/exec';
+
+// GASから状態を読み込む
+async function loadStateFromGAS() {
+  try {
+    document.getElementById('saveStatus').textContent = '🔄 データを読み込み中...';
+    const res = await fetch(GAS_URL + '?action=load&t=' + Date.now());
+    const data = await res.json();
+    if (data.ok) {
+      state = data.data || {};
+      document.getElementById('saveStatus').textContent = '✅ データを読み込みました（' + new Date().toLocaleTimeString() + '）';
+    }
+  } catch(e) {
+    console.error(e);
+    document.getElementById('saveStatus').textContent = '⚠️ 読み込み失敗。ローカルデータを使用中。';
+    state = loadStateLocal();
+  }
+  renderSections();
+}
+
+// GASに状態を保存する
+async function saveStateToGAS(key, value) {
+  try {
+    document.getElementById('saveStatus').textContent = '💾 保存中...';
+    const url = GAS_URL + '?action=save&key=' + encodeURIComponent(key) + '&value=' + encodeURIComponent(JSON.stringify(value));
+    await fetch(url);
+    // ローカルにも保存
+    saveStateLocal(state);
+    document.getElementById('saveStatus').textContent = '✅ 保存しました（' + new Date().toLocaleTimeString() + '）';
+  } catch(e) {
+    console.error(e);
+    document.getElementById('saveStatus').textContent = '⚠️ 保存失敗。ローカルに保存しました。';
+    saveStateLocal(state);
+  }
+}
+
+// ローカルストレージ（バックアップ用）
+function loadStateLocal() {
+  try { return JSON.parse(localStorage.getItem('ami_test_state') || '{}'); } catch(e) { return {}; }
+}
+
+function saveStateLocal(s) {
+  localStorage.setItem('ami_test_state', JSON.stringify(s));
+}
+
+// 全体保存（リセット用）
+async function saveAllToGAS() {
+  try {
+    for (const key of Object.keys(state)) {
+      const url = GAS_URL + '?action=save&key=' + encodeURIComponent(key) + '&value=' + encodeURIComponent(JSON.stringify(state[key]));
+      await fetch(url);
+    }
+  } catch(e) { console.error(e); }
+}
+
+let state = {};
+
+function toggleCheck(itemId) {
+  if (!state[itemId]) state[itemId] = {};
+  state[itemId].checked = !state[itemId].checked;
+  saveStateToGAS(itemId, state[itemId]);
+  renderSections();
+}
+
+function toggleBug(itemId) {
+  if (!state[itemId]) state[itemId] = {};
+  state[itemId].bugOpen = !state[itemId].bugOpen;
+  saveStateLocal(state);
+
+  const wrap = document.getElementById('bugwrap_' + itemId);
+  if (wrap) {
+    wrap.classList.toggle('open', state[itemId].bugOpen);
+    if (state[itemId].bugOpen) {
+      setTimeout(() => {
+        const ta = document.getElementById('memo_' + itemId);
+        if (ta) ta.focus();
+      }, 100);
+    }
+  }
+}
+
+function saveMemo(itemId) {
+  if (!state[itemId]) state[itemId] = {};
+  const ta = document.getElementById('memo_' + itemId);
+  if (ta) {
+    state[itemId].memo = ta.value;
+    state[itemId].bug = ta.value.length > 0;
+    saveStateToGAS(itemId, state[itemId]);
+    renderSections();
+  }
+}
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+
+  TEST_DATA.forEach(section => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.id = 'sec_' + section.id;
+
+    const completedCount = section.items.filter(item => state[item.id]?.checked).length;
+    const bugCount = section.items.filter(item => state[item.id]?.bug).length;
+
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${section.id}')">
+        <div class="section-title">
+          <span class="section-icon">${section.icon}</span>
+          ${section.title}
+          ${bugCount > 0 ? `<span class="bug-mark">🐛 ${bugCount}件</span>` : ''}
+        </div>
+        <div class="section-meta">
+          <span class="section-count">${completedCount} / ${section.items.length}</span>
+          <span class="section-toggle">▾</span>
+        </div>
+      </div>
+      <div class="section-body" id="body_${section.id}">
+        ${section.items.map(item => renderItem(item)).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  updateStats();
+}
+
+function renderItem(item) {
+  const s = state[item.id] || {};
+  const priorityClass = item.priority === '🔴' ? 'badge-red' : item.priority === '🟡' ? 'badge-orange' : 'badge-blue';
+  const hasBug = s.bug && s.memo;
+
+  return `
+    <div class="test-item ${s.checked ? 'checked' : ''} ${hasBug ? 'has-bug' : ''}" id="item_${item.id}">
+      <div class="item-top">
+        <div class="item-checkbox" onclick="toggleCheck('${item.id}')">
+          <span class="item-checkbox-mark">✓</span>
+        </div>
+        <div class="item-content">
+          <div class="item-header">
+            <span class="item-title" onclick="toggleCheck('${item.id}')">${item.title}</span>
+            <span class="badge ${priorityClass} item-priority">${item.priority}</span>
+            ${hasBug ? '<span class="bug-mark">🐛 バグあり</span>' : ''}
+          </div>
+          <div class="item-desc">📋 ${item.desc}</div>
+          <div class="item-expected">✅ 期待する結果：${item.expected}</div>
+          <div class="bug-section">
+            <button class="bug-toggle" onclick="toggleBug('${item.id}')">
+              🐛 バグ・メモを記録する
+            </button>
+            <div class="bug-memo-wrap ${s.bugOpen ? 'open' : ''}" id="bugwrap_${item.id}">
+              <textarea class="bug-memo" id="memo_${item.id}" placeholder="バグの内容・再現手順・メモを入力..." onchange="saveMemo('${item.id}')">${s.memo || ''}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleSection(id) {
+  const sec = document.getElementById('sec_' + id);
+  sec.classList.toggle('collapsed');
+}
+
+function updateStats() {
+  let total = 0, done = 0, bugs = 0;
+  TEST_DATA.forEach(section => {
+    section.items.forEach(item => {
+      total++;
+      if (state[item.id]?.checked) done++;
+      if (state[item.id]?.bug && state[item.id]?.memo) bugs++;
+    });
+  });
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statBug').textContent = bugs;
+  document.getElementById('statRemain').textContent = total - done;
+
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / ' + total;
+}
+
+// カテゴリ選択肢を生成
+function resetAll() {
+  if (!confirm('全てのチェックとメモをリセットしますか？\n※この操作は元に戻せません。')) return;
+  state = {};
+  saveStateLocal(state);
+  fetch(GAS_URL + '?action=save&key=__reset__&value=' + Date.now());
+  renderSections();
+  document.getElementById('saveStatus').textContent = '🔄 リセットしました';
+}
+
+// カテゴリプルダウン生成
+function populateCategories() {
+  const select = document.getElementById('addCategory');
+  TEST_DATA.forEach(section => {
+    const opt = document.createElement('option');
+    opt.value = section.id;
+    opt.textContent = section.icon + ' ' + section.title;
+    select.appendChild(opt);
+  });
+  const customSections = JSON.parse(localStorage.getItem('ami_custom_sections') || '[]');
+  customSections.forEach(section => {
+    const opt = document.createElement('option');
+    opt.value = section.id;
+    opt.textContent = section.icon + ' ' + section.title;
+    select.appendChild(opt);
+  });
+  const opt = document.createElement('option');
+  opt.value = '__new__';
+  opt.textContent = '＋ 新しいカテゴリを作る';
+  select.appendChild(opt);
+}
+
+function addCustomItem() {
+  const categoryId = document.getElementById('addCategory').value;
+  const title = document.getElementById('addTitle').value.trim();
+  const desc = document.getElementById('addDesc').value.trim();
+  const expected = document.getElementById('addExpected').value.trim();
+  const priority = document.querySelector('input[name="addPriority"]:checked').value;
+
+  if (!categoryId) { alert('カテゴリを選択してください'); return; }
+  if (!title) { alert('テスト項目名を入力してください'); return; }
+
+  if (categoryId === '__new__') {
+    const newName = prompt('新しいカテゴリ名を入力してください：');
+    if (!newName) return;
+    const newId = 'custom_' + Date.now();
+    const customSections = JSON.parse(localStorage.getItem('ami_custom_sections') || '[]');
+    customSections.push({ id: newId, icon: '📌', title: newName, items: [] });
+    localStorage.setItem('ami_custom_sections', JSON.stringify(customSections));
+    const select = document.getElementById('addCategory');
+    const o = document.createElement('option');
+    o.value = newId;
+    o.textContent = '📌 ' + newName;
+    select.insertBefore(o, select.lastElementChild);
+    select.value = newId;
+    addCustomItem();
+    return;
+  }
+
+  const itemId = 'custom_' + Date.now();
+  const newItem = { id: itemId, priority, title, desc: desc || 'テスト手順を記入', expected: expected || '正常に動作する', custom: true, categoryId };
+
+  const customItems = JSON.parse(localStorage.getItem('ami_custom_items') || '[]');
+  customItems.push(newItem);
+  localStorage.setItem('ami_custom_items', JSON.stringify(customItems));
+
+  document.getElementById('addTitle').value = '';
+  document.getElementById('addDesc').value = '';
+  document.getElementById('addExpected').value = '';
+  document.getElementById('addCategory').value = '';
+
+  alert('✅ 追加しました！');
+  renderSections();
+}
+
+function deleteCustomItem(itemId) {
+  if (!confirm('この項目を削除しますか？')) return;
+  const customItems = JSON.parse(localStorage.getItem('ami_custom_items') || '[]');
+  localStorage.setItem('ami_custom_items', JSON.stringify(customItems.filter(i => i.id !== itemId)));
+  delete state[itemId];
+  saveState(state);
+  renderSections();
+}
+
+function getFullTestData() {
+  const customItems = JSON.parse(localStorage.getItem('ami_custom_items') || '[]');
+  const customSections = JSON.parse(localStorage.getItem('ami_custom_sections') || '[]');
+  const result = TEST_DATA.map(section => ({
+    ...section,
+    items: [...section.items, ...customItems.filter(i => i.categoryId === section.id)]
+  }));
+  customSections.forEach(section => {
+    result.push({ ...section, items: customItems.filter(i => i.categoryId === section.id) });
+  });
+  return result;
+}
+
+// renderSectionsをgetFullTestDataを使うよう更新
+const _origRender = renderSections;
+renderSections = function() {
+  const fullData = getFullTestData();
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+
+  fullData.forEach(section => {
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.id = 'sec_' + section.id;
+
+    const completedCount = section.items.filter(item => state[item.id]?.checked).length;
+    const bugCount = section.items.filter(item => state[item.id]?.bug).length;
+
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${section.id}')">
+        <div class="section-title">
+          <span class="section-icon">${section.icon}</span>
+          ${section.title}
+          ${bugCount > 0 ? `<span class="bug-mark">🐛 ${bugCount}件</span>` : ''}
+        </div>
+        <div class="section-meta">
+          <span class="section-count">${completedCount} / ${section.items.length}</span>
+          <span class="section-toggle">▾</span>
+        </div>
+      </div>
+      <div class="section-body" id="body_${section.id}">
+        ${section.items.map(item => renderItem(item)).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  updateStats();
+};
+
+// renderItemにカスタム項目の削除ボタンを追加
+const _origRenderItem = renderItem;
+renderItem = function(item) {
+  const html = _origRenderItem(item);
+  if (!item.custom) return html;
+  return html.replace(
+    '</div>\n    </div>',
+    `<button onclick="deleteCustomItem('${item.id}')" style="margin-top:8px;background:none;border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">🗑️ 削除</button>
+    </div>\n    </div>`
+  );
+};
+
+populateCategories();
+loadStateFromGAS();
+</script>
+</body>
+</html>
