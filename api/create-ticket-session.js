@@ -31,9 +31,18 @@ module.exports = async function handler(req, res) {
     }
 
     const unitPrice = Number(priceJson.price);
-    const totalPrice = unitPrice * lessonCount;
-    const unitAmount = totalPrice * 100;
 
+    // まとめ買い割引
+    let discountRate = 0;
+    if (lessonCount >= 10) discountRate = 0.10;
+    else if (lessonCount >= 5) discountRate = 0.05;
+
+    const totalPriceBeforeDiscount = unitPrice * lessonCount;
+    const discountAmount = Math.floor(totalPriceBeforeDiscount * discountRate * 100) / 100;
+    const totalPrice = Math.round((totalPriceBeforeDiscount - discountAmount) * 100) / 100;
+    const unitAmount = Math.round(totalPrice * 100);
+
+    const discountLabel = discountRate > 0 ? `（${discountRate * 100}%OFF適用）` : '';
     const lessonLabel = lessonMinutes === 50 ? "50分レッスン" : "25分レッスン";
     const langParam = lang && lang !== "ja" ? `&lang=${encodeURIComponent(lang)}` : "";
     const infoParams = `&lesson=${encodeURIComponent(String(lessonMinutes))}&count=${encodeURIComponent(String(lessonCount))}&uid=${encodeURIComponent(userId)}`;
@@ -46,8 +55,8 @@ module.exports = async function handler(req, res) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `${lessonLabel} × ${lessonCount}回券`,
-              description: `有効期限：購入から3ヶ月 / 返金不可`
+              name: `${lessonLabel} × ${lessonCount}回券${discountLabel}`,
+              description: `有効期限：購入から3ヶ月 / 返金不可${discountRate > 0 ? ` / ${discountRate * 100}%OFFまとめ買い割引適用` : ''}`
             },
             unit_amount: unitAmount
           },
@@ -60,7 +69,8 @@ module.exports = async function handler(req, res) {
         lessonType: String(lessonMinutes),
         count: String(lessonCount),
         unitPrice: String(unitPrice),
-        totalPrice: String(totalPrice)
+        totalPrice: String(totalPrice),
+        discountRate: String(discountRate)
       },
       success_url: `https://ami-app-eta.vercel.app/success-ticket.html?session_id={CHECKOUT_SESSION_ID}${langParam}${infoParams}`,
       cancel_url: `https://ami-app-eta.vercel.app/ticket.html`
