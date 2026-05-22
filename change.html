@@ -269,7 +269,10 @@ button {
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
-    <div id="calendar">
+    <!-- 日付ヘッダー固定エリア -->
+    <div id="calendarHeader" style="overflow-x:hidden;border:1px solid #eee;border-bottom:none;border-radius:16px 16px 0 0;background:#f8faf9;"></div>
+    <!-- カレンダー本体 -->
+    <div id="calendar" style="border-radius:0 0 16px 16px;border-top:none;">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
@@ -596,12 +599,15 @@ function renderCalendar() {
 
   const times = Array.from(allTimeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
-  let html = "<table class='calendar-table'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
-
+  // ヘッダーHTML生成
+  let headerHtml = "<table class='calendar-table' style='margin-bottom:0;'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
   visibleDates.forEach(d => {
-    html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
+    headerHtml += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
   });
-  html += "</tr>";
+  headerHtml += "</tr></table>";
+
+  // 本体HTML生成
+  let html = "<table class='calendar-table' style='border-top:none;'>";
 
   if (times.length === 0) {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
@@ -612,7 +618,6 @@ function renderCalendar() {
       visibleDates.forEach(d => {
         const dow = new Date(d.date + 'T00:00:00+09:00').getDay();
         const canSelect = d.times && d.times.includes(time);
-        // 営業日かどうか確認
         const isBusinessDay = dow >= 1 && dow <= 6;
         if (canSelect) {
           html += '<td><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
@@ -627,7 +632,16 @@ function renderCalendar() {
   }
 
   html += "</table>";
+
+  // ヘッダーと本体を別々のdivに設定
+  const calHeader = document.getElementById("calendarHeader");
+  if (calHeader) calHeader.innerHTML = headerHtml;
   calendar.innerHTML = html;
+
+  // 横スクロールを同期
+  calendar.addEventListener("scroll", function() {
+    if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
+  });
 }
 
 function prevWeek() {

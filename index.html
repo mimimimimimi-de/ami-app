@@ -346,7 +346,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
-    <div id="calendar">
+    <!-- 日付ヘッダー固定エリア -->
+    <div id="calendarHeader" style="overflow-x:hidden;border:1px solid #eee;border-bottom:none;border-radius:16px 16px 0 0;background:#f8faf9;"></div>
+    <!-- カレンダー本体 -->
+    <div id="calendar" style="border-radius:0 0 16px 16px;border-top:none;">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
@@ -1014,20 +1017,22 @@ function generateCalendar() {
   const times = Array.from(timeSet).sort();
   const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
 
-  let html = "<table class='calendar-table'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style="font-size:10px;color:#aaa;">${userTzName || ''}</span>` : '') + "</th>";
-
+  // ヘッダーHTML生成
+  let headerHtml = "<table class='calendar-table' style='margin-bottom:0;'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style="font-size:10px;color:#aaa;">${userTzName || ''}</span>` : '') + "</th>";
   days.forEach(day => {
     const isSunday = day.getDay() === 0;
     const dayLabel = isSunday ? `<span style="color:#e67e22;font-weight:700;">日</span>` : getDayLabel(day);
-    html += `<th>${formatShort(day)}<br>(${dayLabel})</th>`;
+    headerHtml += `<th>${formatShort(day)}<br>(${dayLabel})</th>`;
   });
-  html += "</tr>";
+  headerHtml += "</tr></table>";
+
+  // 本体HTML生成
+  let html = "<table class='calendar-table' style='border-top:none;'>";
 
   if (times.length === 0) {
     html += `<tr><td colspan="${days.length + 1}" style="padding:20px;text-align:center;color:#aaa;">この週は空き時間がありません<br><span style="font-size:12px;">No available slots this week</span></td></tr>`;
   } else {
     times.forEach(time => {
-      // 現地時間も表示
       const localTimeStr = showLocalTime && days.length > 0 ? getLocalTimeLabel(formatFull(days[0]), time) : '';
       html += `<tr><td>${time}<br>${localTimeStr ? `<span style="font-size:11px;color:#aaa;">${localTimeStr}</span>` : ''}</td>`;
 
@@ -1061,7 +1066,19 @@ function generateCalendar() {
   }
 
   html += "</table>";
+
+  // ヘッダーと本体を別々のdivに設定
+  // ヘッダーのスクロールと本体を同期させる
+  const calHeader = document.getElementById("calendarHeader");
+  if (calHeader) {
+    calHeader.innerHTML = headerHtml;
+  }
   calendar.innerHTML = html;
+
+  // 横スクロールを同期
+  calendar.addEventListener("scroll", function() {
+    if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
+  });
 }
 
 async function pickSlot(date, time) {
