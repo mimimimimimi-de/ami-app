@@ -606,8 +606,11 @@ function renderCalendar() {
   });
   headerHtml += "</tr></table>";
 
-  // 本体HTML生成
-  let html = "<table class='calendar-table' style='border-top:none;'>";
+  // 本体HTML（ダミーヘッダー行で列幅を合わせる）
+  let html = "<table class='calendar-table'>";
+  html += "<tr style='visibility:hidden;height:0;'><th>時間</th>";
+  visibleDates.forEach(() => { html += "<th></th>"; });
+  html += "</tr>";
 
   if (times.length === 0) {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
@@ -633,15 +636,45 @@ function renderCalendar() {
 
   html += "</table>";
 
-  // ヘッダーと本体を別々のdivに設定
   const calHeader = document.getElementById("calendarHeader");
   if (calHeader) calHeader.innerHTML = headerHtml;
   calendar.innerHTML = html;
 
-  // 横スクロールを同期
-  calendar.addEventListener("scroll", function() {
+  // 横スクロール同期
+  calendar.onscroll = function() {
     if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
-  });
+  };
+
+  // フローティングヘッダー
+  const floatingHeader = document.getElementById("floatingCalHeader");
+  if (!floatingHeader) {
+    const fh = document.createElement("div");
+    fh.id = "floatingCalHeader";
+    fh.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#f8faf9;overflow-x:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.12);";
+    fh.innerHTML = headerHtml;
+    document.body.appendChild(fh);
+  } else {
+    floatingHeader.innerHTML = headerHtml;
+  }
+
+  function syncFloatingHeader() {
+    const fh = document.getElementById("floatingCalHeader");
+    if (!fh) return;
+    const calRect = calendar.getBoundingClientRect();
+    const headerRect = calHeader ? calHeader.getBoundingClientRect() : null;
+    if (headerRect && headerRect.bottom < 0) {
+      fh.style.display = "block";
+      fh.style.left = calRect.left + "px";
+      fh.style.right = (window.innerWidth - calRect.right) + "px";
+      fh.scrollLeft = calendar.scrollLeft;
+    } else {
+      fh.style.display = "none";
+    }
+  }
+
+  window.removeEventListener("scroll", window._calScrollHandler);
+  window._calScrollHandler = syncFloatingHeader;
+  window.addEventListener("scroll", syncFloatingHeader);
 }
 
 function prevWeek() {
