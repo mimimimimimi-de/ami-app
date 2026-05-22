@@ -812,7 +812,9 @@ async function selectLesson(minutes) {
   }
 }
 
-function openCalendar() {
+let calendarData = null; // GASから取得したデータをキャッシュ
+
+async function openCalendar() {
   if (!selectedPrice) { alert("料金が設定されていません。先生にご連絡ください。\nFee not set. Please contact the teacher."); return; }
   weekOffset = 0;
   go("calendarPage");
@@ -822,6 +824,30 @@ function openCalendar() {
     document.getElementById("tzInfo").textContent = `📍 表示時刻: 日本時間 (JST) / あなたの時間 (${userTzName || userTimezone}) も確認できます`;
   } else {
     document.getElementById("tzInfo").textContent = "📍 表示時刻: 日本時間 (JST) / Times shown in JST";
+  }
+
+  // カレンダーのローディング表示
+  const calendar = document.getElementById("calendar");
+  calendar.innerHTML = `
+    <div class="cal-loading">
+      <div class="cal-spinner"></div>
+      <div class="cal-loading-text">
+        空き時間を確認しています...<br>
+        <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || "Checking available slots..."}</span>
+      </div>
+    </div>`;
+
+  // GASからデータを一括取得
+  try {
+    const [busyItems, tempData] = await Promise.all([
+      fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
+      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json())
+    ]);
+    calendarData = { busyItems, tempData };
+  } catch(e) {
+    console.error(e);
+    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
+    return;
   }
 
   generateCalendar();
@@ -930,22 +956,24 @@ function getLocalTimeLabel(dateStr, timeStr) {
   } catch (e) { return ''; }
 }
 
-async function generateCalendar() {
+function generateCalendar() {
   const calendar = document.getElementById("calendar");
-  calendar.innerHTML = `
-    <div class="cal-loading">
-      <div class="cal-spinner"></div>
-      <div class="cal-loading-text">
-        空き時間を確認しています...<br>
-        <span style="font-size:12px;color:#bbb;">Checking available slots...</span>
-      </div>
-    </div>`;
 
-  const [busyItems, tempData] = await Promise.all([
-    fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
-    fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json())
-  ]);
+  // キャッシュがない場合はローディング表示
+  if (!calendarData) {
+    calendar.innerHTML = `
+      <div class="cal-loading">
+        <div class="cal-spinner"></div>
+        <div class="cal-loading-text">
+          空き時間を確認しています...<br>
+          <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || "Checking available slots..."}</span>
+        </div>
+      </div>`;
+    return;
+  }
 
+  const busyItems = calendarData.busyItems;
+  const tempData = calendarData.tempData;
   const temporaryDates = (tempData.ok && tempData.dates) ? tempData.dates : [];
   const temporaryWindows = (tempData.ok && tempData.windows) ? tempData.windows : {};
 
