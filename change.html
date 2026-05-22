@@ -640,32 +640,34 @@ function renderCalendar() {
   if (calHeader) calHeader.innerHTML = headerHtml;
   calendar.innerHTML = html;
 
-  // 横スクロール同期
+  // 横スクロール同期（本体 → 固定ヘッダー両方）
   calendar.onscroll = function() {
     if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
+    const fh = document.getElementById("floatingCalHeader");
+    if (fh && fh.style.display !== 'none') fh.scrollLeft = calendar.scrollLeft;
   };
 
-  // フローティングヘッダー
-  const floatingHeader = document.getElementById("floatingCalHeader");
-  if (!floatingHeader) {
-    const fh = document.createElement("div");
+  // フローティングヘッダー（横スクロール対応・白空白なし）
+  let fh = document.getElementById("floatingCalHeader");
+  if (!fh) {
+    fh = document.createElement("div");
     fh.id = "floatingCalHeader";
-    fh.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:1000;background:#f8faf9;overflow-x:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.12);";
-    fh.innerHTML = headerHtml;
     document.body.appendChild(fh);
-  } else {
-    floatingHeader.innerHTML = headerHtml;
   }
+  fh.style.cssText = "display:none;position:fixed;top:0;z-index:1000;background:#f8faf9;overflow-x:auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);";
+  fh.innerHTML = headerHtml;
+  fh.onscroll = function() {
+    calendar.scrollLeft = fh.scrollLeft;
+    if (calHeader) calHeader.scrollLeft = fh.scrollLeft;
+  };
 
   function syncFloatingHeader() {
-    const fh = document.getElementById("floatingCalHeader");
-    if (!fh) return;
     const calRect = calendar.getBoundingClientRect();
     const headerRect = calHeader ? calHeader.getBoundingClientRect() : null;
     if (headerRect && headerRect.bottom < 0) {
       fh.style.display = "block";
       fh.style.left = calRect.left + "px";
-      fh.style.right = (window.innerWidth - calRect.right) + "px";
+      fh.style.width = calRect.width + "px";
       fh.scrollLeft = calendar.scrollLeft;
     } else {
       fh.style.display = "none";
