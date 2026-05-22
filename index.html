@@ -110,8 +110,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 #calendar {
   overflow-x: auto;
-  overflow-y: auto;
-  max-height: 60vh;
   margin-top: 16px;
   border-radius: 16px;
   border: 1px solid #eee;
@@ -133,12 +131,13 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 14px;
   font-weight: 700;
   padding: 10px 8px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 2px solid #d0e8d8;
   white-space: nowrap;
   line-height: 1.4;
   position: sticky;
-  top: 0;
+  top: -1px;
   z-index: 3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
 }
 
 .calendar-table td {
