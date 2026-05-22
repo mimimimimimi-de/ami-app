@@ -408,7 +408,7 @@ const TRANSLATIONS = {
     checkingTicket: "Checking ticket...",
     savingReservation: "Saving reservation...",
     preparingPayment: "Preparing payment page...",
-    loading: "Loading..."
+    loading: "Loading...", bookingComplete: "Booking Complete", lesson: "Lesson", date: "Date", time: "Time", payment: "Payment", ticket: "Ticket", remaining: "Remaining", sentViaLine: "Booking details sent via LINE.", addToCalendar: "Add to Google Calendar", myBookings: "My Bookings"
   },
   zh: {
     selectLesson: "请选择课程类型",
@@ -438,7 +438,7 @@ const TRANSLATIONS = {
     checkingTicket: "正在确认次券...",
     savingReservation: "正在保存预约...",
     preparingPayment: "正在准备支付页面...",
-    loading: "获取中..."
+    loading: "获取中...", bookingComplete: "预约完成", lesson: "课程", date: "日期", time: "时间", payment: "付款方式", ticket: "次券", remaining: "剩余次数", sentViaLine: "预约详情已通过LINE发送.", addToCalendar: "添加到Google日历", myBookings: "我的预约"
   },
   ko: {
     selectLesson: "레슨 유형을 선택해주세요",
@@ -468,7 +468,7 @@ const TRANSLATIONS = {
     checkingTicket: "횟수권을 확인하고 있습니다...",
     savingReservation: "예약을 저장하고 있습니다...",
     preparingPayment: "결제 페이지를 준비하고 있습니다...",
-    loading: "불러오는 중..."
+    loading: "불러오는 중...", bookingComplete: "예약 완료", lesson: "레슨", date: "날짜", time: "시간", payment: "결제", ticket: "횟수권", remaining: "남은 횟수", sentViaLine: "LINE으로 예약 내용을 전송했습니다.", addToCalendar: "Google 캘린더에 추가", myBookings: "내 예약"
   },
   th: {
     selectLesson: "กรุณาเลือกประเภทบทเรียน",
@@ -498,7 +498,7 @@ const TRANSLATIONS = {
     checkingTicket: "กำลังตรวจสอบคูปอง...",
     savingReservation: "กำลังบันทึกการจอง...",
     preparingPayment: "กำลังเตรียมหน้าชำระเงิน...",
-    loading: "กำลังโหลด..."
+    loading: "กำลังโหลด...", bookingComplete: "จองเสร็จสมบูรณ์", lesson: "บทเรียน", date: "วันที่", time: "เวลา", payment: "การชำระเงิน", ticket: "คูปอง", remaining: "คงเหลือ", sentViaLine: "ส่งรายละเอียดการจองทาง LINE แล้ว", addToCalendar: "เพิ่มใน Google Calendar", myBookings: "การจองของฉัน"
   },
   fr: {
     selectLesson: "Choisissez votre type de leçon",
@@ -528,7 +528,7 @@ const TRANSLATIONS = {
     checkingTicket: "Vérification du ticket...",
     savingReservation: "Sauvegarde de la réservation...",
     preparingPayment: "Préparation de la page de paiement...",
-    loading: "Chargement..."
+    loading: "Chargement...", bookingComplete: "Réservation effectuée", lesson: "Leçon", date: "Date", time: "Heure", payment: "Paiement", ticket: "Ticket", remaining: "Restant", sentViaLine: "Détails envoyés via LINE.", addToCalendar: "Ajouter à Google Agenda", myBookings: "Mes réservations"
   },
   de: {
     selectLesson: "Wählen Sie Ihren Unterrichtstyp",
@@ -558,7 +558,7 @@ const TRANSLATIONS = {
     checkingTicket: "Ticket wird überprüft...",
     savingReservation: "Buchung wird gespeichert...",
     preparingPayment: "Zahlungsseite wird vorbereitet...",
-    loading: "Wird geladen..."
+    loading: "Wird geladen...", bookingComplete: "Buchung abgeschlossen", lesson: "Unterricht", date: "Datum", time: "Uhrzeit", payment: "Zahlung", ticket: "Ticket", remaining: "Verbleibend", sentViaLine: "Buchungsdetails via LINE gesendet.", addToCalendar: "Zu Google Kalender hinzufügen", myBookings: "Meine Buchungen"
   }
 };
 
@@ -1218,6 +1218,7 @@ async function checkout() {
       const parts = selectedDate.split("-");
       const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
       const localTimeDisplay = formatTimeWithTz(selectedDate, selectedTime);
+      const T = window._currentT || {};
 
       document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
       const doneCard = document.createElement("div");
@@ -1225,23 +1226,23 @@ async function checkout() {
       doneCard.innerHTML = `
         <div style="text-align:center;font-size:52px;margin-bottom:10px;">✅</div>
         <h2 style="text-align:center;color:#06C755;font-size:22px;margin-bottom:4px;">予約完了！</h2>
-        <div style="text-align:center;font-size:11px;color:#bbb;margin-bottom:16px;">Booking Complete</div>
+        <div style="text-align:center;font-size:11px;color:#bbb;margin-bottom:16px;">${T.bookingComplete || "Booking Complete"}</div>
         <div style="background:#f7fdf9;border:1px solid #d7f3df;padding:16px;border-radius:16px;font-size:15px;line-height:1.9;margin-bottom:16px;">
-          <strong>レッスン / Lesson：</strong>${selectedMinutes}分レッスン<br>
-          <strong>日付 / Date：</strong>${displayDate}<br>
-          <strong>時間 / Time：</strong>${localTimeDisplay}<br>
-          <strong>支払い / Payment：</strong>回数券 / Ticket<br>
-          <strong>残り回数 / Remaining：</strong>${useData.remaining}回 / ${useData.remaining} left
+          <strong>レッスン / ${T.lesson || "Lesson"}：</strong>${selectedMinutes}分レッスン<br>
+          <strong>日付 / ${T.date || "Date"}：</strong>${displayDate}<br>
+          <strong>時間 / ${T.time || "Time"}：</strong>${localTimeDisplay}<br>
+          <strong>支払い / ${T.payment || "Payment"}：</strong>回数券 / ${T.ticket || "Ticket"}<br>
+          <strong>残り回数 / ${T.remaining || "Remaining"}：</strong>${useData.remaining}回 / ${useData.remaining} left
         </div>
         <p style="text-align:center;color:#666;font-size:14px;line-height:1.7;">
           LINEに予約内容を送信しました。<br>
-          <span style="font-size:12px;color:#bbb;">Booking details sent via LINE.</span>
+          <span style="font-size:12px;color:#bbb;">${T.sentViaLine || "Booking details sent via LINE."}</span>
         </p>
         <a href="${calUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:12px;background:#fff;color:#4285f4;border:2px solid #4285f4;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;">
-          📅 Googleカレンダーに追加 / Add to Google Calendar
+          📅 Googleカレンダーに追加 / ${T.addToCalendar || "Add to Google Calendar"}
         </a>
         <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="width:100%;padding:15px;margin-top:10px;background:#06C755;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
-          マイ予約を見る / My Bookings
+          マイ予約を見る / ${T.myBookings || "My Bookings"}
         </button>
       `;
       document.querySelector(".container").appendChild(doneCard);
