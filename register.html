@@ -406,7 +406,7 @@ body {
 
 <div class="processing-overlay" id="processingOverlay">
   <div class="spinner"></div>
-  <div class="proc-text">登録中...<br><span style="font-size:13px;color:#888;">Registering...</span></div>
+  <div class="proc-text">登録中...<br><span id="overlayRegisterText" style="font-size:13px;color:#888;">Registering...</span></div>
 </div>
 
 <div class="bg-circle bg-circle-1"></div>
@@ -553,7 +553,7 @@ const LANG_TEXT = {
     alreadyTitle: "Already Registered", alreadyTitleSub: "",
     alreadyMsgPrice: "Already registered and fee is set. Head to the booking page!",
     alreadyMsgWait: "Registered. We'll notify you via LINE once the teacher sets your fee.",
-    bookBtn: "📅 Book a Lesson", bookBtnSub: ""
+    bookBtn: "📅 Book a Lesson", bookBtnSub: "", registering: "Registering..."
   },
   zh: {
     step1title: "首先注册", step1desc: "只需点击下面的按钮！<br>使用LINE账户自动注册。",
@@ -568,7 +568,7 @@ const LANG_TEXT = {
     alreadyTitle: "已经注册", alreadyTitleSub: "",
     alreadyMsgPrice: "已经注册且费用已设置。请前往预约页面！",
     alreadyMsgWait: "已注册。老师设置费用后，我们将通过LINE通知您。",
-    bookBtn: "📅 预约课程", bookBtnSub: ""
+    bookBtn: "📅 预约课程", bookBtnSub: "", registering: "正在注册..."
   },
   ko: {
     step1title: "먼저 등록하기", step1desc: "아래 버튼을 누르기만 하면 됩니다！<br>LINE 계정으로 자동 등록됩니다.",
@@ -583,7 +583,7 @@ const LANG_TEXT = {
     alreadyTitle: "이미 등록되어 있습니다", alreadyTitleSub: "",
     alreadyMsgPrice: "이미 등록되어 있고 요금도 설정되어 있습니다. 예약 페이지로 이동하세요！",
     alreadyMsgWait: "등록되었습니다. 선생님이 요금을 설정하면 LINE으로 알려드립니다.",
-    bookBtn: "📅 레슨 예약하기", bookBtnSub: ""
+    bookBtn: "📅 레슨 예약하기", bookBtnSub: "", registering: "등록 중..."
   },
   th: {
     step1title: "ลงทะเบียนก่อน", step1desc: "แตะปุ่มด้านล่างเท่านั้น！<br>ลงทะเบียนอัตโนมัติด้วยบัญชี LINE",
@@ -598,7 +598,7 @@ const LANG_TEXT = {
     alreadyTitle: "ลงทะเบียนแล้ว", alreadyTitleSub: "",
     alreadyMsgPrice: "ลงทะเบียนแล้วและตั้งค่าค่าเรียนแล้ว ไปที่หน้าการจองได้เลย！",
     alreadyMsgWait: "ลงทะเบียนแล้ว เราจะแจ้งให้ทราบผ่าน LINE เมื่อครูตั้งค่าค่าเรียน",
-    bookBtn: "📅 จองบทเรียน", bookBtnSub: ""
+    bookBtn: "📅 จองบทเรียน", bookBtnSub: "", registering: "กำลังลงทะเบียน..."
   },
   fr: {
     step1title: "S'inscrire d'abord", step1desc: "Appuyez simplement sur le bouton ci-dessous！<br>Inscription automatique avec votre compte LINE.",
@@ -613,7 +613,7 @@ const LANG_TEXT = {
     alreadyTitle: "Deja inscrit", alreadyTitleSub: "",
     alreadyMsgPrice: "Deja inscrit et frais fixes. Rendez-vous sur la page de reservation！",
     alreadyMsgWait: "Inscrit. Nous vous informerons via LINE des que le professeur fixe vos frais.",
-    bookBtn: "📅 Reserver une lecon", bookBtnSub: ""
+    bookBtn: "📅 Reserver une lecon", bookBtnSub: "", registering: "Inscription en cours..."
   },
   de: {
     step1title: "Zuerst registrieren", step1desc: "Tippen Sie einfach auf die Schaltflache unten！<br>Automatische Registrierung mit Ihrem LINE-Konto.",
@@ -628,7 +628,7 @@ const LANG_TEXT = {
     alreadyTitle: "Bereits registriert", alreadyTitleSub: "",
     alreadyMsgPrice: "Bereits registriert und Gebuhr festgelegt. Gehen Sie zur Buchungsseite！",
     alreadyMsgWait: "Registriert. Wir benachrichtigen Sie uber LINE, sobald der Lehrer Ihre Gebuhr festlegt.",
-    bookBtn: "📅 Unterricht buchen", bookBtnSub: ""
+    bookBtn: "📅 Unterricht buchen", bookBtnSub: "", registering: "Wird registriert..."
   }
 };
 
@@ -661,6 +661,10 @@ function applyLang(lang) {
       ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${LANG_TEXT.en[s.desc]}</span>`
       : `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${T[s.desc]}</span>`;
   });
+
+  // オーバーレイサブテキスト
+  const overlayRegisterText = document.getElementById("overlayRegisterText");
+  if (overlayRegisterText) overlayRegisterText.textContent = T.registering || "Registering...";
 
   // タイムゾーンラベル
   const tzLabel = document.querySelector(".tz-label");
