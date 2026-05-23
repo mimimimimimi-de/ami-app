@@ -340,6 +340,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   <div class="card" id="top">
     <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;">Ami's Japanese Lesson</p>
     <h2>レッスンを選んでください</h2>
+    <p id="selectLessonSub" style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 0;">Select Your Lesson Type</p>
     <p id="loginStatus" style="font-size:13px;min-height:18px;margin:4px 0 24px;"></p>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <button type="button" id="btn25" onclick="selectLesson(25)" disabled style="all:unset;background:#fff;border:0.5px solid #e0e0e0;border-radius:16px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s,background 0.15s;width:100%;box-sizing:border-box;">
@@ -376,8 +377,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="price">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <h2>料金の確認</h2>
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:20px;margin:20px 0;text-align:center;">
       <div style="font-size:13px;color:#888;margin-bottom:4px;" id="lesson"></div>
       <div class="price" id="priceText" style="margin:8px 0;">-</div>
@@ -425,8 +426,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="confirmPage">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <h2>予約内容の最終確認</h2>
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <div id="confirm"></div>
 
     <div class="payment-section" id="paymentSection" style="display:none">
@@ -637,14 +638,15 @@ function getLang() {
 
 function t(key, lang) {
   const l = lang || getLang();
-  if (l === "ja") return TRANSLATIONS["en"][key] || "";
+  if (l === "ja") return "";
   return (TRANSLATIONS[l] && TRANSLATIONS[l][key]) || TRANSLATIONS["en"][key] || "";
 }
 
 function applyTranslations(lang) {
   const l = lang || getLang();
-  // 日本語の場合は英語サブテキストを表示、それ以外はその言語
-  const T = l === "ja" ? TRANSLATIONS["en"] : (TRANSLATIONS[l] || TRANSLATIONS["en"]);
+  if (l === "ja") return;
+
+  const T = TRANSLATIONS[l] || TRANSLATIONS["en"];
 
   const setSubText = (selector, key) => {
     const el = document.querySelector(selector);
@@ -693,6 +695,7 @@ function applyTranslations(lang) {
 
   // 各ページのサブテキスト
   function setEl(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+  setEl("selectLessonSub", T.selectLesson || "Select Your Lesson Type");
   setEl("priceTitleSub", T.confirmFee || "Confirm Lesson Fee");
   setEl("priceBackSub", T.back || "Back");
   setEl("nextBtnSub", T.selectDateNext || "Select date & time");
