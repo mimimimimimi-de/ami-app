@@ -1186,14 +1186,31 @@ async function pickSlot(date, time) {
   const T = window._currentT || {};
 
   document.getElementById("confirm").innerHTML = `
-    <div class="info-box">
-      <strong>レッスン / ${T.lesson || "Lesson"}：</strong>${lessonLabel}<br>
-      <strong>料金 / ${T.fee || "Fee"}：</strong>$${selectedPrice}<br>
-      <strong>日付 / ${T.date || "Date"}：</strong>${displayDate}<br>
-      <strong>時間 / ${T.time || "Time"}：</strong>${localTimeDisplay}
+    <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:16px 0;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">レッスン <span style="font-size:11px;color:#ccc;">/ ${T.lesson || "Lesson"}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#222;">${lessonLabel}</span>
+        </div>
+        <div style="height:0.5px;background:#eee;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">料金 <span style="font-size:11px;color:#ccc;">/ ${T.fee || "Fee"}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#06C755;">$${selectedPrice}</span>
+        </div>
+        <div style="height:0.5px;background:#eee;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">日付 <span style="font-size:11px;color:#ccc;">/ ${T.date || "Date"}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#222;">${displayDate}</span>
+        </div>
+        <div style="height:0.5px;background:#eee;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">時間 <span style="font-size:11px;color:#ccc;">/ ${T.time || "Time"}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#222;">${localTimeDisplay}</span>
+        </div>
+      </div>
     </div>
-    <div class="policy-box">
-      <strong>キャンセルポリシー / ${T.cancelPolicy || "Cancellation Policy"}</strong><br>
+    <div style="background:#fffbf0;border:0.5px solid #f0e0a0;border-radius:12px;padding:12px 14px;font-size:12px;color:#888;line-height:1.8;">
+      <strong style="color:#b8860b;">キャンセルポリシー <span style="font-weight:400;">/ ${T.cancelPolicy || "Cancellation Policy"}</span></strong><br>
       ・12時間前まで：返金あり / ${T.cancelLine1 || "Up to 12h before: refundable"}<br>
       ・決済手数料は返金対象外 / ${T.cancelLine2 || "Processing fees non-refundable"}<br>
       ・12時間を過ぎた場合：返金なし / ${T.cancelLine3 || "After 12h: non-refundable"}
