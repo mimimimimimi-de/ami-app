@@ -187,8 +187,8 @@ const SUCCESS_TICKET_TRANS = {
 
 function applySuccessTicketLang(lang) {
   const l = lang || localStorage.getItem("userLang") || "en";
-  if (l === "ja") return;
-  const T = SUCCESS_TICKET_TRANS[l] || SUCCESS_TICKET_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? SUCCESS_TICKET_TRANS["en"] : (SUCCESS_TICKET_TRANS[l] || SUCCESS_TICKET_TRANS["en"]);
   window._stT = T;
 
   const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };

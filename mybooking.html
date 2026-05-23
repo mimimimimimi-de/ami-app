@@ -705,8 +705,8 @@ function getMyBookingLang() {
 
 function applyMyBookingLang() {
   const l = getMyBookingLang();
-  if (l === "ja") return;
-  const T = MYBOOKING_TRANS[l] || MYBOOKING_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? MYBOOKING_TRANS["en"] : (MYBOOKING_TRANS[l] || MYBOOKING_TRANS["en"]);
   window._mybookingT = T;
 
   // タイトル
@@ -1049,7 +1049,7 @@ async function init() {
     }
 
     // GASから言語を取得して設定
-    if (data.lang && data.lang !== 'ja') {
+    if (data.lang) {
       localStorage.setItem("userLang", data.lang);
       applyMyBookingLang();
     }

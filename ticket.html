@@ -528,8 +528,8 @@ function getTicketLang() {
 
 function applyTicketLang() {
   const l = getTicketLang();
-  if (l === "ja") return;
-  const T = TICKET_TRANS[l] || TICKET_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? TICKET_TRANS["en"] : (TICKET_TRANS[l] || TICKET_TRANS["en"]);
   window._ticketT = T;
 
   const set = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
@@ -662,7 +662,7 @@ async function fetchPrices() {
     const [data25, data50] = await Promise.all([res25.json(), res50.json()]);
 
     // GASから言語を取得して適用
-    if (data25.lang && data25.lang !== 'ja') {
+    if (data25.lang) {
       localStorage.setItem("userLang", data25.lang);
       applyTicketLang();
     }
