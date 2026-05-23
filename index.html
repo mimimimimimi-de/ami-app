@@ -67,6 +67,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .main { background: #06C755; color: #fff; }
 .sub { background: #e5e5e5; color: #333; }
 
+/* レッスン選択ボタン */
+#btn25:not(:disabled):hover, #btn50:not(:disabled):hover {
+  border-color: #06C755 !important;
+  background: #f0fdf4 !important;
+}
+#btn25:not(:disabled):active, #btn50:not(:disabled):active {
+  background: #e0f8ec !important;
+  transform: scale(0.99);
+}
+
 .price {
   font-size: 34px;
   font-weight: 800;
@@ -328,14 +338,40 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 <div class="container">
 
   <div class="card" id="top">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;">Ami's Japanese Lesson</p>
     <h2>レッスンを選んでください</h2>
-    <p id="loginStatus">LINE情報を確認しています...<span class="en-sub">Checking LINE info...</span></p>
-    <button class="main" id="btn25" onclick="selectLesson(25)" disabled>
-      25分レッスン<span class="en-sub" style="color:rgba(255,255,255,0.8);">25-min Lesson</span>
-    </button>
-    <button class="main" id="btn50" onclick="selectLesson(50)" disabled>
-      50分レッスン<span class="en-sub" style="color:rgba(255,255,255,0.8);">50-min Lesson</span>
-    </button>
+    <p id="loginStatus" style="font-size:13px;min-height:18px;margin:4px 0 24px;"></p>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <button id="btn25" onclick="selectLesson(25)" disabled style="all:unset;background:#fff;border:0.5px solid #e0e0e0;border-radius:16px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s,background 0.15s;width:100%;box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:40px;height:40px;background:#e8faf0;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div style="text-align:left;">
+            <div style="font-size:15px;font-weight:600;color:#222;" id="btn25Label">25分レッスン</div>
+            <div style="font-size:12px;color:#aaa;margin-top:2px;" id="btn25Sub">25-min Lesson</div>
+          </div>
+        </div>
+        <div style="font-size:18px;font-weight:600;color:#06C755;">→</div>
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;margin:0;">
+        <div style="flex:1;height:0.5px;background:#eee;"></div>
+        <span style="font-size:11px;color:#ccc;">or</span>
+        <div style="flex:1;height:0.5px;background:#eee;"></div>
+      </div>
+      <button id="btn50" onclick="selectLesson(50)" disabled style="all:unset;background:#fff;border:0.5px solid #e0e0e0;border-radius:16px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.15s,background 0.15s;width:100%;box-sizing:border-box;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:40px;height:40px;background:#e8faf0;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div style="text-align:left;">
+            <div style="font-size:15px;font-weight:600;color:#222;" id="btn50Label">50分レッスン</div>
+            <div style="font-size:12px;color:#aaa;margin-top:2px;" id="btn50Sub">50-min Lesson</div>
+          </div>
+        </div>
+        <div style="font-size:18px;font-weight:600;color:#06C755;">→</div>
+      </button>
+    </div>
     <div class="status" id="topStatus"></div>
   </div>
 
@@ -633,11 +669,11 @@ function applyTranslations(lang) {
     nextMainBtn.innerHTML = `次へ / ${T.next || "Next"} →<span class="en-sub" style="color:rgba(255,255,255,0.7);">${T.selectDateNext || ""}</span>`;
   }
 
-  // ボタンのサブテキスト
-  const btn25 = document.getElementById("btn25");
-  if (btn25) { const sub = btn25.querySelector(".en-sub"); if (sub) sub.textContent = T.btn25 || ""; }
-  const btn50 = document.getElementById("btn50");
-  if (btn50) { const sub = btn50.querySelector(".en-sub"); if (sub) sub.textContent = T.btn50 || ""; }
+  // ボタンのサブテキスト（新デザイン対応）
+  const btn25sub = document.getElementById("btn25Sub");
+  const btn50sub = document.getElementById("btn50Sub");
+  if (btn25sub) btn25sub.textContent = T.btn25 || "25-min Lesson";
+  if (btn50sub) btn50sub.textContent = T.btn50 || "50-min Lesson";
   const checkoutBtn = document.getElementById("checkoutBtn");
   if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = T.proceed || ""; }
   const procText = document.getElementById("processingText");
