@@ -107,11 +107,13 @@ button {
 .main { background: #06C755; color: white; }
 
 #calendar {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 55vh;
   border-radius: 16px;
   border: 1px solid #eee;
   background: #fff;
   min-height: 100px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cal-loading {
@@ -153,9 +155,8 @@ button {
   white-space: nowrap;
   line-height: 1.4;
   position: sticky;
-  top: -1px;
+  top: 0;
   z-index: 3;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
 }
 
 .calendar-table td {
@@ -269,10 +270,7 @@ button {
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
-    <!-- 日付ヘッダー固定エリア -->
-    <div id="calendarHeader" style="overflow-x:hidden;border:1px solid #eee;border-bottom:none;border-radius:16px 16px 0 0;background:#f8faf9;"></div>
-    <!-- カレンダー本体 -->
-    <div id="calendar" style="border-radius:0 0 16px 16px;border-top:none;">
+    <div id="calendar">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
@@ -599,18 +597,12 @@ function renderCalendar() {
 
   const times = Array.from(allTimeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
-  // ヘッダーHTML生成
-  let headerHtml = "<table class='calendar-table' style='margin-bottom:0;'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
+  // 1テーブルで生成（theadにsticky適用）
+  let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
   visibleDates.forEach(d => {
-    headerHtml += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
+    html += "<th>" + formatShort(d.date) + "<br>(" + getDayLabel(d.date) + ")</th>";
   });
-  headerHtml += "</tr></table>";
-
-  // 本体HTML（ダミーヘッダー行で列幅を合わせる）
-  let html = "<table class='calendar-table'>";
-  html += "<tr style='visibility:hidden;height:0;'><th>時間</th>";
-  visibleDates.forEach(() => { html += "<th></th>"; });
-  html += "</tr>";
+  html += "</tr></thead><tbody>";
 
   if (times.length === 0) {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
@@ -634,49 +626,8 @@ function renderCalendar() {
     });
   }
 
-  html += "</table>";
-
-  const calHeader = document.getElementById("calendarHeader");
-  if (calHeader) calHeader.innerHTML = headerHtml;
+  html += "</tbody></table>";
   calendar.innerHTML = html;
-
-  // 横スクロール同期（本体 → 固定ヘッダー両方）
-  calendar.onscroll = function() {
-    if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
-    const fh = document.getElementById("floatingCalHeader");
-    if (fh && fh.style.display !== 'none') fh.scrollLeft = calendar.scrollLeft;
-  };
-
-  // フローティングヘッダー（横スクロール対応・白空白なし）
-  let fh = document.getElementById("floatingCalHeader");
-  if (!fh) {
-    fh = document.createElement("div");
-    fh.id = "floatingCalHeader";
-    document.body.appendChild(fh);
-  }
-  fh.style.cssText = "display:none;position:fixed;top:0;z-index:1000;background:#f8faf9;overflow-x:auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);";
-  fh.innerHTML = headerHtml;
-  fh.onscroll = function() {
-    calendar.scrollLeft = fh.scrollLeft;
-    if (calHeader) calHeader.scrollLeft = fh.scrollLeft;
-  };
-
-  function syncFloatingHeader() {
-    const calRect = calendar.getBoundingClientRect();
-    const headerRect = calHeader ? calHeader.getBoundingClientRect() : null;
-    if (headerRect && headerRect.bottom < 0) {
-      fh.style.display = "block";
-      fh.style.left = calRect.left + "px";
-      fh.style.width = calRect.width + "px";
-      fh.scrollLeft = calendar.scrollLeft;
-    } else {
-      fh.style.display = "none";
-    }
-  }
-
-  window.removeEventListener("scroll", window._calScrollHandler);
-  window._calScrollHandler = syncFloatingHeader;
-  window.addEventListener("scroll", syncFloatingHeader);
 }
 
 function prevWeek() {

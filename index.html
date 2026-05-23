@@ -109,12 +109,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 #calendar {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 55vh;
   margin-top: 16px;
   border-radius: 16px;
   border: 1px solid #eee;
   background: #fff;
   min-height: 100px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .calendar-table {
@@ -135,9 +137,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   white-space: nowrap;
   line-height: 1.4;
   position: sticky;
-  top: -1px;
+  top: 0;
   z-index: 3;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
 }
 
 .calendar-table td {
@@ -346,10 +347,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
 
-    <!-- 日付ヘッダー固定エリア -->
-    <div id="calendarHeader" style="overflow-x:hidden;border:1px solid #eee;border-bottom:none;border-radius:16px 16px 0 0;background:#f8faf9;"></div>
-    <!-- カレンダー本体 -->
-    <div id="calendar" style="border-radius:0 0 16px 16px;border-top:none;">
+    <div id="calendar">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
@@ -1017,22 +1015,14 @@ function generateCalendar() {
   const times = Array.from(timeSet).sort();
   const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
 
-  // ヘッダーHTML生成
-  let headerHtml = "<table class='calendar-table' style='margin-bottom:0;'><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style="font-size:10px;color:#aaa;">${userTzName || ''}</span>` : '') + "</th>";
+  // 1テーブルで生成（thにsticky適用）
+  let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style="font-size:10px;color:#aaa;">${userTzName || ''}</span>` : '') + "</th>";
   days.forEach(day => {
     const isSunday = day.getDay() === 0;
     const dayLabel = isSunday ? `<span style="color:#e67e22;font-weight:700;">日</span>` : getDayLabel(day);
-    headerHtml += `<th>${formatShort(day)}<br>(${dayLabel})</th>`;
+    html += `<th>${formatShort(day)}<br>(${dayLabel})</th>`;
   });
-  headerHtml += "</tr></table>";
-
-  // 本体HTML生成（ヘッダー行なし）
-  let html = "<table class='calendar-table'>";
-
-  // ダミーヘッダー行（列幅を合わせるため非表示）
-  html += "<tr style='visibility:hidden;height:0;'><th>時間</th>";
-  days.forEach(() => { html += "<th></th>"; });
-  html += "</tr>";
+  html += "</tr></thead><tbody>";
 
   if (times.length === 0) {
     html += `<tr><td colspan="${days.length + 1}" style="padding:20px;text-align:center;color:#aaa;">この週は空き時間がありません<br><span style="font-size:12px;">No available slots this week</span></td></tr>`;
@@ -1040,26 +1030,20 @@ function generateCalendar() {
     times.forEach(time => {
       const localTimeStr = showLocalTime && days.length > 0 ? getLocalTimeLabel(formatFull(days[0]), time) : '';
       html += `<tr><td>${time}<br>${localTimeStr ? `<span style="font-size:11px;color:#aaa;">${localTimeStr}</span>` : ''}</td>`;
-
       days.forEach(day => {
         const date = formatFull(day);
         const isSunday = day.getDay() === 0;
         const isTemporary = temporaryDates.includes(date);
-        const windows = (isSunday && isTemporary)
-          ? (temporaryWindows[date] || [])
-          : getTimeWindows(day);
+        const windows = (isSunday && isTemporary) ? (temporaryWindows[date] || []) : getTimeWindows(day);
         const blockMinutes = getBlockMinutes(selectedMinutes);
-
         const inWindow = windows.some(w => {
           const t = timeToMinutes(time);
           return t >= timeToMinutes(w.start) && t + blockMinutes <= timeToMinutes(w.end);
         });
-
         const start = new Date(`${date}T${time}:00+09:00`);
         const end = new Date(start.getTime() + blockMinutes * 60000);
         const tooSoon = isWithin12Hours(date, time);
         const busy = isOverlap(start, end, busyItems);
-
         if (inWindow && !tooSoon && !busy) {
           html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
         } else {
@@ -1070,50 +1054,8 @@ function generateCalendar() {
     });
   }
 
-  html += "</table>";
-
-  // ヘッダーと本体を設定
-  const calHeader = document.getElementById("calendarHeader");
-  if (calHeader) calHeader.innerHTML = headerHtml;
+  html += "</tbody></table>";
   calendar.innerHTML = html;
-
-  // 横スクロール同期（本体 → 固定ヘッダー両方）
-  calendar.onscroll = function() {
-    if (calHeader) calHeader.scrollLeft = calendar.scrollLeft;
-    const fh = document.getElementById("floatingCalHeader");
-    if (fh && fh.style.display !== 'none') fh.scrollLeft = calendar.scrollLeft;
-  };
-
-  // フローティングヘッダー（横スクロール対応・白空白なし）
-  let fh = document.getElementById("floatingCalHeader");
-  if (!fh) {
-    fh = document.createElement("div");
-    fh.id = "floatingCalHeader";
-    document.body.appendChild(fh);
-  }
-  fh.style.cssText = "display:none;position:fixed;top:0;z-index:1000;background:#f8faf9;overflow-x:auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);";
-  fh.innerHTML = headerHtml;
-  fh.onscroll = function() {
-    calendar.scrollLeft = fh.scrollLeft;
-    if (calHeader) calHeader.scrollLeft = fh.scrollLeft;
-  };
-
-  function syncFloatingHeader() {
-    const calRect = calendar.getBoundingClientRect();
-    const headerRect = calHeader ? calHeader.getBoundingClientRect() : null;
-    if (headerRect && headerRect.bottom < 0) {
-      fh.style.display = "block";
-      fh.style.left = calRect.left + "px";
-      fh.style.width = calRect.width + "px";
-      fh.scrollLeft = calendar.scrollLeft;
-    } else {
-      fh.style.display = "none";
-    }
-  }
-
-  window.removeEventListener("scroll", window._calScrollHandler);
-  window._calScrollHandler = syncFloatingHeader;
-  window.addEventListener("scroll", syncFloatingHeader);
 }
 
 async function pickSlot(date, time) {
