@@ -1345,25 +1345,54 @@ async function checkout() {
       const doneCard = document.createElement("div");
       doneCard.className = "card";
       doneCard.innerHTML = `
-        <div style="text-align:center;font-size:52px;margin-bottom:10px;">✅</div>
-        <h2 style="text-align:center;color:#06C755;font-size:22px;margin-bottom:4px;">予約完了！</h2>
-        <div style="text-align:center;font-size:11px;color:#bbb;margin-bottom:16px;">${T.bookingComplete || "Booking Complete"}</div>
-        <div style="background:#f7fdf9;border:1px solid #d7f3df;padding:16px;border-radius:16px;font-size:15px;line-height:1.9;margin-bottom:16px;">
-          <strong>レッスン / ${T.lesson || "Lesson"}：</strong>${selectedMinutes}分レッスン<br>
-          <strong>日付 / ${T.date || "Date"}：</strong>${displayDate}<br>
-          <strong>時間 / ${T.time || "Time"}：</strong>${localTimeDisplay}<br>
-          <strong>支払い / ${T.payment || "Payment"}：</strong>回数券 / ${T.ticket || "Ticket"}<br>
-          <strong>残り回数 / ${T.remaining || "Remaining"}：</strong>${useData.remaining}回 / ${useData.remaining} left
+        <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;">${T.bookingComplete || "Booking Complete"}</p>
+        <div style="text-align:center;margin:12px 0 4px;">
+          <div style="width:56px;height:56px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2 style="margin:0;font-size:22px;color:#06C755;">予約完了！</h2>
         </div>
-        <p style="text-align:center;color:#666;font-size:14px;line-height:1.7;">
-          LINEに予約内容を送信しました。<br>
-          <span style="font-size:12px;color:#bbb;">${T.sentViaLine || "Booking details sent via LINE."}</span>
+
+        <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:20px 0;">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:12px;color:#999;">レッスン <span style="font-size:11px;color:#ccc;">/ ${T.lesson || "Lesson"}</span></span>
+              <span style="font-size:14px;font-weight:600;color:#222;">${selectedMinutes}分レッスン</span>
+            </div>
+            <div style="height:0.5px;background:#eee;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:12px;color:#999;">日付 <span style="font-size:11px;color:#ccc;">/ ${T.date || "Date"}</span></span>
+              <span style="font-size:14px;font-weight:600;color:#222;">${displayDate}</span>
+            </div>
+            <div style="height:0.5px;background:#eee;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:12px;color:#999;">時間 <span style="font-size:11px;color:#ccc;">/ ${T.time || "Time"}</span></span>
+              <span style="font-size:14px;font-weight:600;color:#222;">${localTimeDisplay}</span>
+            </div>
+            <div style="height:0.5px;background:#eee;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:12px;color:#999;">支払い <span style="font-size:11px;color:#ccc;">/ ${T.payment || "Payment"}</span></span>
+              <span style="font-size:14px;font-weight:600;color:#222;">回数券</span>
+            </div>
+            <div style="height:0.5px;background:#eee;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:12px;color:#999;">残り回数 <span style="font-size:11px;color:#ccc;">/ ${T.remaining || "Remaining"}</span></span>
+              <span style="font-size:14px;font-weight:600;color:#06C755;">${useData.remaining}回</span>
+            </div>
+          </div>
+        </div>
+
+        <p style="text-align:center;color:#aaa;font-size:12px;margin:0 0 16px;">
+          LINEに予約内容を送信しました。<br>${T.sentViaLine || "Booking details sent via LINE."}
         </p>
-        <a href="${calUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:12px;background:#fff;color:#4285f4;border:2px solid #4285f4;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;">
-          📅 Googleカレンダーに追加 / ${T.addToCalendar || "Add to Google Calendar"}
+
+        <a href="${calUrl}" target="_blank" style="all:unset;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:14px;background:#fff;color:#4285f4;border:0.5px solid #c5d8f8;border-radius:12px;font-size:14px;font-weight:600;text-align:center;cursor:pointer;margin-bottom:10px;">
+          📅 Googleカレンダーに追加
+          <span style="font-size:11px;font-weight:400;color:#aaa;">${T.addToCalendar || "Add to Google Calendar"}</span>
         </a>
-        <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="width:100%;padding:15px;margin-top:10px;background:#06C755;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
-          マイ予約を見る / ${T.myBookings || "My Bookings"}
+        <button onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;">
+          マイ予約を見る
+          <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">${T.myBookings || "My Bookings"}</span>
         </button>
       `;
       document.querySelector(".container").appendChild(doneCard);
