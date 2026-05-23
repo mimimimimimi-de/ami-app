@@ -833,7 +833,7 @@ async function init() {
     userId = null;
     setLessonButtons(false);
     document.getElementById("loginStatus").innerHTML = 'LINE情報を取得できませんでした。<span class="en-sub">Could not get LINE info.</span>';
-    document.getElementById("topStatus").innerHTML = 'LINEアプリ内で開き直してください。<span class="en-sub">Please reopen in the LINE app.</span>';
+    document.getElementById("topStatus").innerHTML = 'LINEアプリ内で開き直してください。<span class="en-sub">Please reopen in the LINE app.</span><br><span style="font-size:10px;color:#aaa;">' + String(e) + '</span>';
     document.getElementById("topStatus").className = "status error";
   }
 }
