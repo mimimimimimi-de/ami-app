@@ -654,12 +654,12 @@ function applyLang(lang) {
     { title: "step3title", titleJa: "予約スタート！", desc: "step3desc", descJa: "先生からLINEが届いたら予約できるようになります。" }
   ];
   steps.forEach((s, i) => {
-    if (stepTitles[i]) stepTitles[i].innerHTML = isJa
-      ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
-    if (stepDescs[i]) stepDescs[i].innerHTML = isJa
-      ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
+    const subTitle = isJa ? LANG_TEXT.en[s.title] : T[s.title];
+    const subDesc  = isJa ? LANG_TEXT.en[s.desc]  : T[s.desc];
+    if (stepTitles[i]) stepTitles[i].innerHTML =
+      `${LANG_TEXT.ja[s.title]}<span class="en-sub">${subTitle || ""}</span>`;
+    if (stepDescs[i]) stepDescs[i].innerHTML =
+      `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${subDesc || ""}</span>`;
   });
 
   // オーバーレイサブテキスト
@@ -680,25 +680,25 @@ function applyLang(lang) {
 
   // 登録ボタン
   const regBtn = document.getElementById("registerBtn");
-  if (regBtn) regBtn.innerHTML = isJa
-    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`
-    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`;
+  const regBtnSub = isJa ? LANG_TEXT.en.registerBtn : T.registerBtn;
+  if (regBtn) regBtn.innerHTML =
+    `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${regBtnSub || ""}</span>`;
 
   // 注意書き
   const note = document.querySelector(".note");
-  if (note) note.innerHTML = isJa
-    ? `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`;
+  const noteSub = isJa ? LANG_TEXT.en.note : T.note;
+  if (note) note.innerHTML =
+    `${LANG_TEXT.ja.note}<br><span class="en-sub">${noteSub || ""}</span>`;
 
   // 登録完了画面
   const doneH2 = document.querySelector("#doneView h2");
-  if (doneH2) doneH2.innerHTML = isJa
-    ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`;
+  const doneTitleSub = isJa ? LANG_TEXT.en.doneTitle : T.doneTitle;
+  if (doneH2) doneH2.innerHTML =
+    `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${doneTitleSub || ""}</span>`;
   const doneP = document.querySelector("#doneView p");
-  if (doneP) doneP.innerHTML = isJa
-    ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`;
+  const doneMsgSub = isJa ? LANG_TEXT.en.doneMsg : T.doneMsg;
+  if (doneP) doneP.innerHTML =
+    `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${doneMsgSub || ""}</span>`;
 
   // 登録済み画面
   const subAlreadyTitle = document.getElementById("subAlreadyTitle");
