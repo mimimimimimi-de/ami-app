@@ -753,6 +753,8 @@ async function init() {
     fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName))
       .then(r => r.json())
       .then(langData => {
+        // 料金もキャッシュに保存
+        priceCache[25] = langData;
         if (langData.lang && langData.lang !== 'ja') {
           applyTranslations(langData.lang);
           const TInit = window._currentT || {};
@@ -765,7 +767,11 @@ async function init() {
             userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
           } catch(e) {}
         }
+        // 50分も先取得
+        return fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=50&name=" + encodeURIComponent(displayName));
       })
+      .then(r => r && r.json())
+      .then(data50 => { if (data50) priceCache[50] = data50; })
       .catch(e => {});
 
   } catch (e) {
@@ -785,6 +791,19 @@ async function ensureUserId() {
   return !!(userId && userId !== "null" && userId !== "undefined");
 }
 
+// 料金キャッシュ（バックグラウンドで先取得）
+let priceCache = {};
+
+function prefetchPrices() {
+  if (!userId) return;
+  [25, 50].forEach(min => {
+    fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=" + min + "&name=" + encodeURIComponent(displayName))
+      .then(r => r.json())
+      .then(data => { priceCache[min] = data; })
+      .catch(e => {});
+  });
+}
+
 async function selectLesson(minutes) {
   selectedMinutes = minutes;
   selectedPrice = null;
@@ -792,6 +811,14 @@ async function selectLesson(minutes) {
   document.getElementById("nextBtn").disabled = true;
   const TL = window._currentT || {};
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + (minutes === 25 ? (TL.btn25 || "25-min Lesson") : (TL.btn50 || "50-min Lesson"));
+
+  // キャッシュがあればすぐ表示
+  if (priceCache[minutes]) {
+    applyPriceData(priceCache[minutes], minutes);
+    return;
+  }
+
+  // キャッシュがない場合は取得中表示してフェッチ
   document.getElementById("priceText").textContent = "取得中... / " + (TL.loading || "Loading...");
   const ok = await ensureUserId();
   if (!ok) {
@@ -803,38 +830,36 @@ async function selectLesson(minutes) {
   try {
     const res = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=" + encodeURIComponent(minutes) + "&name=" + encodeURIComponent(displayName));
     const data = await res.json();
-
-    // 言語取得後にまず翻訳を適用
-    if (data.lang && data.lang !== 'ja') {
-      applyTranslations(data.lang);
-    }
-
-    const TL = window._currentT || {};
-
-    // 取得中テキストを言語に合わせて更新
-    document.getElementById("priceText").textContent = "取得中... / " + (TL.loading || "Loading...");
-
-    if (!data.ok || !data.price) {
-      document.getElementById("priceText").textContent = "料金未設定 / Not Set";
-      alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
-      return;
-    }
-    selectedPrice = Number(data.price);
-    document.getElementById("priceText").textContent = "$" + selectedPrice;
-    document.getElementById("nextBtn").disabled = false;
-
-    // 登録時のタイムゾーンを使用（ブラウザ自動検出を上書き）
-    if (data.timezone && data.timezone !== '') {
-      userTimezone = data.timezone;
-      try {
-        const now = new Date();
-        userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
-      } catch (e) {}
-    }
-
+    priceCache[minutes] = data;
+    applyPriceData(data, minutes);
   } catch (e) {
     console.error(e);
     document.getElementById("priceText").textContent = "取得失敗 / Failed";
+  }
+}
+
+function applyPriceData(data, minutes) {
+  if (data.lang && data.lang !== 'ja') {
+    applyTranslations(data.lang);
+  }
+  const TL = window._currentT || {};
+  document.getElementById("lesson").textContent = minutes + "分レッスン / " + (minutes === 25 ? (TL.btn25 || "25-min Lesson") : (TL.btn50 || "50-min Lesson"));
+
+  if (!data.ok || !data.price) {
+    document.getElementById("priceText").textContent = "料金未設定 / Not Set";
+    alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
+    return;
+  }
+  selectedPrice = Number(data.price);
+  document.getElementById("priceText").textContent = "$" + selectedPrice;
+  document.getElementById("nextBtn").disabled = false;
+
+  if (data.timezone && data.timezone !== '') {
+    userTimezone = data.timezone;
+    try {
+      const now = new Date();
+      userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    } catch (e) {}
   }
 }
 
