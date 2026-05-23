@@ -376,8 +376,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="price">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <h2>料金の確認</h2>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:20px;margin:20px 0;text-align:center;">
       <div style="font-size:13px;color:#888;margin-bottom:4px;" id="lesson"></div>
       <div class="price" id="priceText" style="margin:8px 0;">-</div>
@@ -425,8 +425,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="confirmPage">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <h2>予約内容の最終確認</h2>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <div id="confirm"></div>
 
     <div class="payment-section" id="paymentSection" style="display:none">
@@ -637,15 +637,14 @@ function getLang() {
 
 function t(key, lang) {
   const l = lang || getLang();
-  if (l === "ja") return "";
+  if (l === "ja") return TRANSLATIONS["en"][key] || "";
   return (TRANSLATIONS[l] && TRANSLATIONS[l][key]) || TRANSLATIONS["en"][key] || "";
 }
 
 function applyTranslations(lang) {
   const l = lang || getLang();
-  if (l === "ja") return;
-
-  const T = TRANSLATIONS[l] || TRANSLATIONS["en"];
+  // 日本語の場合は英語サブテキストを表示、それ以外はその言語
+  const T = l === "ja" ? TRANSLATIONS["en"] : (TRANSLATIONS[l] || TRANSLATIONS["en"]);
 
   const setSubText = (selector, key) => {
     const el = document.querySelector(selector);

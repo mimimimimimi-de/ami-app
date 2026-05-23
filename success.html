@@ -114,7 +114,7 @@
     function applySuccessLang() {
       const urlLang = new URLSearchParams(window.location.search).get("lang");
       const lang = urlLang || localStorage.getItem("userLang") || "en";
-      if (lang === "ja") return;
+      // 日本語の場合は英語サブテキストを表示
       const T = SUCCESS_TRANS[lang] || SUCCESS_TRANS["en"];
       const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
       set("subPaymentComplete", T.paymentComplete);
