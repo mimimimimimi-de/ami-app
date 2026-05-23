@@ -653,8 +653,8 @@ function applyTranslations(lang) {
   if (tapEl) tapEl.textContent = T.tapToSelect || "";
 
   // 週ボタン
-  set("prevWeekSub", T.prevWeek || "Prev");
-  set("nextWeekSub", T.nextWeek || "Next");
+  setEl("prevWeekSub", T.prevWeek || "Prev");
+  setEl("nextWeekSub", T.nextWeek || "Next");
 
   // 戻るボタン
   document.querySelectorAll(".sub").forEach(btn => {
