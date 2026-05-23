@@ -1450,9 +1450,9 @@ async function checkout() {
           📅 Googleカレンダーに追加
           <span style="font-size:11px;font-weight:400;color:#aaa;">${T.addToCalendar || "Add to Google Calendar"}</span>
         </a>
-        <button type="button" onclick="window.location.href='https://ami-app-eta.vercel.app/mybooking.html'" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;">
-          マイ予約を見る
-          <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">${T.myBookings || "My Bookings"}</span>
+        <button type="button" onclick="if(typeof liff !== 'undefined' && liff.isInClient && liff.isInClient()){ liff.closeWindow(); } else { window.close(); }" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;">
+          閉じる
+          <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;">${(window._currentT || {}).close || "Close"}</span>
         </button>
       `;
       document.querySelector(".container").appendChild(doneCard);
