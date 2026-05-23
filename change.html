@@ -548,7 +548,9 @@ async function loadChangeData() {
     const data = await res.json();
 
     if (!data.ok) {
-      document.getElementById("reservationInfo").innerHTML = "<span class='error'>" + (data.message || "変更データを取得できませんでした。") + "</span>";
+      const cachedL = localStorage.getItem("userLang") || "ja";
+      const T_err = CHANGE_TRANS[cachedL] || CHANGE_TRANS["en"];
+      document.getElementById("reservationInfo").innerHTML = `<span class='error'>予約が見つかりませんでした。<br><span style='font-size:12px;color:#e74c3c;'>${T_err.notFound || "Reservation not found."}</span></span>`;
       document.getElementById("calendar").innerHTML = "";
       return;
     }
