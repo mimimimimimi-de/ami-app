@@ -271,28 +271,28 @@ td.available:active { background: #d4f5e0; }
 <div class="container">
 
   <div class="card" id="changeCard">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="changeTitleSub">Change Reservation</p>
     <h2>予約変更</h2>
-    <div class="en-title">Change Reservation</div>
-    <p>○をタップして新しい時間を選んでください<span class="en-sub">Tap ○ to select a new time slot</span></p>
+    <p style="font-size:13px;color:#888;margin:4px 0 16px;text-align:center;">○をタップして新しい時間を選んでください<br><span id="changeTapSub" style="font-size:11px;color:#bbb;">Tap ○ to select a new time slot</span></p>
 
-    <div class="info-box" id="reservationInfo">
+    <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:16px;margin-bottom:14px;" id="reservationInfo">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text" id="calLoadingText">読み込み中...<br><span style="font-size:12px;color:#bbb;">Loading...</span></div>
       </div>
     </div>
 
-    <div class="warning-box">
-      <strong>予約変更について / About Changes</strong><br>
-      ・12時間前まで変更可能 / Changes available up to 12h before<br>
-      ・変更後は新しいMeetリンクが発行されます / New Meet link will be issued
+    <div style="background:#fffbf0;border:0.5px solid #f0e0a0;border-radius:12px;padding:12px 14px;font-size:12px;color:#888;line-height:1.8;margin-bottom:14px;">
+      <strong style="color:#b8860b;">予約変更について <span style="font-weight:400;" id="aboutChangesSub">/ About Changes</span></strong><br>
+      ・12時間前まで変更可能 / <span id="changeLine1Sub">Changes available up to 12h before</span><br>
+      ・変更後は新しいMeetリンクが発行されます / <span id="changeLine2Sub">New Meet link will be issued</span>
     </div>
 
     <div class="tz-info" id="tzInfo">📍 表示時刻: 日本時間 (JST) / Times shown in JST</div>
 
-    <div class="nav">
-      <button class="sub" type="button" onclick="prevWeek()">← 前の週 / Prev</button>
-      <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
+    <div class="nav" style="gap:8px;margin:12px 0;">
+      <button type="button" onclick="prevWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">← 前の週 <span style="font-size:11px;color:#aaa;" id="prevWeekSub">Prev</span></button>
+      <button type="button" onclick="nextWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">次の週 → <span style="font-size:11px;color:#aaa;" id="nextWeekSub">Next</span></button>
     </div>
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
@@ -309,23 +309,25 @@ td.available:active { background: #d4f5e0; }
   </div>
 
   <div class="card hidden" id="doneCard">
-    <div class="done-icon">✅</div>
-    <h2>予約を変更しました</h2>
-    <div class="en-title">Reservation Changed</div>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 12px;" id="doneTitleSub">Reservation Changed</p>
 
-    <div class="info-box" id="doneInfo"></div>
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="width:60px;height:60px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="margin:0;font-size:22px;color:#06C755;font-weight:600;">予約を変更しました</h2>
+    </div>
 
-    <p>
+    <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:0 0 16px;" id="doneInfo"></div>
+
+    <p style="text-align:center;font-size:13px;color:#aaa;line-height:1.7;margin:0 0 16px;">
       LINEに新しい予約内容を送信しました。<br>
-      このページは閉じて大丈夫です。<br>
-      <span class="en-sub">New booking details sent via LINE. You can close this page.</span>
-    </p>
-    <p style="font-size:12px;color:#aaa;margin-top:8px;line-height:1.7;">
-      ※以前のレッスンはGoogleカレンダーから手動で削除してください。<br>
-      <span style="font-size:11px;">※Please manually delete the previous lesson from your Google Calendar.</span>
+      <span id="doneSub">New booking details sent via LINE.</span>
     </p>
 
-    <button class="main" onclick="closePage()">閉じる / Close</button>
+    <button onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;">
+      閉じる <span style="font-size:11px;font-weight:400;opacity:0.8;" id="closeSub">Close</span>
+    </button>
   </div>
 
 </div>
@@ -423,38 +425,24 @@ function applyChangeLang(lang) {
   if (l === "ja") return;
   const T = CHANGE_TRANS[l] || CHANGE_TRANS["en"];
 
-  const setSubText = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
-  setSubText("#changeCard .en-title", T.title);
-  setSubText("#changeCard p .en-sub", T.tapToSelect);
-  const scrollHintSub = document.querySelector(".scroll-hint-sub"); if (scrollHintSub) scrollHintSub.textContent = T.scrollHint || "Scroll to see more days →";
-  setSubText("#doneCard .en-title", T.doneTitle);
-  setSubText("#doneCard p .en-sub", T.doneLine);
+  set("changeTitleSub", T.title);
+  set("changeTapSub", T.tapToSelect);
+  set("doneTitleSub", T.doneTitle);
+  set("doneSub", T.doneLine);
+  set("closeSub", T.close);
+  set("prevWeekSub", T.prevWeek);
+  set("nextWeekSub", T.nextWeek);
+  set("aboutChangesSub", "/ " + T.aboutChanges);
+  set("changeLine1Sub", T.changeLine1);
+  set("changeLine2Sub", T.changeLine2);
 
-  // tzInfo
+  const scrollHintSub = document.querySelector(".scroll-hint-sub");
+  if (scrollHintSub) scrollHintSub.textContent = T.scrollHint || "Scroll to see more days →";
+
   const tzInfo = document.getElementById("tzInfo");
   if (tzInfo) tzInfo.textContent = "📍 表示時刻: 日本時間 (JST) / " + T.timesShown;
-
-  // warning-box
-  const warningBox = document.querySelector(".warning-box");
-  if (warningBox) warningBox.innerHTML =
-    `<strong>予約変更について / ${T.aboutChanges}</strong><br>` +
-    `・12時間前まで変更可能 / ${T.changeLine1}<br>` +
-    `・変更後は新しいMeetリンクが発行されます / ${T.changeLine2}`;
-
-  // 週ボタン
-  const prevBtn = document.querySelector("button[onclick='prevWeek()']");
-  if (prevBtn) prevBtn.textContent = "← 前の週 / " + T.prevWeek;
-  const nextBtn = document.querySelector("button[onclick='nextWeek()']");
-  if (nextBtn) nextBtn.textContent = "次の週 / " + T.nextWeek + " →";
-
-  // 閉じるボタン
-  const closeBtn = document.querySelector("button[onclick='closePage()']");
-  if (closeBtn) closeBtn.textContent = "閉じる / " + T.close;
-
-  // 注意書きサブテキスト
-  const deleteNote = document.querySelector("#doneCard p[style] span");
-  if (deleteNote) deleteNote.textContent = "※" + T.deleteNote;
 
   window._changeT = T;
 }
