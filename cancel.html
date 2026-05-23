@@ -446,8 +446,8 @@ function getCancelLang() {
 
 function applyCancelLang(forceLang) {
   const l = forceLang || getCancelLang();
-  if (l === "ja") return;
-  const T = CANCEL_TRANS[l] || CANCEL_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? CANCEL_TRANS["en"] : (CANCEL_TRANS[l] || CANCEL_TRANS["en"]);
   window._cancelT = T;
 
   const setSubText = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
@@ -510,18 +510,12 @@ let userTzName = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   const cachedLang = localStorage.getItem("userLang");
-  if (cachedLang && cachedLang !== 'ja') {
-    applyCancelLang(cachedLang);
-  } else {
-    applyCancelLang();
-  }
+  applyCancelLang(cachedLang || "ja");
 
   const loadLang = cachedLang || "ja";
-  if (loadLang !== 'ja') {
-    const T0 = CANCEL_TRANS[loadLang] || CANCEL_TRANS["en"];
-    const loadingSub = document.getElementById("cancelLoadingSub");
-    if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
-  }
+  const T0 = CANCEL_TRANS[loadLang] || CANCEL_TRANS["en"];
+  const loadingSub = document.getElementById("cancelLoadingSub");
+  if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
 
   const cachedTz = localStorage.getItem("userTimezone");
   if (cachedTz && cachedTz !== 'Asia/Tokyo') {
@@ -602,7 +596,7 @@ async function loadCancelData() {
 
     reservationData = data.reservation;
 
-    if (data.lang && data.lang !== 'ja') {
+    if (data.lang) {
       localStorage.setItem("userLang", data.lang);
       applyCancelLang(data.lang);
     }
@@ -779,7 +773,7 @@ function showResult(isSuccess, message) {
   document.getElementById("resultCard").classList.remove("hidden");
 
   const cachedL = localStorage.getItem("userLang") || "ja";
-  const T = window._cancelT || (cachedL !== "ja" ? CANCEL_TRANS[cachedL] || CANCEL_TRANS["en"] : {});
+  const T = window._cancelT || CANCEL_TRANS[cachedL] || CANCEL_TRANS["en"];
 
   const iconWrap = document.getElementById("resultIconWrap");
   const iconSvg = document.getElementById("resultIconSvg");
