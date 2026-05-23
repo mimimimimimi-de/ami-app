@@ -898,7 +898,7 @@ async function selectLesson(minutes) {
   const spinWrap = document.getElementById("priceSpinnerWrap");
   const spinText = document.getElementById("priceSpinnerText");
   if (spinWrap) spinWrap.style.display = "flex";
-  if (spinText) spinText.textContent = TL.loading || "Loading...";
+  if (spinText) spinText.innerHTML = '取得中... <span style="font-size:11px;color:#aaa;display:block;">' + (TL.loading || "Loading...") + '</span>';
 
   // キャッシュがあればすぐ表示
   if (priceCache[minutes]) {
