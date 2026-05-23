@@ -212,12 +212,12 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
   <div class="card" id="confirmCard">
     <div class="icon">⚠️</div>
-    <h2 class="red">キャンセル確認<span class="en-sub">Cancel Reservation</span></h2>
+    <h2 class="red">キャンセル確認<span class="en-sub"></span></h2>
 
     <div class="lead">
       以下のレッスンをキャンセルしますか？<br>
       内容をご確認ください。<br>
-      <span class="en-sub">Are you sure you want to cancel this lesson? Please review the details below.</span>
+      <span class="en-sub"></span>
     </div>
 
     <div style="background:#fdf5f5;border:0.5px solid #f0d0d0;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">
@@ -235,7 +235,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
         ・12時間前を過ぎた場合：キャンセル・返金はできません。<br>
         <span class="en-sub">・After 12 hours before the lesson: No cancellation or refund.</span>
       </div>
-      <button class="cancel" type="button" id="cancelBtn">キャンセルを確定する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Confirm Cancellation</span></button>
+      <button class="cancel" type="button" id="cancelBtn">キャンセルを確定する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span></button>
     </div>
 
     <!-- 回数券予約 -->
@@ -278,7 +278,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     </div>
 
     <!-- 欠席ボタン（常に表示） -->
-    <button class="absence" type="button" id="absenceBtn">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
+    <button class="absence" type="button" id="absenceBtn">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span></button>
     <button class="back-small" type="button" onclick="closePage()">閉じる / Close</button>
 
     <div class="status" id="status"></div>
@@ -301,7 +301,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     </p>
 
     <button class="absence" type="button" id="absenceBtn2" style="display:none;">
-      📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span>
+      📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
     </button>
 
     <button type="button" onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:8px;">
