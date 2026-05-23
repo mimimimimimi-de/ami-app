@@ -376,25 +376,27 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="price">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <h2>料金の確認</h2>
-    <div class="en-title">Confirm Lesson Fee</div>
-    <div id="lesson"></div>
-    <div class="price" id="priceText">-</div>
-    <button class="sub" onclick="go('top')">← 戻る / Back</button>
-    <button class="main" id="nextBtn" onclick="openCalendar()" disabled>
-      次へ / Next →<span class="en-sub" style="color:rgba(255,255,255,0.7);">Select date & time</span>
+    <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:20px;margin:20px 0;text-align:center;">
+      <div style="font-size:13px;color:#888;margin-bottom:4px;" id="lesson"></div>
+      <div class="price" id="priceText" style="margin:8px 0;">-</div>
+    </div>
+    <button style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;margin-bottom:10px;" onclick="go('top')">← 戻る <span style="font-size:11px;color:#aaa;" id="priceBackSub">Back</span></button>
+    <button style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:16px;font-weight:600;color:#fff;cursor:pointer;display:block;" id="nextBtn" onclick="openCalendar()" disabled>
+      次へ → <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;" id="nextBtnSub">Select date & time</span>
     </button>
   </div>
 
   <div class="card hidden" id="calendarPage">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="calTitleSub">Select Date & Time</p>
     <h2>日時を選んでください</h2>
-    <div class="en-title">Select Date & Time</div>
-    <p>○をタップして予約する時間を選んでください<span class="en-sub">Tap ○ to select your preferred time slot</span></p>
+    <p style="font-size:13px;color:#888;text-align:center;margin:4px 0 12px;">○をタップして予約する時間を選んでください<br><span id="calTapSub" style="font-size:11px;color:#bbb;">Tap ○ to select your preferred time slot</span></p>
     <div class="tz-info" id="tzInfo">📍 表示時刻: 読み込み中...</div>
 
-    <div class="nav">
-      <button class="sub" onclick="prevWeek()">← 前の週 / Prev</button>
-      <button class="sub" onclick="nextWeek()">次の週 / Next →</button>
+    <div class="nav" style="gap:8px;margin:12px 0;">
+      <button class="sub" onclick="prevWeek()" style="font-size:13px;padding:10px 14px;">← 前の週 <span style="font-size:11px;color:#aaa;" id="prevWeekSub">Prev</span></button>
+      <button class="sub" onclick="nextWeek()" style="font-size:13px;padding:10px 14px;">次の週 → <span style="font-size:11px;color:#aaa;" id="nextWeekSub">Next</span></button>
     </div>
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
@@ -409,22 +411,22 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
       </div>
     </div>
 
-    <button class="sub" onclick="go('price')" style="margin-top:16px;">← 戻る / Back</button>
+    <button style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;margin-top:16px;" onclick="go('price')">← 戻る <span style="font-size:11px;color:#aaa;" id="calBackSub">Back</span></button>
   </div>
 
   <div class="card hidden" id="confirmPage">
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <h2>予約内容の最終確認</h2>
-    <div class="en-title">Confirm Your Booking</div>
     <div id="confirm"></div>
 
     <div class="payment-section" id="paymentSection" style="display:none">
-      <div class="section-title">💳 支払い方法を選んでください / Payment Method</div>
+      <div class="section-title">💳 支払い方法を選んでください <span style="font-size:12px;color:#aaa;font-weight:400;">/ Payment Method</span></div>
       <div id="paymentOptions"></div>
     </div>
 
-    <button class="sub" onclick="go('calendarPage')">← 戻る / Back</button>
-    <button class="main" id="checkoutBtn" onclick="checkout()">
-      決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">Proceed to Payment</span>
+    <button style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;margin-bottom:10px;" onclick="go('calendarPage')">← 戻る <span style="font-size:11px;color:#aaa;" id="confirmBackSub">Back</span></button>
+    <button style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:16px;font-weight:600;color:#fff;cursor:pointer;display:block;" id="checkoutBtn" onclick="checkout()">
+      決済に進む <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;" id="checkoutBtnSub">Proceed to Payment</span>
     </button>
     <div class="status" id="statusMessage"></div>
   </div>
@@ -675,9 +677,23 @@ function applyTranslations(lang) {
   if (btn25sub) btn25sub.textContent = T.btn25 || "25-min Lesson";
   if (btn50sub) btn50sub.textContent = T.btn50 || "50-min Lesson";
   const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) { const sub = checkoutBtn.querySelector(".en-sub"); if (sub) sub.textContent = T.proceed || ""; }
+  if (checkoutBtn) { const sub = checkoutBtn.querySelector("span"); if (sub) sub.textContent = T.proceed || "Proceed to Payment"; }
   const procText = document.getElementById("processingText");
   if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = T.processing || ""; }
+
+  // 各ページのサブテキスト
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  set("priceTitleSub", T.confirmFee || "Confirm Lesson Fee");
+  set("priceBackSub", T.back || "Back");
+  set("nextBtnSub", T.selectDateNext || "Select date & time");
+  set("calTitleSub", T.selectDateTime || "Select Date & Time");
+  set("calTapSub", T.tapToSelect || "Tap ○ to select your preferred time slot");
+  set("prevWeekSub", T.prevWeek || "Prev");
+  set("nextWeekSub", T.nextWeek || "Next");
+  set("calBackSub", T.back || "Back");
+  set("confirmTitleSub", T.confirmBooking || "Confirm Your Booking");
+  set("confirmBackSub", T.back || "Back");
+  set("checkoutBtnSub", T.proceed || "Proceed to Payment");
 
   // tz情報
   const tzInfo = document.getElementById("tzInfo");
