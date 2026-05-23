@@ -6,61 +6,40 @@
   <title>決済完了</title>
 
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 40px;
-      background: #f7f7f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f5f6f7;
+      color: #222;
     }
+
+    .container { max-width: 460px; margin: 0 auto; }
 
     .card {
-      background: white;
-      max-width: 420px;
-      margin: 40px auto;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    h1 { color: #06C755; }
-
-    p {
-      color: #555;
-      line-height: 1.7;
+      background: #fff;
+      padding: 28px 20px;
+      border-radius: 20px;
+      margin-top: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
 
     .status {
-      margin-top: 16px;
+      margin-top: 12px;
       color: #06C755;
-      font-weight: bold;
+      font-weight: 600;
       white-space: pre-line;
-    }
-
-    .error { color: #d93025; }
-
-    .cal-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: #4285f4;
-      color: white;
-      border-radius: 14px;
+      font-size: 14px;
       text-align: center;
-      font-size: 15px;
-      font-weight: 700;
-      text-decoration: none;
-      box-sizing: border-box;
-      margin-top: 16px;
-      transition: background 0.15s;
     }
-
-    .cal-btn:hover { background: #3367d6; }
+    .error { color: #d93025 !important; }
 
     .processing-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.92);
       z-index: 200;
       align-items: center;
       justify-content: center;
@@ -76,7 +55,7 @@
       animation: spin 0.7s linear infinite;
     }
     .processing-overlay .processing-text {
-      font-size: 16px; font-weight: 700; color: #333; text-align: center; line-height: 1.6;
+      font-size: 16px; font-weight: 600; color: #333; text-align: center; line-height: 1.6;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
@@ -91,19 +70,32 @@
   <div class="processing-text">処理中...<br><span id="overlaySubText" style="font-size:13px;color:#888;">Processing...</span></div>
 </div>
 
+<div class="container">
   <div class="card">
-    <h1>決済が完了しました<br><small id="subPaymentComplete" style="font-size:0.6em;color:#04a344;">Payment Complete</small></h1>
-    <p>ご予約ありがとうございます。<br><small id="subThankYou" style="color:#888;font-size:0.9em;">Thank you for your booking.</small></p>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 12px;" id="subPaymentComplete">Payment Complete</p>
+
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="width:60px;height:60px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="margin:0;font-size:22px;color:#06C755;font-weight:600;">決済が完了しました</h2>
+      <p style="font-size:13px;color:#aaa;margin:6px 0 0;" id="subThankYou">Thank you for your booking.</p>
+    </div>
+
     <div class="status" id="status">保存中...</div>
-    <div id="calendarBtnArea" style="display:none;">
-      <a id="calendarLink" class="cal-btn" href="#" target="_blank">
-        📅 Googleカレンダーに追加 / <span id="subCalendar">Add to Google Calendar</span>
+
+    <div id="calendarBtnArea" style="display:none;margin-top:20px;">
+      <a id="calendarLink" href="#" target="_blank" style="all:unset;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#fff;color:#4285f4;border:0.5px solid #c5d8f8;border-radius:12px;font-size:14px;font-weight:600;text-align:center;cursor:pointer;box-sizing:border-box;">
+        📅 Googleカレンダーに追加
+        <span id="subCalendar" style="font-size:11px;font-weight:400;color:#aaa;">Add to Google Calendar</span>
       </a>
     </div>
-    <button id="closeBtn" onclick="closePage()" style="display:none;margin-top:14px;width:100%;padding:14px;background:#e5e5e5;color:#333;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">
-      閉じる / <span id="subClose">Close</span>
+
+    <button id="closeBtn" onclick="closePage()" style="display:none;all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;margin-top:10px;">
+      閉じる <span id="subClose" style="font-size:11px;font-weight:400;opacity:0.8;">Close</span>
     </button>
   </div>
+</div>
 
   <script>
     const LIFF_ID = "2009890655-jIJpN1Ya";
