@@ -749,7 +749,7 @@ async function init() {
     detectTimezone();
 
     // LIFFが完了したらすぐボタンを有効化
-    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">Select your lesson type below.</span>';
+    document.getElementById("loginStatus").innerHTML = '';
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
 
@@ -766,7 +766,7 @@ async function init() {
         localStorage.setItem("userLang", data25.lang);
         applyTranslations(data25.lang);
         const TInit = window._currentT || {};
-        document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
+        document.getElementById("loginStatus").innerHTML = '';
       }
       if (data25.timezone && data25.timezone !== '' && data25.timezone !== 'Asia/Tokyo') {
         userTimezone = data25.timezone;
