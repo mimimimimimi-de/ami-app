@@ -184,18 +184,26 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 36px;
-  border-radius: 12px;
-  background: #f1fff6;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
   color: #06C755;
   font-size: 20px;
   font-weight: 800;
-  border: 1px solid #ccefd8;
-  margin: 0;
+  cursor: pointer;
   padding: 0;
+}
+
+td.available {
+  color: #06C755;
+  font-size: 20px;
+  font-weight: 800;
+  background: #f1fff6;
   cursor: pointer;
 }
+
+td.available:active { background: #d4f5e0; }
 
 .unavailable { color: #ddd; font-size: 16px; background: #fafafa; }
 
@@ -272,7 +280,7 @@ button {
       <button class="sub" type="button" onclick="nextWeek()">次の週 / Next →</button>
     </div>
 
-    <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
+    <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
 
     <div id="calendar">
       <div class="cal-loading">
@@ -404,7 +412,7 @@ function applyChangeLang(lang) {
 
   setSubText("#changeCard .en-title", T.title);
   setSubText("#changeCard p .en-sub", T.tapToSelect);
-  setSubText(".scroll-hint", T.scrollHint);
+  const scrollHintSub = document.querySelector(".scroll-hint-sub"); if (scrollHintSub) scrollHintSub.textContent = T.scrollHint || "Scroll to see more days →";
   setSubText("#doneCard .en-title", T.doneTitle);
   setSubText("#doneCard p .en-sub", T.doneLine);
 
@@ -619,7 +627,7 @@ function renderCalendar() {
         const canSelect = d.times && d.times.includes(time);
         const isBusinessDay = dow >= 1 && dow <= 6;
         if (canSelect) {
-          html += '<td><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
+          html += '<td class="available"><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
         } else if (!isBusinessDay) {
           html += "<td style='background:#f9f9f9;'></td>";
         } else {

@@ -349,7 +349,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
       <button class="sub" onclick="nextWeek()">次の週 / Next →</button>
     </div>
 
-    <div class="scroll-hint">← 横にスクロールして他の日を確認 / Scroll to see more days →</div>
+    <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
 
     <div id="calendar">
       <div class="cal-loading">
@@ -597,7 +597,7 @@ function applyTranslations(lang) {
   setSubText("#price .en-title", "confirmFee");
   setSubText("#calendarPage .en-title", "selectDateTime");
   setSubText("#confirmPage .en-title", "confirmBooking");
-  setSubText(".scroll-hint", "scrollHint");
+  const scrollHintSub = document.querySelector(".scroll-hint-sub"); if (scrollHintSub) scrollHintSub.textContent = T["scrollHint"] || "Scroll to see more days →";
 
   // tapToSelect
   const tapEl = document.querySelector("#calendarPage p .en-sub");
