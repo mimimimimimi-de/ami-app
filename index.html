@@ -680,7 +680,7 @@ function applyTranslations(lang) {
   if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = T.processing || ""; }
 
   // 各ページのサブテキスト
-  const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  function setEl(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
   setEl("priceTitleSub", T.confirmFee || "Confirm Lesson Fee");
   setEl("priceBackSub", T.back || "Back");
   setEl("nextBtnSub", T.selectDateNext || "Select date & time");
