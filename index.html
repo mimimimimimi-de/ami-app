@@ -864,6 +864,7 @@ function applyPriceData(data, minutes) {
 }
 
 let calendarData = null; // GASから取得したデータをキャッシュ
+let ticketCache = null; // 回数券キャッシュ
 
 async function openCalendar() {
   if (!selectedPrice) { alert("料金が設定されていません。先生にご連絡ください。\nFee not set. Please contact the teacher."); return; }
@@ -888,13 +889,15 @@ async function openCalendar() {
       </div>
     </div>`;
 
-  // GASからデータを一括取得
+  // GASからデータを一括取得（空き情報＋回数券を同時に）
   try {
-    const [busyItems, tempData] = await Promise.all([
+    const [busyItems, tempData, ticketRes] = await Promise.all([
       fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
-      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json())
+      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json()),
+      fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now()).then(r => r.json())
     ]);
     calendarData = { busyItems, tempData };
+    ticketCache = ticketRes;
   } catch(e) {
     console.error(e);
     calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
@@ -1159,8 +1162,15 @@ async function loadPaymentOptions(lessonLabel) {
   checkoutBtn.innerHTML = `決済に進む<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T0.proceed || "Proceed to Payment"}</span>`;
 
   try {
-    const res = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
-    const data = await res.json();
+    // キャッシュがあれば使う、なければ取得
+    let data;
+    if (ticketCache) {
+      data = ticketCache;
+    } else {
+      const res = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
+      data = await res.json();
+      ticketCache = data;
+    }
     if (!data.ok) return;
 
     const lessonKey = selectedMinutes === 50 ? "50分" : "25分";
