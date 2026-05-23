@@ -417,7 +417,7 @@ body {
   <div class="logo-area">
     <div class="logo-icon">🇯🇵</div>
     <h1>Ami's<br><span>Japanese Lesson</span></h1>
-    <p>日本語レッスン予約システム<br><span class="en-sub">Japanese Lesson Booking System</span></p>
+    <p>日本語レッスン予約システム<br><span class="en-sub"></span></p>
   </div>
 
   <div class="card">
@@ -428,22 +428,22 @@ body {
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-text">
-            <div class="title">まず登録する<span class="en-sub">Register first</span></div>
-            <div class="desc">下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。<span class="en-sub">Just tap the button below. Auto-registered with your LINE account.</span></div>
+            <div class="title">まず登録する<span class="en-sub"></span></div>
+            <div class="desc">下のボタンを押すだけ！<br>LINEアカウントで自動登録されます。<span class="en-sub"></span></div>
           </div>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <div class="step-text">
-            <div class="title">先生が料金を設定<span class="en-sub">Teacher sets your price</span></div>
-            <div class="desc">登録後、先生があなたの料金を設定します。<span class="en-sub">After registration, the teacher will set your lesson fee.</span></div>
+            <div class="title">先生が料金を設定<span class="en-sub"></span></div>
+            <div class="desc">登録後、先生があなたの料金を設定します。<span class="en-sub"></span></div>
           </div>
         </div>
         <div class="step">
           <div class="step-num">3</div>
           <div class="step-text">
-            <div class="title">予約スタート！<span class="en-sub">Start booking!</span></div>
-            <div class="desc">先生からLINEが届いたら予約できるようになります。<span class="en-sub">Once the teacher contacts you via LINE, you can start booking.</span></div>
+            <div class="title">予約スタート！<span class="en-sub"></span></div>
+            <div class="desc">先生からLINEが届いたら予約できるようになります。<span class="en-sub"></span></div>
           </div>
         </div>
       </div>
@@ -480,7 +480,7 @@ body {
       </div>
 
       <button class="register-btn" id="registerBtn" onclick="register()">
-        📝 登録する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Register</span>
+        📝 登録する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
       </button>
 
       <p class="note">
@@ -495,7 +495,7 @@ body {
     <!-- 登録完了 -->
     <div class="done-card" id="doneView">
       <div class="done-icon">🎉</div>
-      <h2>登録完了！<span class="en-sub">Registration Complete!</span></h2>
+      <h2>登録完了！<span class="en-sub"></span></h2>
       <div class="done-name" id="doneName"></div>
       <p>
         登録が完了しました。<br>
@@ -655,11 +655,11 @@ function applyLang(lang) {
   ];
   steps.forEach((s, i) => {
     if (stepTitles[i]) stepTitles[i].innerHTML = isJa
-      ? `${LANG_TEXT.ja[s.title]}<span class="en-sub">${LANG_TEXT.en[s.title]}</span>`
-      : `${LANG_TEXT.ja[s.title]}<span class="en-sub">${T[s.title]}</span>`;
+      ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
     if (stepDescs[i]) stepDescs[i].innerHTML = isJa
-      ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${LANG_TEXT.en[s.desc]}</span>`
-      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${T[s.desc]}</span>`;
+      ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
   });
 
   // オーバーレイサブテキスト
@@ -681,24 +681,24 @@ function applyLang(lang) {
   // 登録ボタン
   const regBtn = document.getElementById("registerBtn");
   if (regBtn) regBtn.innerHTML = isJa
-    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${LANG_TEXT.en.registerBtn}</span>`
-    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${T.registerBtn}</span>`;
+    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`
+    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`;
 
   // 注意書き
   const note = document.querySelector(".note");
   if (note) note.innerHTML = isJa
-    ? `${LANG_TEXT.ja.note}<br><span class="en-sub">${LANG_TEXT.en.note}</span>`
-    : `${LANG_TEXT.ja.note}<br><span class="en-sub">${T.note}</span>`;
+    ? `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`;
 
   // 登録完了画面
   const doneH2 = document.querySelector("#doneView h2");
   if (doneH2) doneH2.innerHTML = isJa
-    ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${LANG_TEXT.en.doneTitle}</span>`
-    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${T.doneTitle}</span>`;
+    ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`;
   const doneP = document.querySelector("#doneView p");
   if (doneP) doneP.innerHTML = isJa
-    ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${LANG_TEXT.en.doneMsg}</span>`
-    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${T.doneMsg}</span>`;
+    ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`;
 
   // 登録済み画面
   const subAlreadyTitle = document.getElementById("subAlreadyTitle");

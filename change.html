@@ -264,7 +264,7 @@ td.available:active { background: #d4f5e0; }
   <div class="spinner"></div>
   <div class="processing-text" id="overlayText">
     変更中...<br>
-    <span id="overlaySubText" style="font-size:13px;color:#888;">Processing change...</span>
+    <span id="overlaySubText" style="font-size:13px;color:#888;"></span>
   </div>
 </div>
 
@@ -283,16 +283,16 @@ td.available:active { background: #d4f5e0; }
     </div>
 
     <div style="background:#fffbf0;border:0.5px solid #f0e0a0;border-radius:12px;padding:12px 14px;font-size:12px;color:#888;line-height:1.8;margin-bottom:14px;">
-      <strong style="color:#b8860b;">予約変更について <span style="font-weight:400;" id="aboutChangesSub">/ About Changes</span></strong><br>
-      ・12時間前まで変更可能 / <span id="changeLine1Sub">Changes available up to 12h before</span><br>
-      ・変更後は新しいMeetリンクが発行されます / <span id="changeLine2Sub">New Meet link will be issued</span>
+      <strong style="color:#b8860b;">予約変更について <span style="font-weight:400;" id="aboutChangesSub"></span></strong><br>
+      ・12時間前まで変更可能 / <span id="changeLine1Sub"></span><br>
+      ・変更後は新しいMeetリンクが発行されます / <span id="changeLine2Sub"></span>
     </div>
 
     <div class="tz-info" id="tzInfo">📍 表示時刻: 日本時間 (JST) / Times shown in JST</div>
 
     <div class="nav" style="gap:8px;margin:12px 0;">
-      <button type="button" onclick="prevWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">← 前の週 <span style="font-size:11px;color:#aaa;" id="prevWeekSub">Prev</span></button>
-      <button type="button" onclick="nextWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">次の週 → <span style="font-size:11px;color:#aaa;" id="nextWeekSub">Next</span></button>
+      <button type="button" onclick="prevWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">← 前の週 <span style="font-size:11px;color:#aaa;" id="prevWeekSub"></span></button>
+      <button type="button" onclick="nextWeek()" style="all:unset;flex:1;background:#f5f5f5;border-radius:10px;padding:10px;text-align:center;font-size:13px;color:#555;cursor:pointer;">次の週 → <span style="font-size:11px;color:#aaa;" id="nextWeekSub"></span></button>
     </div>
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
@@ -321,18 +321,18 @@ td.available:active { background: #d4f5e0; }
 
     <p style="text-align:center;font-size:13px;color:#aaa;line-height:1.7;margin:0 0 16px;">
       LINEに新しい予約内容を送信しました。<br>
-      <span id="doneSub">New booking details sent via LINE.</span>
+      <span id="doneSub"></span>
     </p>
 
     <div id="calendarBtnArea"></div>
 
     <p style="text-align:center;font-size:12px;color:#aaa;line-height:1.7;margin:14px 0 8px;">
       ⚠️ 変更前のGoogleカレンダーの予定は手動で削除してください。<br>
-      <span id="deleteNoteSub" style="font-size:11px;">Please manually delete the previous event from Google Calendar.</span>
+      <span id="deleteNoteSub" style="font-size:11px;"></span>
     </p>
 
     <button onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:10px;">
-      閉じる <span style="font-size:11px;font-weight:400;opacity:0.8;" id="closeSub">Close</span>
+      閉じる <span style="font-size:11px;font-weight:400;opacity:0.8;" id="closeSub"></span>
     </button>
   </div>
 
