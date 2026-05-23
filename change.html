@@ -574,9 +574,9 @@ async function loadChangeData() {
           <span style="font-size:14px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${data.reservation.lesson}</span>
         </div>
         <div style="height:0.5px;background:#eee;"></div>
-        <div>
-          <span style="font-size:12px;color:#999;">現在の日時<br><span style="font-size:11px;color:#ccc;">${T.currentTime || "Current Time"}</span></span>
-          <div style="font-size:13px;font-weight:600;color:#444;margin-top:6px;">${data.reservation.date} ${timeDisplay}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <span style="font-size:12px;color:#999;flex-shrink:0;">現在の日時<br><span style="font-size:11px;color:#ccc;">${T.currentTime || "Current Time"}</span></span>
+          <div style="font-size:13px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${data.reservation.date} ${timeDisplay}</div>
         </div>
       </div>
     `;
@@ -748,9 +748,9 @@ async function executeChange(date, time) {
 
     document.getElementById("doneInfo").innerHTML = `
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div>
-          <span style="font-size:12px;color:#999;">新しい日時<br><span style="font-size:11px;color:#ccc;">${T.newTime || "New Time"}</span></span>
-          <div style="font-size:13px;font-weight:600;color:#444;margin-top:6px;">${formatShort(date)} ${timeDisplay}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <span style="font-size:12px;color:#999;flex-shrink:0;">新しい日時<br><span style="font-size:11px;color:#ccc;">${T.newTime || "New Time"}</span></span>
+          <div style="font-size:13px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${formatShort(date)} ${timeDisplay}</div>
         </div>
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
