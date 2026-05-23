@@ -536,8 +536,9 @@ async function loadChangeData() {
   reservationId = params.get("id");
 
   if (!reservationId) {
-    const T_nf = window._changeT || {};
-    document.getElementById("reservationInfo").innerHTML = `<span class='error'>予約が見つかりませんでした。<br><span style='font-size:12px;'>${T_nf.notFound || "Reservation not found."}</span></span>`;
+    const cachedL = localStorage.getItem("userLang") || "ja";
+    const T_nf = CHANGE_TRANS[cachedL] || CHANGE_TRANS["en"];
+    document.getElementById("reservationInfo").innerHTML = `<span class='error'>予約が見つかりませんでした。<br><span style='font-size:12px;color:#e74c3c;'>${T_nf.notFound || "Reservation not found."}</span></span>`;
     document.getElementById("calendar").innerHTML = "";
     return;
   }
@@ -592,8 +593,9 @@ async function loadChangeData() {
 
   } catch (e) {
     console.error(e);
-    const T_fl = window._changeT || {};
-    document.getElementById("reservationInfo").innerHTML = `<span class='error'>読み込みに失敗しました。<br><span style='font-size:12px;'>${T_fl.failedLoad || "Failed to load."}</span></span>`;
+    const cachedL2 = localStorage.getItem("userLang") || "ja";
+    const T_fl = CHANGE_TRANS[cachedL2] || CHANGE_TRANS["en"];
+    document.getElementById("reservationInfo").innerHTML = `<span class='error'>読み込みに失敗しました。<br><span style='font-size:12px;color:#e74c3c;'>${T_fl.failedLoad || "Failed to load."}</span></span>`;
     document.getElementById("calendar").innerHTML = "";
   }
 }
