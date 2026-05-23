@@ -416,7 +416,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
           空き時間を確認しています<br>
-          <span style="font-size:12px;color:#bbb;">Checking available slots...</span>
+          <span id="calLoadingSubText" style="font-size:12px;color:#bbb;">Checking available slots...</span>
         </div>
       </div>
     </div>
@@ -661,6 +661,9 @@ function applyTranslations(lang) {
   // tapToSelect
   const tapEl = document.querySelector("#calendarPage p .en-sub");
   if (tapEl) tapEl.textContent = T.tapToSelect || "";
+
+  // カレンダー読み込みテキスト
+  setEl("calLoadingSubText", T.checkingSlots || "Checking available slots...");
 
   // 週ボタン
   setEl("prevWeekSub", T.prevWeek || "Prev");
