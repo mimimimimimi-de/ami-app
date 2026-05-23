@@ -680,18 +680,18 @@ function applyTranslations(lang) {
   if (procText) { const sub = procText.querySelector("span"); if (sub) sub.textContent = T.processing || ""; }
 
   // 各ページのサブテキスト
-  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-  set("priceTitleSub", T.confirmFee || "Confirm Lesson Fee");
-  set("priceBackSub", T.back || "Back");
-  set("nextBtnSub", T.selectDateNext || "Select date & time");
-  set("calTitleSub", T.selectDateTime || "Select Date & Time");
-  set("calTapSub", T.tapToSelect || "Tap ○ to select your preferred time slot");
-  set("prevWeekSub", T.prevWeek || "Prev");
-  set("nextWeekSub", T.nextWeek || "Next");
-  set("calBackSub", T.back || "Back");
-  set("confirmTitleSub", T.confirmBooking || "Confirm Your Booking");
-  set("confirmBackSub", T.back || "Back");
-  set("checkoutBtnSub", T.proceed || "Proceed to Payment");
+  const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  setEl("priceTitleSub", T.confirmFee || "Confirm Lesson Fee");
+  setEl("priceBackSub", T.back || "Back");
+  setEl("nextBtnSub", T.selectDateNext || "Select date & time");
+  setEl("calTitleSub", T.selectDateTime || "Select Date & Time");
+  setEl("calTapSub", T.tapToSelect || "Tap ○ to select your preferred time slot");
+  setEl("prevWeekSub", T.prevWeek || "Prev");
+  setEl("nextWeekSub", T.nextWeek || "Next");
+  setEl("calBackSub", T.back || "Back");
+  setEl("confirmTitleSub", T.confirmBooking || "Confirm Your Booking");
+  setEl("confirmBackSub", T.back || "Back");
+  setEl("checkoutBtnSub", T.proceed || "Proceed to Payment");
 
   // tz情報
   const tzInfo = document.getElementById("tzInfo");
@@ -833,7 +833,7 @@ async function init() {
     userId = null;
     setLessonButtons(false);
     document.getElementById("loginStatus").innerHTML = 'LINE情報を取得できませんでした。<span class="en-sub">Could not get LINE info.</span>';
-    document.getElementById("topStatus").innerHTML = 'LINEアプリ内で開き直してください。<span class="en-sub">Please reopen in the LINE app.</span><br><span style="font-size:10px;color:#aaa;">' + String(e) + '</span>';
+    document.getElementById("topStatus").innerHTML = 'LINEアプリ内で開き直してください。<span class="en-sub">Please reopen in the LINE app.</span>';
     document.getElementById("topStatus").className = "status error";
   }
 }
