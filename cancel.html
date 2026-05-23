@@ -449,7 +449,6 @@ function getCancelLang() {
 
 function applyCancelLang(forceLang) {
   const l = forceLang || getCancelLang();
-  // 日本語の場合は英語サブテキストを表示
   const T = l === "ja" ? CANCEL_TRANS["en"] : (CANCEL_TRANS[l] || CANCEL_TRANS["en"]);
   window._cancelT = T;
 
@@ -757,10 +756,27 @@ async function sendAbsence() {
       GAS_URL + "?action=sendAbsence&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now()
     ).catch(e => console.error("sendAbsence error:", e));
 
-    alert("✅ 欠席連絡を先生に送りました。" + (T.absenceSent ? "\n" + T.absenceSent : ""));
+    // カスタム完了モーダル
+    const doneModal = document.createElement("div");
+    doneModal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+    doneModal.innerHTML = `
+      <div style="background:#fff;border-radius:24px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.18);">
+        <div style="width:64px;height:64px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p style="font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">欠席連絡を送りました</p>
+        <p style="font-size:12px;color:#aaa;margin-bottom:20px;">${T.absenceSent || "Absence notification sent to teacher."}</p>
+        <button id="absenceDoneBtn" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:14px;padding:14px;text-align:center;font-size:15px;font-weight:700;color:#fff;cursor:pointer;display:block;">
+          OK
+        </button>
+      </div>`;
+    document.body.appendChild(doneModal);
 
-    if (btn) btn.disabled = false;
-    if (btn2) btn2.disabled = false;
+    document.getElementById("absenceDoneBtn").addEventListener("click", function() {
+      doneModal.remove();
+      if (btn) btn.disabled = false;
+      if (btn2) btn2.disabled = false;
+    });
   }); // absenceModal OK button
 }
 
