@@ -309,13 +309,12 @@ td.available:active { background: #d4f5e0; }
   </div>
 
   <div class="card hidden" id="doneCard">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 12px;" id="doneTitleSub">Reservation Changed</p>
-
     <div style="text-align:center;margin-bottom:16px;">
       <div style="width:60px;height:60px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2 style="margin:0;font-size:22px;color:#06C755;font-weight:600;">予約を変更しました</h2>
+      <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;margin:6px 0 0;" id="doneTitleSub">Reservation Changed</p>
     </div>
 
     <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:0 0 16px;" id="doneInfo"></div>
@@ -325,7 +324,9 @@ td.available:active { background: #d4f5e0; }
       <span id="doneSub">New booking details sent via LINE.</span>
     </p>
 
-    <button onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;">
+    <div id="calendarBtnArea"></div>
+
+    <button onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:10px;">
       閉じる <span style="font-size:11px;font-weight:400;opacity:0.8;" id="closeSub">Close</span>
     </button>
   </div>
@@ -749,8 +750,9 @@ async function executeChange(date, time) {
       "&dates=" + toCalDate(calStart) + "/" + toCalDate(calEnd) +
       "&details=" + encodeURIComponent("Ami先生との日本語レッスン");
 
-    const calBtnHtml = `<a href="${calUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:10px;background:#fff;color:#4285f4;border:2px solid #4285f4;border-radius:14px;font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;">📅 Googleカレンダーに追加 / ${T.addCalendar || "Add to Calendar"}</a>`;
-    document.getElementById("doneCard").querySelector("p").insertAdjacentHTML("afterend", calBtnHtml);
+    const calBtnHtml = `<a href="${calUrl}" target="_blank" style="all:unset;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:14px;background:#fff;color:#4285f4;border:0.5px solid #c5d8f8;border-radius:12px;font-size:14px;font-weight:600;text-align:center;cursor:pointer;"">📅 Googleカレンダーに追加 <span style="font-size:11px;font-weight:400;color:#aaa;">${T.addCalendar || "Add to Calendar"}</span></a>`;
+    const calArea = document.getElementById("calendarBtnArea");
+    if (calArea) calArea.innerHTML = calBtnHtml;
 
     document.getElementById("changeCard").classList.add("hidden");
     document.getElementById("doneCard").classList.remove("hidden");
