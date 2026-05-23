@@ -383,8 +383,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
       <div class="price" id="priceText" style="margin:8px 0;">-</div>
     </div>
     <button type="button" style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;margin-bottom:10px;" onclick="go('top')">← 戻る <span style="font-size:11px;color:#aaa;" id="priceBackSub">Back</span></button>
-    <button type="button" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:16px;font-weight:600;color:#fff;cursor:pointer;display:block;" id="nextBtn" onclick="openCalendar()" disabled>
-      次へ → <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;" id="nextBtnSub">Select date & time</span>
+    <button type="button" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:16px;font-weight:600;color:#fff;cursor:pointer;display:block;transition:opacity 0.2s;" id="nextBtn" onclick="openCalendar()" disabled>
+      <span id="nextBtnContent">
+        次へ → <span style="display:block;font-size:11px;font-weight:400;opacity:0.8;margin-top:2px;" id="nextBtnSub">Select date & time</span>
+      </span>
+      <span id="nextBtnLoading" style="display:none;align-items:center;justify-content:center;gap:10px;">
+        <span style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span>
+        <span style="font-size:14px;">取得中...</span>
+      </span>
     </button>
   </div>
 
@@ -774,6 +780,23 @@ function go(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function setNextBtnLoading(isLoading) {
+  const btn = document.getElementById("nextBtn");
+  const content = document.getElementById("nextBtnContent");
+  const loading = document.getElementById("nextBtnLoading");
+  if (!btn) return;
+  if (isLoading) {
+    btn.style.opacity = "0.75";
+    btn.disabled = true;
+    if (content) content.style.display = "none";
+    if (loading) loading.style.display = "flex";
+  } else {
+    btn.style.opacity = "1";
+    if (content) content.style.display = "block";
+    if (loading) loading.style.display = "none";
+  }
+}
+
 function setLessonButtons(enabled) {
   document.getElementById("btn25").disabled = !enabled;
   document.getElementById("btn50").disabled = !enabled;
@@ -863,6 +886,7 @@ async function selectLesson(minutes) {
   selectedPrice = null;
   go("price");
   document.getElementById("nextBtn").disabled = true;
+  setNextBtnLoading(true);
   const TL = window._currentT || {};
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + (minutes === 25 ? (TL.btn25 || "25-min Lesson") : (TL.btn50 || "50-min Lesson"));
 
@@ -899,6 +923,7 @@ function applyPriceData(data, minutes) {
   const TL = window._currentT || {};
   document.getElementById("lesson").textContent = minutes + "分レッスン / " + (minutes === 25 ? (TL.btn25 || "25-min Lesson") : (TL.btn50 || "50-min Lesson"));
 
+  setNextBtnLoading(false);
   if (!data.ok || !data.price) {
     document.getElementById("priceText").textContent = "料金未設定 / Not Set";
     alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
