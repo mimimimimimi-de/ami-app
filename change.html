@@ -434,6 +434,7 @@ function applyChangeLang(lang) {
   const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
   set("calLoadingSubText", T.loading || "Loading...");
+  set("changeCalLoadingSub", T.checkingSlots || "Checking available slots...");
   set("changeTitleSub", T.title);
   set("changeTapSub", T.tapToSelect);
   set("doneTitleSub", T.doneTitle);
@@ -522,6 +523,10 @@ function minutesToTime(m) {
 }
 
 async function loadChangeData() {
+  // キャッシュからすぐサブテキストを設定
+  const T0 = window._changeT || {};
+  const subEl = document.getElementById("changeCalLoadingSub");
+  if (subEl) subEl.textContent = T0.checkingSlots || "Checking available slots...";
   // 言語適用（localStorageまたはURLパラメータから）
   const urlLang = new URLSearchParams(window.location.search).get("lang");
   if (urlLang) localStorage.setItem("userLang", urlLang);
