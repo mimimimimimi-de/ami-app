@@ -502,6 +502,18 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
   detectTimezone();
   initLiffSilent();
+
+  // localStorageのキャッシュからすぐ言語・タイムゾーンを適用
+  const cachedLang = localStorage.getItem("userLang");
+  if (cachedLang && cachedLang !== 'ja') applyCancelLang(cachedLang);
+  const cachedTz = localStorage.getItem("userTimezone");
+  if (cachedTz && cachedTz !== 'Asia/Tokyo') {
+    userTimezone = cachedTz;
+    try {
+      userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: cachedTz }).split(' ').pop();
+    } catch(e) {}
+  }
+
   loadCancelData();
 });
 

@@ -799,6 +799,18 @@ document.getElementById("calendar").addEventListener("click", function(e) {
 // 初期化
 detectTimezone();
 initLiffSilent();
+
+// localStorageのキャッシュからすぐ言語・タイムゾーンを適用
+const cachedLang = localStorage.getItem("userLang");
+if (cachedLang && cachedLang !== 'ja') applyChangeLang(cachedLang);
+const cachedTz = localStorage.getItem("userTimezone");
+if (cachedTz && cachedTz !== 'Asia/Tokyo') {
+  userTimezone = cachedTz;
+  try {
+    userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: cachedTz }).split(' ').pop();
+  } catch(e) {}
+}
+
 loadChangeData();
 </script>
 </body>
