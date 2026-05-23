@@ -502,24 +502,22 @@ let userTimezone = null;
 let userTzName = null;
 
 window.addEventListener("DOMContentLoaded", () => {
-  applyCancelLang();
+  // キャッシュからすぐ言語・タイムゾーンを適用
+  const cachedLang = localStorage.getItem("userLang");
+  if (cachedLang && cachedLang !== 'ja') {
+    applyCancelLang(cachedLang);
+  } else {
+    applyCancelLang();
+  }
 
   // キャッシュから読み込みサブテキストをすぐ設定
-  const cachedLangInit = localStorage.getItem("userLang");
-  if (cachedLangInit && cachedLangInit !== 'ja') {
-    const T0 = CANCEL_TRANS[cachedLangInit] || CANCEL_TRANS["en"];
+  const loadLang = cachedLang || "ja";
+  if (loadLang !== 'ja') {
+    const T0 = CANCEL_TRANS[loadLang] || CANCEL_TRANS["en"];
     const loadingSub = document.getElementById("cancelLoadingSub");
     if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
   }
-  document.getElementById("cancelBtn").addEventListener("click", executeCancel);
-  document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
-  document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
-  detectTimezone();
-  initLiffSilent();
 
-  // localStorageのキャッシュからすぐ言語・タイムゾーンを適用
-  const cachedLang = localStorage.getItem("userLang");
-  if (cachedLang && cachedLang !== 'ja') applyCancelLang(cachedLang);
   const cachedTz = localStorage.getItem("userTimezone");
   if (cachedTz && cachedTz !== 'Asia/Tokyo') {
     userTimezone = cachedTz;
@@ -528,6 +526,11 @@ window.addEventListener("DOMContentLoaded", () => {
     } catch(e) {}
   }
 
+  document.getElementById("cancelBtn").addEventListener("click", executeCancel);
+  document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
+  document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
+  detectTimezone();
+  initLiffSilent();
   loadCancelData();
 });
 
