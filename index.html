@@ -1343,12 +1343,12 @@ async function checkout() {
       const doneCard = document.createElement("div");
       doneCard.className = "card";
       doneCard.innerHTML = `
-        <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;">${T.bookingComplete || "Booking Complete"}</p>
         <div style="text-align:center;margin:12px 0 4px;">
           <div style="width:56px;height:56px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <h2 style="margin:0;font-size:22px;color:#06C755;">予約完了！</h2>
+          <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;margin:6px 0 0;">${T.bookingComplete || "Booking Complete"}</p>
         </div>
 
         <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:20px 0;">
