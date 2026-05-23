@@ -416,7 +416,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
           空き時間を確認しています<br>
-          <span id="calLoadingSubText" style="font-size:12px;color:#bbb;">Checking available slots...</span>
+          <span id="calLoadingSubText" style="font-size:12px;color:#bbb;"></span>
         </div>
       </div>
     </div>
@@ -473,7 +473,7 @@ const TRANSLATIONS = {
     bookWithTicket: "Book with Ticket",
     proceed: "Proceed to Payment",
     processing: "Processing...",
-    checkingTime: "Checking selected time...",
+    checkingSlots: "Checking available slots...", checkingTime: "Checking selected time...",
     checkingTicket: "Checking ticket...",
     savingReservation: "Saving reservation...",
     preparingPayment: "Preparing payment page...",
@@ -503,7 +503,7 @@ const TRANSLATIONS = {
     bookWithTicket: "用次券预约",
     proceed: "前往付款",
     processing: "处理中...",
-    checkingTime: "正在确认所选时间...",
+    checkingSlots: "正在检查可用时间...", checkingTime: "正在确认所选时间...",
     checkingTicket: "正在确认次券...",
     savingReservation: "正在保存预约...",
     preparingPayment: "正在准备支付页面...",
@@ -533,7 +533,7 @@ const TRANSLATIONS = {
     bookWithTicket: "횟수권으로 예약",
     proceed: "결제 진행",
     processing: "처리 중...",
-    checkingTime: "선택한 시간을 확인하고 있습니다...",
+    checkingSlots: "가능한 시간대를 확인하고 있습니다...", checkingTime: "선택한 시간을 확인하고 있습니다...",
     checkingTicket: "횟수권을 확인하고 있습니다...",
     savingReservation: "예약을 저장하고 있습니다...",
     preparingPayment: "결제 페이지를 준비하고 있습니다...",
@@ -563,7 +563,7 @@ const TRANSLATIONS = {
     bookWithTicket: "จองด้วยคูปอง",
     proceed: "ดำเนินการชำระเงิน",
     processing: "กำลังดำเนินการ...",
-    checkingTime: "กำลังตรวจสอบเวลาที่เลือก...",
+    checkingSlots: "กำลังตรวจสอบเวลาว่าง...", checkingTime: "กำลังตรวจสอบเวลาที่เลือก...",
     checkingTicket: "กำลังตรวจสอบคูปอง...",
     savingReservation: "กำลังบันทึกการจอง...",
     preparingPayment: "กำลังเตรียมหน้าชำระเงิน...",
@@ -593,7 +593,7 @@ const TRANSLATIONS = {
     bookWithTicket: "Réserver avec ticket",
     proceed: "Procéder au paiement",
     processing: "Traitement en cours...",
-    checkingTime: "Vérification de l'heure sélectionnée...",
+    checkingSlots: "Vérification des créneaux disponibles...", checkingTime: "Vérification de l'heure sélectionnée...",
     checkingTicket: "Vérification du ticket...",
     savingReservation: "Sauvegarde de la réservation...",
     preparingPayment: "Préparation de la page de paiement...",
@@ -623,7 +623,7 @@ const TRANSLATIONS = {
     bookWithTicket: "Mit Ticket buchen",
     proceed: "Zur Zahlung",
     processing: "Wird verarbeitet...",
-    checkingTime: "Ausgewählte Zeit wird überprüft...",
+    checkingSlots: "Verfügbare Zeiten werden geprüft...", checkingTime: "Ausgewählte Zeit wird überprüft...",
     checkingTicket: "Ticket wird überprüft...",
     savingReservation: "Buchung wird gespeichert...",
     preparingPayment: "Zahlungsseite wird vorbereitet...",
@@ -985,8 +985,8 @@ async function openCalendar() {
     <div class="cal-loading">
       <div class="cal-spinner"></div>
       <div class="cal-loading-text">
-        空き時間を確認しています...<br>
-        <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || "Checking available slots..."}</span>
+        空き時間を確認しています<br>
+        <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || ""}</span>
       </div>
     </div>`;
 
@@ -1120,8 +1120,8 @@ function generateCalendar() {
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
-          空き時間を確認しています...<br>
-          <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || "Checking available slots..."}</span>
+          空き時間を確認しています<br>
+          <span style="font-size:12px;color:#bbb;">${(window._currentT || {}).checkingSlots || ""}</span>
         </div>
       </div>`;
     return;
