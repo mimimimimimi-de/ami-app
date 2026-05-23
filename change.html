@@ -326,6 +326,11 @@ td.available:active { background: #d4f5e0; }
 
     <div id="calendarBtnArea"></div>
 
+    <p style="text-align:center;font-size:12px;color:#aaa;line-height:1.7;margin:14px 0 8px;">
+      ⚠️ 変更前のGoogleカレンダーの予定は手動で削除してください。<br>
+      <span id="deleteNoteSub" style="font-size:11px;">Please manually delete the previous event from Google Calendar.</span>
+    </p>
+
     <button onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:10px;">
       閉じる <span style="font-size:11px;font-weight:400;opacity:0.8;" id="closeSub">Close</span>
     </button>
@@ -432,7 +437,7 @@ function applyChangeLang(lang) {
   set("changeTapSub", T.tapToSelect);
   set("doneTitleSub", T.doneTitle);
   set("doneSub", T.doneLine);
-  set("closeSub", T.close);
+  set("deleteNoteSub", T.deleteNote || "Please manually delete the previous event from Google Calendar.");
   set("prevWeekSub", T.prevWeek);
   set("nextWeekSub", T.nextWeek);
   set("aboutChangesSub", "/ " + T.aboutChanges);
