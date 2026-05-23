@@ -221,10 +221,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     </div>
 
     <div style="background:#fdf5f5;border:0.5px solid #f0d0d0;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:8px 0;">
-        <div style="width:28px;height:28px;border:3px solid #f0d0d0;border-top-color:#d93025;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
-        <div style="font-size:14px;color:#aaa;text-align:center;">読み込み中...<br><span id="cancelLoadingSub" style="font-size:12px;color:#bbb;"></span></div>
-      </div>
+      読み込み中...<br><span id="cancelLoadingSub" style="font-size:12px;color:#bbb;"></span>
     </div>
 
     <!-- 通常予約 -->
@@ -750,7 +747,7 @@ async function sendAbsence() {
     </div>`;
   document.body.appendChild(modal);
 
-  document.getElementById("absenceOkBtn").addEventListener("click", async function() {
+  document.getElementById("absenceOkBtn").addEventListener("click", function() {
     modal.remove();
 
     const btn = document.getElementById("absenceBtn");
@@ -758,22 +755,15 @@ async function sendAbsence() {
     if (btn) btn.disabled = true;
     if (btn2) btn2.disabled = true;
 
-    const overlayText = document.getElementById("overlayText");
-    if (overlayText) overlayText.innerHTML = "送信中...<br><span style='font-size:13px;color:#888;'>" + (T.sending || "Sending...") + "</span>";
-    document.getElementById("processingOverlay").classList.add("show");
-
-  try {
-    await fetch(
+    // GASの応答を待たずに即座に完了表示（fire-and-forget）
+    fetch(
       GAS_URL + "?action=sendAbsence&id=" + encodeURIComponent(reservationId) + "&t=" + Date.now()
-    );
+    ).catch(e => console.error("sendAbsence error:", e));
+
     alert("✅ 欠席連絡を先生に送りました。" + (T.absenceSent ? "\n" + T.absenceSent : ""));
-  } catch (e) {
-    alert("送信に失敗しました。LINEで先生に直接ご連絡ください。" + (T.sendFailed ? "\n" + T.sendFailed : ""));
-  } finally {
-    document.getElementById("processingOverlay").classList.remove("show");
+
     if (btn) btn.disabled = false;
     if (btn2) btn2.disabled = false;
-  }
   }); // absenceModal OK button
 }
 
