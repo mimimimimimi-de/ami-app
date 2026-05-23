@@ -220,7 +220,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
       <span class="en-sub">Are you sure you want to cancel this lesson? Please review the details below.</span>
     </div>
 
-    <div class="lesson-card" id="reservationInfo">読み込み中...</div>
+    <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">読み込み中...</div>
 
     <!-- 通常予約 -->
     <div id="normalSection">
@@ -584,15 +584,39 @@ async function loadCancelData() {
 
     const T = window._cancelT || {};
 
+    function formatShortDate(dateStr) {
+      if (!dateStr) return dateStr;
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return Number(parts[1]) + '/' + Number(parts[2]);
+      return dateStr;
+    }
+
     const lessonCard = document.getElementById("reservationInfo");
     const timeDisplay = formatTimeDisplay(reservationData.date, reservationData.time);
-    lessonCard.innerHTML =
-      "<strong>レッスン / " + (T.lesson || "Lesson") + "：</strong>" + reservationData.lesson + "<br>" +
-      "<strong>日時 / " + (T.date || "Date") + "：</strong>" + reservationData.date + " " + timeDisplay + "<br>" +
-      "<strong>料金 / " + (T.payment || "Payment") + "：</strong>" + (data.isTicket ? "回数券 / " + (T.ticket || "Ticket") : reservationData.price);
+    const isTicket = data.isTicket;
+    const paymentText = isTicket ? "回数券" : reservationData.price;
+    const paymentSub = isTicket ? (T.ticket || "Ticket") : (T.payment || "Payment");
+
+    lessonCard.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">レッスン <span style="font-size:11px;color:#ccc;">/ ${T.lesson || "Lesson"}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#444;">${reservationData.lesson}</span>
+        </div>
+        <div style="height:0.5px;background:#eee;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <span style="font-size:12px;color:#999;flex-shrink:0;">日時<br><span style="font-size:11px;color:#ccc;">${T.date || "Date"}</span></span>
+          <div style="font-size:13px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${formatShortDate(reservationData.date)} ${timeDisplay}</div>
+        </div>
+        <div style="height:0.5px;background:#eee;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:12px;color:#999;">支払い <span style="font-size:11px;color:#ccc;">/ ${paymentSub}</span></span>
+          <span style="font-size:14px;font-weight:600;color:#444;">${paymentText}</span>
+        </div>
+      </div>
+    `;
 
     if (data.isTicket) {
-      lessonCard.classList.add("ticket");
       document.getElementById("normalSection").classList.add("hidden");
       document.getElementById("ticketSection").classList.remove("hidden");
     }
