@@ -428,8 +428,8 @@ function getChangeLang() {
 
 function applyChangeLang(lang) {
   const l = lang || getChangeLang();
-  if (l === "ja") return;
-  const T = CHANGE_TRANS[l] || CHANGE_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? CHANGE_TRANS["en"] : (CHANGE_TRANS[l] || CHANGE_TRANS["en"]);
 
   const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
@@ -530,7 +530,7 @@ async function loadChangeData() {
   // 言語適用（localStorageまたはURLパラメータから）
   const urlLang = new URLSearchParams(window.location.search).get("lang");
   if (urlLang) localStorage.setItem("userLang", urlLang);
-  applyChangeLang(localStorage.getItem("userLang") || "en");
+  applyChangeLang(localStorage.getItem("userLang") || "ja");
 
   const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
@@ -558,7 +558,7 @@ async function loadChangeData() {
     optionsData = data;
 
     // GASから言語を取得して適用
-    if (data.lang && data.lang !== 'ja') {
+    if (data.lang) {
       localStorage.setItem("userLang", data.lang);
       applyChangeLang(data.lang);
     }
@@ -819,7 +819,7 @@ initLiffSilent();
 
 // localStorageのキャッシュからすぐ言語・タイムゾーンを適用
 const cachedLang = localStorage.getItem("userLang");
-if (cachedLang && cachedLang !== 'ja') applyChangeLang(cachedLang);
+if (cachedLang) applyChangeLang(cachedLang);
 const cachedTz = localStorage.getItem("userTimezone");
 if (cachedTz && cachedTz !== 'Asia/Tokyo') {
   userTimezone = cachedTz;
