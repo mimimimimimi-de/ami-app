@@ -748,7 +748,8 @@ async function init() {
     displayName = profile.displayName || "ユーザー";
 
     setStatus("");
-    await fetchPrices();
+    // バックグラウンドで料金取得（待たせない）
+    fetchPrices();
 
   } catch (e) {
     console.error(e);
