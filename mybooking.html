@@ -831,15 +831,21 @@ function renderList() {
 
   if (!filtered.length) {
     const T = window._mybookingT || {};
-    const emptyMsg = currentTab === "upcoming"
-      ? (T.noUpcoming || "今後の予約はありません。\n新しいレッスンを予約しましょう！")
+    const jaMsg = currentTab === "upcoming"
+      ? "今後の予約はありません。\n新しいレッスンを予約しましょう！"
       : currentTab === "past"
-      ? (T.noPast || "該当する予約がありません。\n(直近3ヶ月の履歴のみ表示)")
-      : (T.noAll || "該当する予約がありません。");
+      ? "該当する予約がありません。\n(直近3ヶ月の履歴のみ表示)"
+      : "該当する予約がありません。";
+    const subMsg = currentTab === "upcoming"
+      ? (T.noUpcoming || "")
+      : currentTab === "past"
+      ? (T.noPast || "")
+      : (T.noAll || "");
     list.innerHTML = `
       <div class="empty">
         <div class="empty-icon">${currentTab === "upcoming" ? "📭" : "📋"}</div>
-        <p>${emptyMsg}</p>
+        <p style="white-space:pre-line;">${jaMsg}</p>
+        ${subMsg ? `<p style="font-size:12px;color:#bbb;margin-top:4px;">${subMsg}</p>` : ''}
       </div>`;
     return;
   }
