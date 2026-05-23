@@ -278,7 +278,7 @@ td.available:active { background: #d4f5e0; }
     <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:16px;margin-bottom:14px;" id="reservationInfo">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
-        <div class="cal-loading-text" id="calLoadingText">読み込み中...<br><span style="font-size:12px;color:#bbb;">Loading...</span></div>
+        <div class="cal-loading-text" id="calLoadingText">読み込み中...<br><span style="font-size:12px;color:#bbb;" id="calLoadingSubText"></span></div>
       </div>
     </div>
 
@@ -302,7 +302,7 @@ td.available:active { background: #d4f5e0; }
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
           空き時間を確認しています...<br>
-          <span style="font-size:12px;color:#bbb;">Checking available slots...</span>
+          <span style="font-size:12px;color:#bbb;">${(window._changeT || {}).checkingSlots || ""}</span>
         </div>
       </div>
     </div>
@@ -433,6 +433,7 @@ function applyChangeLang(lang) {
 
   const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
+  set("calLoadingSubText", T.loading || "Loading...");
   set("changeTitleSub", T.title);
   set("changeTapSub", T.tapToSelect);
   set("doneTitleSub", T.doneTitle);
