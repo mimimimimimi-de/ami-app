@@ -329,7 +329,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
   <div class="card" id="top">
     <h2>レッスンを選んでください</h2>
-    <div class="en-title">Select Your Lesson Type</div>
     <p id="loginStatus">LINE情報を確認しています...<span class="en-sub">Checking LINE info...</span></p>
     <button class="main" id="btn25" onclick="selectLesson(25)" disabled>
       25分レッスン<span class="en-sub" style="color:rgba(255,255,255,0.8);">25-min Lesson</span>
@@ -606,7 +605,6 @@ function applyTranslations(lang) {
   };
 
   // タイトルサブテキスト
-  setSubText("#top .en-title", "selectLesson");
   setSubText("#price .en-title", "confirmFee");
   setSubText("#calendarPage .en-title", "selectDateTime");
   setSubText("#confirmPage .en-title", "confirmBooking");
