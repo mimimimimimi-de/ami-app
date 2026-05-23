@@ -744,26 +744,30 @@ async function init() {
     liffReady = true;
     detectTimezone();
 
-    // GASからlang・timezoneを早期取得して翻訳を適用
-    try {
-      const langRes = await fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName));
-      const langData = await langRes.json();
-      if (langData.lang && langData.lang !== 'ja') {
-        applyTranslations(langData.lang);
-      }
-      if (langData.timezone && langData.timezone !== '' && langData.timezone !== 'Asia/Tokyo') {
-        userTimezone = langData.timezone;
-        try {
-          const now = new Date();
-          userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
-        } catch(e) {}
-      }
-    } catch(e) {}
-
-    const TInit = window._currentT || {};
-    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
+    // LIFFが完了したらすぐボタンを有効化
+    document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">Select your lesson type below.</span>';
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
+
+    // GASからlang・timezoneはバックグラウンドで取得（ボタンを待たせない）
+    fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName))
+      .then(r => r.json())
+      .then(langData => {
+        if (langData.lang && langData.lang !== 'ja') {
+          applyTranslations(langData.lang);
+          const TInit = window._currentT || {};
+          document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
+        }
+        if (langData.timezone && langData.timezone !== '' && langData.timezone !== 'Asia/Tokyo') {
+          userTimezone = langData.timezone;
+          try {
+            const now = new Date();
+            userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+          } catch(e) {}
+        }
+      })
+      .catch(e => {});
+
   } catch (e) {
     console.error(e);
     liffReady = false;
