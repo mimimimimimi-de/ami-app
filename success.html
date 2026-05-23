@@ -193,15 +193,19 @@
       let priceLabel = "";
 
       try {
-        statusEl.textContent = "決済情報を確認しています...";
-        checkoutData = await getCheckoutData();
+        statusEl.textContent = "決済情報とLINE情報を確認しています...";
 
+        // StripeとLIFFを並行初期化
+        const [checkoutResult] = await Promise.all([
+          getCheckoutData().catch(e => { console.error(e); return {}; }),
+          liff.init({ liffId: LIFF_ID }).catch(e => { console.error(e); })
+        ]);
+
+        checkoutData = checkoutResult || {};
         paymentIntentId = checkoutData.payment_intent || "";
-
         if (checkoutData.selectedDate) date = checkoutData.selectedDate;
         if (checkoutData.selectedTime) time = checkoutData.selectedTime;
         if (checkoutData.lessonType) lessonType = checkoutData.lessonType;
-
         if (checkoutData.price) {
           priceLabel = "$" + checkoutData.price;
         } else if (localPrice) {
@@ -209,7 +213,7 @@
         }
 
       } catch (error) {
-        console.error("Checkout data error:", error);
+        console.error("Init error:", error);
       }
 
       if (!date || !time || !lessonType) {
@@ -222,8 +226,6 @@
 
       try {
         statusEl.textContent = "LINE情報を確認しています...";
-
-        await liff.init({ liffId: LIFF_ID });
 
         if (!liff.isLoggedIn()) {
           liff.login({ redirectUri: window.location.href });
@@ -262,7 +264,7 @@
         statusEl.textContent = "空き状況を確認しています...\nChecking availability...";
         document.getElementById("processingOverlay").classList.add("show");
 
-        // 空き確認
+        // 空き確認と予約保存を順番に実行
         const checkRes = await fetch(
           GAS_URL + "?action=checkSlotAvailable" +
           "&date=" + encodeURIComponent(date) +
@@ -273,12 +275,9 @@
         const checkData = await checkRes.json();
 
         if (!checkData.available) {
-          // 埋まっている場合は返金して終了
           statusEl.classList.add("error");
           statusEl.textContent =
             "⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。\n\nSorry, this time slot was just booked by someone else.\nYou will be refunded.";
-
-          // 返金処理
           if (paymentIntentId) {
             await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
               method: "POST",
@@ -286,7 +285,6 @@
               body: JSON.stringify({ paymentIntentId: paymentIntentId })
             });
           }
-
           document.getElementById("closeBtn").style.display = "block";
           return;
         }
@@ -305,11 +303,7 @@
           "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\n" + ((window._successT && window._successT.saved) || "Booking saved. Notification sent via LINE.");
 
         document.getElementById("processingOverlay").classList.remove("show");
-
-        // Googleカレンダーボタン表示
         showCalendarBtn(date, time, lessonType);
-
-        // 閉じるボタン表示
         document.getElementById("closeBtn").style.display = "block";
 
         localStorage.removeItem("selectedDate");

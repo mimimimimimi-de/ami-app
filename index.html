@@ -735,6 +735,12 @@ async function init() {
   try {
     setLessonButtons(false);
     document.getElementById("loginStatus").innerHTML = 'LINE情報を確認しています...<span class="en-sub">Checking LINE info...</span>';
+
+    // ローカルストレージのキャッシュからすぐに言語を適用
+    const cachedLang = localStorage.getItem("userLang");
+    if (cachedLang && cachedLang !== 'ja') {
+      applyTranslations(cachedLang);
+    }
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login({ redirectUri: window.location.href }); return; }
     const profile = await liff.getProfile();
@@ -749,30 +755,29 @@ async function init() {
     document.getElementById("topStatus").textContent = "";
     setLessonButtons(true);
 
-    // GASからlang・timezoneはバックグラウンドで取得（ボタンを待たせない）
-    fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName))
-      .then(r => r.json())
-      .then(langData => {
-        // 料金もキャッシュに保存
-        priceCache[25] = langData;
-        if (langData.lang && langData.lang !== 'ja') {
-          applyTranslations(langData.lang);
-          const TInit = window._currentT || {};
-          document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
-        }
-        if (langData.timezone && langData.timezone !== '' && langData.timezone !== 'Asia/Tokyo') {
-          userTimezone = langData.timezone;
-          try {
-            const now = new Date();
-            userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
-          } catch(e) {}
-        }
-        // 50分も先取得
-        return fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=50&name=" + encodeURIComponent(displayName));
-      })
-      .then(r => r && r.json())
-      .then(data50 => { if (data50) priceCache[50] = data50; })
-      .catch(e => {});
+    // GASからlang・timezone・料金をバックグラウンドで同時取得
+    Promise.all([
+      fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName)).then(r => r.json()),
+      fetch("/api/get-user-price?userId=" + encodeURIComponent(userId) + "&lessonType=50&name=" + encodeURIComponent(displayName)).then(r => r.json())
+    ]).then(([data25, data50]) => {
+      // 料金をキャッシュに保存
+      priceCache[25] = data25;
+      priceCache[50] = data50;
+      // 言語・タイムゾーンを適用
+      if (data25.lang && data25.lang !== 'ja') {
+        localStorage.setItem("userLang", data25.lang);
+        applyTranslations(data25.lang);
+        const TInit = window._currentT || {};
+        document.getElementById("loginStatus").innerHTML = 'レッスン時間を選んでください。<span class="en-sub">' + (TInit.selectLesson || "Select your lesson type below.") + '</span>';
+      }
+      if (data25.timezone && data25.timezone !== '' && data25.timezone !== 'Asia/Tokyo') {
+        userTimezone = data25.timezone;
+        try {
+          const now = new Date();
+          userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+        } catch(e) {}
+      }
+    }).catch(e => {});
 
   } catch (e) {
     console.error(e);
