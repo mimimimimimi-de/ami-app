@@ -505,9 +505,9 @@ window.addEventListener("DOMContentLoaded", () => {
   applyCancelLang();
 
   // キャッシュから読み込みサブテキストをすぐ設定
-  const cachedLang = localStorage.getItem("userLang");
-  if (cachedLang && cachedLang !== 'ja') {
-    const T0 = CANCEL_TRANS[cachedLang] || CANCEL_TRANS["en"];
+  const cachedLangInit = localStorage.getItem("userLang");
+  if (cachedLangInit && cachedLangInit !== 'ja') {
+    const T0 = CANCEL_TRANS[cachedLangInit] || CANCEL_TRANS["en"];
     const loadingSub = document.getElementById("cancelLoadingSub");
     if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
   }
