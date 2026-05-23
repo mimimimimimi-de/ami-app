@@ -146,7 +146,7 @@ p {
 <div class="processing-overlay" id="processingOverlay">
   <div class="spinner"></div>
   <div class="processing-text" id="overlayText">
-    保存中...<br><span style="font-size:13px;color:#888;">Saving...</span>
+    保存中...<br><span id="overlaySubText" style="font-size:13px;color:#888;">Saving...</span>
   </div>
 </div>
 
@@ -200,6 +200,7 @@ function applySuccessTicketLang(lang) {
   set("subThanks", T.thanks.replace("\n", " "));
   set("subBookBtn", T.bookBtn);
   set("subMyBooking", T.myBookingBtn);
+  set("overlaySubText", T.saving || "Saving...");
 }
 
 function setStatus(msg, isError = false) {
