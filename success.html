@@ -72,13 +72,12 @@
 
 <div class="container">
   <div class="card">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 12px;" id="subPaymentComplete">Payment Complete</p>
-
     <div style="text-align:center;margin-bottom:16px;">
       <div style="width:60px;height:60px;background:#e8faf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2 style="margin:0;font-size:22px;color:#06C755;font-weight:600;">決済が完了しました</h2>
+      <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;margin:6px 0 0;" id="subPaymentComplete">Payment Complete</p>
       <p style="font-size:13px;color:#aaa;margin:6px 0 0;" id="subThankYou">Thank you for your booking.</p>
     </div>
 
@@ -298,30 +297,76 @@
         document.getElementById("processingOverlay").classList.remove("show");
 
         // 予約内容を表示
+        const T = window._successT || {};
+        const lang = new URLSearchParams(window.location.search).get("lang") || localStorage.getItem("userLang") || "ja";
+
+        const LESSON_TRANS = {
+          en: { lesson: "Lesson", date: "Date", time: "Time", fee: "Fee",
+                lessonName50: "50-min Lesson", lessonName25: "25-min Lesson" },
+          zh: { lesson: "课程", date: "日期", time: "时间", fee: "费用",
+                lessonName50: "50分钟课程", lessonName25: "25分钟课程" },
+          ko: { lesson: "레슨", date: "날짜", time: "시간", fee: "요금",
+                lessonName50: "50분 레슨", lessonName25: "25분 레슨" },
+          th: { lesson: "บทเรียน", date: "วันที่", time: "เวลา", fee: "ค่าเรียน",
+                lessonName50: "บทเรียน 50 นาที", lessonName25: "บทเรียน 25 นาที" },
+          fr: { lesson: "Leçon", date: "Date", time: "Heure", fee: "Frais",
+                lessonName50: "Leçon 50 min", lessonName25: "Leçon 25 min" },
+          de: { lesson: "Unterricht", date: "Datum", time: "Uhrzeit", fee: "Gebühr",
+                lessonName50: "50-Min-Unterricht", lessonName25: "25-Min-Unterricht" },
+        };
+        const TL = LESSON_TRANS[lang] || null;
+
         const lessonDisplay = Number(lessonType) === 50 ? "50分レッスン" : "25分レッスン";
+        const lessonSub = TL ? (Number(lessonType) === 50 ? TL.lessonName50 : TL.lessonName25) : null;
+
+        // タイムゾーン変換
+        const userTimezone = localStorage.getItem("userTimezone") || "";
+        let localTimeStr = "";
+        let tzName = "";
+        if (userTimezone && userTimezone !== "Asia/Tokyo") {
+          try {
+            const jstDate = new Date(`${date}T${time}:00+09:00`);
+            localTimeStr = jstDate.toLocaleTimeString("en-US", {
+              hour: "2-digit", minute: "2-digit", hour12: false, timeZone: userTimezone
+            });
+            const localDate = jstDate.toLocaleDateString("en-CA", { timeZone: userTimezone });
+            if (localDate !== date) {
+              const parts = localDate.split("-");
+              localTimeStr = `${Number(parts[1])}/${Number(parts[2])} ${localTimeStr}`;
+            }
+            tzName = new Date().toLocaleTimeString("en-US", {
+              timeZoneName: "short", timeZone: userTimezone
+            }).split(" ").pop();
+          } catch(e) {}
+        }
+
+        const timeDisplay = localTimeStr
+          ? `${time} (JST) / ${localTimeStr} (${tzName})`
+          : `${time} (JST)`;
+
         const infoArea = document.getElementById("bookingInfoArea");
         if (infoArea) {
           infoArea.style.display = "block";
           infoArea.innerHTML = `
             <div style="display:flex;flex-direction:column;gap:12px;">
               <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <span style="font-size:12px;color:#999;">レッスン</span>
-                <span style="font-size:14px;font-weight:600;color:#222;">${lessonDisplay}</span>
+                <span style="font-size:12px;color:#999;">レッスン${TL ? ` <span style="font-size:11px;color:#ccc;">/ ${TL.lesson}</span>` : ''}</span>
+                <span style="font-size:14px;font-weight:600;color:#222;">${lessonDisplay}${lessonSub ? `<br><span style="font-size:11px;font-weight:400;color:#aaa;">${lessonSub}</span>` : ''}</span>
               </div>
               <div style="height:0.5px;background:#eee;"></div>
               <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <span style="font-size:12px;color:#999;">日付</span>
+                <span style="font-size:12px;color:#999;">日付${TL ? ` <span style="font-size:11px;color:#ccc;">/ ${TL.date}</span>` : ''}</span>
                 <span style="font-size:14px;font-weight:600;color:#222;">${date}</span>
               </div>
               <div style="height:0.5px;background:#eee;"></div>
               <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <span style="font-size:12px;color:#999;">時間 (JST)</span>
-                <span style="font-size:14px;font-weight:600;color:#222;">${time}</span>
+                <span style="font-size:12px;color:#999;">時間${TL ? ` <span style="font-size:11px;color:#ccc;">/ ${TL.time}</span>` : ''}</span>
+                <span style="font-size:14px;font-weight:600;color:#222;">${timeDisplay}</span>
               </div>
               ${priceLabel ? `
               <div style="height:0.5px;background:#eee;"></div>
               <div style="display:flex;justify-content:space-between;align-items:baseline;">
-                <span style="font-size:12px;color:#999;">料金</span>
+                <span style="font-size:12px;color:#999;">料金${TL ? ` <span style="font-size:11px;color:#ccc;">/ ${TL.fee}</span>` : ''}</span>
                 <span style="font-size:14px;font-weight:600;color:#06C755;">${priceLabel}</span>
               </div>` : ''}
             </div>

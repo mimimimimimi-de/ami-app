@@ -820,6 +820,7 @@ async function init() {
       }
       if (data25.timezone && data25.timezone !== '' && data25.timezone !== 'Asia/Tokyo') {
         userTimezone = data25.timezone;
+        localStorage.setItem("userTimezone", data25.timezone);
         try {
           const now = new Date();
           userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
