@@ -184,8 +184,24 @@
       let lessonType = localLessonType;
       let priceLabel = "";
 
+      // 言語取得
+      const lang = new URLSearchParams(window.location.search).get("lang") || localStorage.getItem("userLang") || "ja";
+      const STATUS_TRANS = {
+        en: { checkingInfo: "Checking payment & LINE info...", checkingLine: "Verifying LINE info...", checkingSlot: "Checking availability...", saving: "Saving reservation...", saved: "Booking saved. Notification sent via LINE.", notFound: "Reservation info not found.\nPlease contact the teacher.", liffError: "Failed to get LINE info.\nPlease reopen in the LINE app.", slotTaken: "Sorry, this time slot was just booked.\nYou will be refunded.", saveFailed: "Save failed. Please contact the teacher." },
+        zh: { checkingInfo: "正在确认付款和LINE信息...", checkingLine: "正在确认LINE信息...", checkingSlot: "正在确认空闲时间...", saving: "正在保存预约...", saved: "预约已保存。已通过LINE发送通知。", notFound: "未找到预约信息。\n请联系老师。", liffError: "无法获取LINE信息。\n请在LINE应用内重新打开。", slotTaken: "抱歉，该时间段已被预约。\n将为您退款。", saveFailed: "保存失败。请联系老师。" },
+        ko: { checkingInfo: "결제 및 LINE 정보 확인 중...", checkingLine: "LINE 정보 확인 중...", checkingSlot: "가능 여부 확인 중...", saving: "예약 저장 중...", saved: "예약이 저장되었습니다. LINE으로 알림을 보냈습니다.", notFound: "예약 정보를 찾을 수 없습니다.\n선생님께 연락해 주세요.", liffError: "LINE 정보를 가져오지 못했습니다.\nLINE 앱에서 다시 열어주세요.", slotTaken: "죄송합니다. 이 시간은 이미 예약되었습니다.\n환불 처리됩니다.", saveFailed: "저장 실패. 선생님께 연락해 주세요." },
+        th: { checkingInfo: "กำลังตรวจสอบข้อมูลการชำระและ LINE...", checkingLine: "กำลังยืนยันข้อมูล LINE...", checkingSlot: "กำลังตรวจสอบช่องว่าง...", saving: "กำลังบันทึกการจอง...", saved: "บันทึกการจองแล้ว ส่งแจ้งเตือนทาง LINE แล้ว", notFound: "ไม่พบข้อมูลการจอง\nกรุณาติดต่อครู", liffError: "ไม่สามารถรับข้อมูล LINE ได้\nกรุณาเปิดใหม่ใน LINE", slotTaken: "ขออภัย ช่วงเวลานี้ถูกจองแล้ว\nจะดำเนินการคืนเงินให้", saveFailed: "บันทึกล้มเหลว กรุณาติดต่อครู" },
+        fr: { checkingInfo: "Vérification du paiement et LINE...", checkingLine: "Vérification des infos LINE...", checkingSlot: "Vérification des disponibilités...", saving: "Enregistrement de la réservation...", saved: "Réservation enregistrée. Notification envoyée via LINE.", notFound: "Informations de réservation introuvables.\nContactez le professeur.", liffError: "Impossible d'obtenir les infos LINE.\nReouvrez dans l'app LINE.", slotTaken: "Désolé, ce créneau est déjà pris.\nVous serez remboursé.", saveFailed: "Échec de l'enregistrement. Contactez le professeur." },
+        de: { checkingInfo: "Zahlung und LINE-Info wird geprüft...", checkingLine: "LINE-Info wird überprüft...", checkingSlot: "Verfügbarkeit wird geprüft...", saving: "Buchung wird gespeichert...", saved: "Buchung gespeichert. Benachrichtigung via LINE gesendet.", notFound: "Buchungsinformationen nicht gefunden.\nBitte Lehrer kontaktieren.", liffError: "LINE-Info konnte nicht abgerufen werden.\nBitte in LINE erneut öffnen.", slotTaken: "Sorry, dieser Zeitslot wurde gerade gebucht.\nSie werden erstattet.", saveFailed: "Speichern fehlgeschlagen. Bitte Lehrer kontaktieren." },
+      };
+      const ST = STATUS_TRANS[lang] || null;
+
+      function setStatus(jaText, enText) {
+        statusEl.textContent = jaText + (enText ? "\n" + enText : "");
+      }
+
       try {
-        statusEl.textContent = "決済情報とLINE情報を確認しています...";
+        setStatus("決済情報とLINE情報を確認しています...", ST ? ST.checkingInfo : "Checking payment & LINE info...");
 
         // StripeとLIFFを並行初期化
         const [checkoutResult] = await Promise.all([
@@ -210,14 +226,14 @@
 
       if (!date || !time || !lessonType) {
         statusEl.classList.add("error");
-        statusEl.textContent = "予約情報が見つかりませんでした。\n先生にご連絡ください。";
+        setStatus("予約情報が見つかりませんでした。\n先生にご連絡ください。", ST ? ST.notFound : "");
         return;
       }
 
       const lessonLabel = Number(lessonType) === 50 ? "50分レッスン" : "25分レッスン";
 
       try {
-        statusEl.textContent = "LINE情報を確認しています...";
+        setStatus("LINE情報を確認しています...", ST ? ST.checkingLine : "Verifying LINE info...");
 
         if (!liff.isLoggedIn()) {
           liff.login({ redirectUri: window.location.href });
@@ -233,8 +249,7 @@
       } catch (error) {
         console.error("LIFF error:", error);
         statusEl.classList.add("error");
-        statusEl.textContent =
-          "LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。";
+        setStatus("LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。", ST ? ST.liffError : "");
         return;
       }
 
@@ -253,7 +268,7 @@
       };
 
       try {
-        statusEl.textContent = "空き状況を確認しています...\nChecking availability...";
+        setStatus("空き状況を確認しています...", ST ? ST.checkingSlot : "Checking availability...");
         document.getElementById("processingOverlay").classList.add("show");
 
         // 空き確認と予約保存を順番に実行
@@ -268,8 +283,7 @@
 
         if (!checkData.available) {
           statusEl.classList.add("error");
-          statusEl.textContent =
-            "⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。\n\nSorry, this time slot was just booked by someone else.\nYou will be refunded.";
+          setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
           if (paymentIntentId) {
             await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
               method: "POST",
@@ -281,7 +295,7 @@
           return;
         }
 
-        statusEl.textContent = "予約内容を保存しています...\nSaving reservation...";
+        setStatus("予約内容を保存しています...", ST ? ST.saving : "Saving reservation...");
 
         await fetch(GAS_URL, {
           method: "POST",
@@ -291,14 +305,12 @@
         });
 
         statusEl.classList.remove("error");
-        statusEl.textContent =
-          "✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。\n" + ((window._successT && window._successT.saved) || "Booking saved. Notification sent via LINE.");
+        setStatus("✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。", ST ? ST.saved : ((window._successT && window._successT.saved) || "Booking saved. Notification sent via LINE."));
 
         document.getElementById("processingOverlay").classList.remove("show");
 
         // 予約内容を表示
         const T = window._successT || {};
-        const lang = new URLSearchParams(window.location.search).get("lang") || localStorage.getItem("userLang") || "ja";
 
         const LESSON_TRANS = {
           en: { lesson: "Lesson", date: "Date", time: "Time", fee: "Fee",
@@ -388,7 +400,7 @@
         console.error("GAS error:", error);
         document.getElementById("processingOverlay").classList.remove("show");
         statusEl.classList.add("error");
-        statusEl.textContent = "保存に失敗しました。\n先生にご連絡ください。\nFailed to save. Please contact the teacher.";
+        setStatus("保存に失敗しました。\n先生にご連絡ください。", ST ? ST.saveFailed : "Failed to save. Please contact the teacher.");
         document.getElementById("closeBtn").style.display = "block";
       }
     }
