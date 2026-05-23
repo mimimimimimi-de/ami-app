@@ -1420,7 +1420,7 @@ async function checkout() {
           <div style="display:flex;flex-direction:column;gap:12px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
               <span style="font-size:12px;color:#999;">レッスン <span style="font-size:11px;color:#ccc;">/ ${T.lesson || "Lesson"}</span></span>
-              <span style="font-size:14px;font-weight:600;color:#222;">${selectedMinutes}分レッスン</span>
+              <span style="font-size:14px;font-weight:600;color:#222;">${selectedMinutes}分レッスン<br><span style="font-size:11px;font-weight:400;color:#aaa;">${selectedMinutes === 25 ? (T.btn25 || "25-min Lesson") : (T.btn50 || "50-min Lesson")}</span></span>
             </div>
             <div style="height:0.5px;background:#eee;"></div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
@@ -1435,7 +1435,7 @@ async function checkout() {
             <div style="height:0.5px;background:#eee;"></div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
               <span style="font-size:12px;color:#999;">支払い <span style="font-size:11px;color:#ccc;">/ ${T.payment || "Payment"}</span></span>
-              <span style="font-size:14px;font-weight:600;color:#222;">回数券</span>
+              <span style="font-size:14px;font-weight:600;color:#222;">回数券<br><span style="font-size:11px;font-weight:400;color:#aaa;">${T.ticket || "Ticket"}</span></span>
             </div>
             <div style="height:0.5px;background:#eee;"></div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
