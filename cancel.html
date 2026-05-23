@@ -221,7 +221,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     </div>
 
     <div style="background:#fdf5f5;border:0.5px solid #f0d0d0;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">
-      読み込み中...<br><span id="cancelLoadingSub" style="font-size:12px;color:#bbb;"></span>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:8px 0;">
+        <div style="width:28px;height:28px;border:3px solid #f0d0d0;border-top-color:#d93025;border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+        <div style="font-size:14px;color:#aaa;text-align:center;">読み込み中...<br><span id="cancelLoadingSub" style="font-size:12px;color:#bbb;"></span></div>
+      </div>
     </div>
 
     <!-- 通常予約 -->
@@ -446,8 +449,8 @@ function getCancelLang() {
 
 function applyCancelLang(forceLang) {
   const l = forceLang || getCancelLang();
-  if (l === "ja") return;
-  const T = CANCEL_TRANS[l] || CANCEL_TRANS["en"];
+  // 日本語の場合は英語サブテキストを表示
+  const T = l === "ja" ? CANCEL_TRANS["en"] : (CANCEL_TRANS[l] || CANCEL_TRANS["en"]);
   window._cancelT = T;
 
   const setSubText = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
@@ -510,18 +513,12 @@ let userTzName = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   const cachedLang = localStorage.getItem("userLang");
-  if (cachedLang && cachedLang !== 'ja') {
-    applyCancelLang(cachedLang);
-  } else {
-    applyCancelLang();
-  }
+  applyCancelLang(cachedLang || "ja");
 
   const loadLang = cachedLang || "ja";
-  if (loadLang !== 'ja') {
-    const T0 = CANCEL_TRANS[loadLang] || CANCEL_TRANS["en"];
-    const loadingSub = document.getElementById("cancelLoadingSub");
-    if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
-  }
+  const T0 = CANCEL_TRANS[loadLang] || CANCEL_TRANS["en"];
+  const loadingSub = document.getElementById("cancelLoadingSub");
+  if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
 
   const cachedTz = localStorage.getItem("userTimezone");
   if (cachedTz && cachedTz !== 'Asia/Tokyo') {
@@ -602,7 +599,7 @@ async function loadCancelData() {
 
     reservationData = data.reservation;
 
-    if (data.lang && data.lang !== 'ja') {
+    if (data.lang) {
       localStorage.setItem("userLang", data.lang);
       applyCancelLang(data.lang);
     }
@@ -772,7 +769,7 @@ function showResult(isSuccess, message) {
   document.getElementById("resultCard").classList.remove("hidden");
 
   const cachedL = localStorage.getItem("userLang") || "ja";
-  const T = window._cancelT || (cachedL !== "ja" ? CANCEL_TRANS[cachedL] || CANCEL_TRANS["en"] : {});
+  const T = window._cancelT || CANCEL_TRANS[cachedL] || CANCEL_TRANS["en"];
 
   const iconWrap = document.getElementById("resultIconWrap");
   const iconSvg = document.getElementById("resultIconSvg");
