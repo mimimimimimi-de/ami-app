@@ -285,12 +285,28 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="resultCard">
-    <div class="icon" id="resultIcon">✅</div>
-    <h2 id="resultTitle" class="green">キャンセルしました</h2>
-    <div class="result-message" id="resultMessage"></div>
-    <div class="small">このページは閉じて大丈夫です。<br><span style="font-size:12px;color:#aaa;">You can close this page.</span></div>
-    <button class="absence" type="button" id="absenceBtn2" style="display:none">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span></button>
-    <button class="back" type="button" onclick="closePage()">閉じる / Close</button>
+    <div style="text-align:center;margin-bottom:16px;">
+      <div id="resultIconWrap" style="width:60px;height:60px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+        <svg id="resultIconSvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06C755" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 id="resultTitle" style="margin:0;font-size:22px;font-weight:600;">キャンセルしました</h2>
+      <p id="resultTitleSub" style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;margin:6px 0 0;"></p>
+    </div>
+
+    <div id="resultMessage" style="background:#f8f8f8;border-radius:14px;padding:16px;font-size:13px;color:#555;white-space:pre-line;line-height:1.8;margin-bottom:16px;"></div>
+
+    <p style="text-align:center;font-size:13px;color:#aaa;margin:0 0 16px;">
+      このページは閉じて大丈夫です。<br>
+      <span id="canCloseSub" style="font-size:11px;">You can close this page.</span>
+    </p>
+
+    <button class="absence" type="button" id="absenceBtn2" style="display:none;">
+      📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);">Notify Teacher of Absence</span>
+    </button>
+
+    <button type="button" onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:8px;">
+      閉じる <span id="closeBtnSub" style="font-size:11px;font-weight:400;opacity:0.8;"></span>
+    </button>
   </div>
 
 </div>
@@ -309,7 +325,7 @@ const CANCEL_TRANS = {
     ticketNotify: "If you cannot attend, please notify the teacher directly via LINE in advance.",
     pastDeadline: "Past the cancellation deadline", pastDeadlineMsg: "If you cannot attend, please contact the teacher directly via LINE as soon as possible.",
     absenceTitle: "If past the cancellation deadline", absenceMsg: "Please notify the teacher directly via LINE as soon as possible.",
-    absenceBtn: "Notify Teacher of Absence", close: "Close", loading: "Loading...",
+    absenceBtn: "Notify Teacher of Absence", close: "Close", loading: "Loading...", notFound: "Reservation not found.",
     back: "Back",
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
@@ -329,7 +345,7 @@ const CANCEL_TRANS = {
     ticketNotify: "如无法出席，请提前通过LINE直接通知老师.",
     pastDeadline: "已超过取消期限", pastDeadlineMsg: "如无法出席，请尽快通过LINE直接联系老师.",
     absenceTitle: "超过取消期限后缺席", absenceMsg: "请尽快通过LINE直接联系老师.",
-    absenceBtn: "通知老师缺席", close: "关闭", loading: "加载中...",
+    absenceBtn: "通知老师缺席", close: "关闭", loading: "加载中...", notFound: "未找到预约。",
     back: "返回",
     canClose: "可以关闭此页面.", cancelled: "已取消", cannotCancel: "无法取消",
     successMsg: "取消完成.", refundDone: "退款处理完成.",
@@ -349,7 +365,7 @@ const CANCEL_TRANS = {
     ticketNotify: "참석하지 못하는 경우 미리 LINE으로 선생님께 직접 연락해주세요.",
     pastDeadline: "취소 기한이 지났습니다", pastDeadlineMsg: "참석하지 못하는 경우 가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
     absenceTitle: "취소 기한 이후 결석하는 경우", absenceMsg: "가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
-    absenceBtn: "선생님께 결석 연락하기", close: "닫기", loading: "불러오는 중...",
+    absenceBtn: "선생님께 결석 연락하기", close: "닫기", loading: "불러오는 중...", notFound: "예약을 찾을 수 없습니다.",
     back: "뒤로",
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
@@ -369,7 +385,7 @@ const CANCEL_TRANS = {
     ticketNotify: "หากไม่สามารถเข้าร่วมได้ กรุณาแจ้งครูโดยตรงผ่าน LINE ล่วงหน้า",
     pastDeadline: "เกินกำหนดการยกเลิก", pastDeadlineMsg: "หากไม่สามารถเข้าร่วมได้ กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
     absenceTitle: "หากขาดเรียนหลังเกินกำหนด", absenceMsg: "กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
-    absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด", loading: "กำลังโหลด...",
+    absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด", loading: "กำลังโหลด...", notFound: "ไม่พบการจอง",
     back: "ย้อนกลับ",
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
@@ -389,7 +405,7 @@ const CANCEL_TRANS = {
     ticketNotify: "Si vous ne pouvez pas assister, veuillez notifier le professeur directement via LINE à l'avance.",
     pastDeadline: "Délai d'annulation dépassé", pastDeadlineMsg: "Si vous ne pouvez pas assister, veuillez contacter le professeur directement via LINE dès que possible.",
     absenceTitle: "Si absence après le délai", absenceMsg: "Veuillez notifier le professeur directement via LINE dès que possible.",
-    absenceBtn: "Notifier le professeur de l'absence", close: "Fermer", loading: "Chargement...",
+    absenceBtn: "Notifier le professeur de l'absence", close: "Fermer", loading: "Chargement...", notFound: "Réservation introuvable.",
     back: "Retour",
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
@@ -409,7 +425,7 @@ const CANCEL_TRANS = {
     ticketNotify: "Wenn Sie nicht teilnehmen können, benachrichtigen Sie den Lehrer bitte im Voraus direkt über LINE.",
     pastDeadline: "Stornierungsfrist überschritten", pastDeadlineMsg: "Wenn Sie nicht teilnehmen können, kontaktieren Sie den Lehrer so schnell wie möglich direkt über LINE.",
     absenceTitle: "Bei Abwesenheit nach der Frist", absenceMsg: "Bitte benachrichtigen Sie den Lehrer so schnell wie möglich direkt über LINE.",
-    absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen", loading: "Wird geladen...",
+    absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen", loading: "Wird geladen...", notFound: "Buchung nicht gefunden.",
     back: "Zurück",
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
@@ -492,7 +508,10 @@ function applyCancelLang(forceLang) {
   if (loadingSub) loadingSub.textContent = T.loading || "Loading...";
 
   // 結果カード
-  setSubText("#resultCard .small span", T.canClose);
+  const canCloseSub = document.getElementById("canCloseSub");
+  if (canCloseSub) canCloseSub.textContent = T.canClose || "You can close this page.";
+  const closeSub = document.getElementById("closeBtnSub");
+  if (closeSub) closeSub.textContent = T.close || "Close";
 }
 
 let reservationId = "";
@@ -579,7 +598,9 @@ async function loadCancelData() {
   reservationId = params.get("id");
 
   if (!reservationId) {
-    showResult(false, "予約IDが見つかりませんでした。");
+    const cachedL0 = localStorage.getItem("userLang") || "ja";
+    const T0 = CANCEL_TRANS[cachedL0] || CANCEL_TRANS["en"];
+    showResult(false, "予約IDが見つかりませんでした。\n" + (T0.notFound || "Reservation not found."));
     return;
   }
 
@@ -775,19 +796,38 @@ function showResult(isSuccess, message) {
   document.getElementById("confirmCard").classList.add("hidden");
   document.getElementById("resultCard").classList.remove("hidden");
 
-  const T = window._cancelT || {};
-  const icon = document.getElementById("resultIcon");
+  const cachedL = localStorage.getItem("userLang") || "ja";
+  const T = window._cancelT || (cachedL !== "ja" ? CANCEL_TRANS[cachedL] || CANCEL_TRANS["en"] : {});
+
+  const iconWrap = document.getElementById("resultIconWrap");
+  const iconSvg = document.getElementById("resultIconSvg");
   const title = document.getElementById("resultTitle");
+  const titleSub = document.getElementById("resultTitleSub");
   const msg = document.getElementById("resultMessage");
+  const canCloseSub = document.getElementById("canCloseSub");
+  const closeSub = document.getElementById("closeBtnSub");
+
+  if (canCloseSub) canCloseSub.textContent = T.canClose || "You can close this page.";
+  if (closeSub) closeSub.textContent = T.close || "Close";
 
   if (isSuccess) {
-    icon.textContent = "✅";
-    title.textContent = "キャンセルしました / " + (T.cancelled || "Cancelled");
-    title.className = "green";
+    iconWrap.style.background = "#e8faf0";
+    iconSvg.setAttribute("stroke", "#06C755");
+    iconSvg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    title.textContent = "キャンセルしました";
+    title.style.color = "#06C755";
+    if (titleSub) titleSub.textContent = T.cancelled || "Cancelled";
+    msg.style.background = "#f8fdf9";
+    msg.style.border = "0.5px solid #d0ead8";
   } else {
-    icon.textContent = "⚠️";
-    title.textContent = "キャンセルできません / " + (T.cannotCancel || "Cannot Cancel");
-    title.className = "red";
+    iconWrap.style.background = "#fdf0ef";
+    iconSvg.setAttribute("stroke", "#e74c3c");
+    iconSvg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+    title.textContent = "キャンセルできません";
+    title.style.color = "#e74c3c";
+    if (titleSub) titleSub.textContent = T.cannotCancel || "Cannot Cancel";
+    msg.style.background = "#fdf5f5";
+    msg.style.border = "0.5px solid #f0d0d0";
   }
 
   msg.textContent = message || "";
