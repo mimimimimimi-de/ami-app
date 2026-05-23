@@ -329,7 +329,7 @@ const CANCEL_TRANS = {
     back: "Back",
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
-    absenceSent: "Absence notification sent to the teacher.",
+    absenceSent: "Absence notification sent to the teacher.", sendFailed: "Failed to send. Please contact the teacher directly via LINE.",
     absenceConfirm: "Send absence notification to the teacher?",
     confirmCancelMsg: "No cancellation or refund after 12 hours before the lesson.",
     sending: "Sending...", processingCancel: "Processing cancellation...",
@@ -349,7 +349,7 @@ const CANCEL_TRANS = {
     back: "返回",
     canClose: "可以关闭此页面.", cancelled: "已取消", cannotCancel: "无法取消",
     successMsg: "取消完成.", refundDone: "退款处理完成.",
-    absenceSent: "缺席通知已发送给老师.",
+    absenceSent: "缺席通知已发送给老师.", sendFailed: "发送失败。请通过LINE直接联系老师。",
     absenceConfirm: "向老师发送缺席通知？",
     confirmCancelMsg: "12小时后无法取消或退款.",
     sending: "发送中...",
@@ -369,7 +369,7 @@ const CANCEL_TRANS = {
     back: "뒤로",
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
-    absenceSent: "결석 알림이 선생님께 전송되었습니다.",
+    absenceSent: "결석 알림이 선생님께 전송되었습니다.", sendFailed: "전송 실패. LINE으로 선생님께 직접 연락해 주세요.",
     absenceConfirm: "선생님께 결석 알림을 보내시겠습니까?",
     confirmCancelMsg: "레슨 시작 12시간 후에는 취소 및 환불이 불가합니다.",
     sending: "전송 중...", processingCancel: "취소 처리 중...",
@@ -389,7 +389,7 @@ const CANCEL_TRANS = {
     back: "ย้อนกลับ",
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
-    absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว",
+    absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว", sendFailed: "ส่งล้มเหลว กรุณาติดต่อครูโดยตรงทาง LINE",
     absenceConfirm: "ส่งการแจ้งขาดเรียนให้ครูหรือไม่?",
     confirmCancelMsg: "หลัง 12 ชั่วโมง ไม่สามารถยกเลิกหรือคืนเงินได้",
     sending: "กำลังส่ง...", processingCancel: "กำลังดำเนินการยกเลิก...",
@@ -409,7 +409,7 @@ const CANCEL_TRANS = {
     back: "Retour",
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
-    absenceSent: "Notification d'absence envoyée au professeur.",
+    absenceSent: "Notification d'absence envoyée au professeur.", sendFailed: "Échec de l'envoi. Contactez directement le professeur via LINE.",
     absenceConfirm: "Envoyer une notification d'absence au professeur ?",
     confirmCancelMsg: "Pas d'annulation ou de remboursement après 12h avant la leçon.",
     sending: "Envoi en cours...", processingCancel: "Traitement de l'annulation...",
@@ -429,7 +429,7 @@ const CANCEL_TRANS = {
     back: "Zurück",
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
-    absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.",
+    absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.", sendFailed: "Senden fehlgeschlagen. Bitte den Lehrer direkt über LINE kontaktieren.",
     absenceConfirm: "Abwesenheitsbenachrichtigung an den Lehrer senden?",
     confirmCancelMsg: "Keine Stornierung oder Rückerstattung nach 12h vor der Unterrichtsstunde.",
     sending: "Wird gesendet...", processingCancel: "Stornierung wird verarbeitet...",
@@ -765,7 +765,7 @@ async function sendAbsence() {
     );
     alert("✅ 欠席連絡を先生に送りました。" + (T.absenceSent ? "\n" + T.absenceSent : ""));
   } catch (e) {
-    alert("送信に失敗しました。LINEで先生に直接ご連絡ください。");
+    alert("送信に失敗しました。LINEで先生に直接ご連絡ください。" + (T.sendFailed ? "\n" + T.sendFailed : ""));
   } finally {
     document.getElementById("processingOverlay").classList.remove("show");
     if (btn) btn.disabled = false;
