@@ -168,13 +168,25 @@ button {
   white-space: nowrap;
 }
 
-.calendar-table td:first-child,
+.calendar-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: #f8faf9;
+  z-index: 2;
+  font-weight: 700;
+  color: #555;
+  font-size: 11px;
+  padding: 8px 5px;
+  min-width: 52px;
+  max-width: 52px;
+}
+
 .calendar-table th:first-child {
   position: sticky;
   left: 0;
   top: 0;
   background: #f8faf9;
-  z-index: 5;
+  z-index: 10 !important;
   font-weight: 700;
   color: #555;
   font-size: 11px;
@@ -643,6 +655,18 @@ function renderCalendar() {
 
   html += "</tbody></table>";
   calendar.innerHTML = html;
+
+  // 左上角セルを縦横両方sticky固定
+  setTimeout(() => {
+    const cornerTh = calendar.querySelector("thead tr th:first-child");
+    if (cornerTh) {
+      cornerTh.style.position = "sticky";
+      cornerTh.style.left = "0";
+      cornerTh.style.top = "0";
+      cornerTh.style.zIndex = "10";
+      cornerTh.style.background = "#f8faf9";
+    }
+  }, 0);
 }
 
 function prevWeek() {
