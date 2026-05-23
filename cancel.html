@@ -220,7 +220,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
       <span class="en-sub">Are you sure you want to cancel this lesson? Please review the details below.</span>
     </div>
 
-    <div style="background:#fdf5f5;border:0.5px solid #f0d0d0;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">読み込み中...</div>
+    <div style="background:#fdf5f5;border:0.5px solid #f0d0d0;border-radius:14px;padding:18px;margin:16px 0;" id="reservationInfo">
+      読み込み中...<br><span id="cancelLoadingSub" style="font-size:12px;color:#bbb;"></span>
+    </div>
 
     <!-- 通常予約 -->
     <div id="normalSection">
@@ -485,6 +487,10 @@ function applyCancelLang(forceLang) {
     btn.textContent = "閉じる / " + T.close;
   });
 
+  // 読み込み中サブテキスト
+  const loadingSub = document.getElementById("cancelLoadingSub");
+  if (loadingSub) loadingSub.textContent = T.loading || "Loading...";
+
   // 結果カード
   setSubText("#resultCard .small span", T.canClose);
 }
@@ -497,6 +503,14 @@ let userTzName = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   applyCancelLang();
+
+  // キャッシュから読み込みサブテキストをすぐ設定
+  const cachedLang = localStorage.getItem("userLang");
+  if (cachedLang && cachedLang !== 'ja') {
+    const T0 = CANCEL_TRANS[cachedLang] || CANCEL_TRANS["en"];
+    const loadingSub = document.getElementById("cancelLoadingSub");
+    if (loadingSub) loadingSub.textContent = T0.loading || "Loading...";
+  }
   document.getElementById("cancelBtn").addEventListener("click", executeCancel);
   document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
   document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
