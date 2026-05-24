@@ -736,8 +736,15 @@ let weekOffset = 0;
 let liffReady = false;
 let myTickets = [];
 let selectedPayment = "stripe";
-let userTimezone = null;
+let userTimezone = localStorage.getItem("userTimezone") || null;
 let userTzName = null;
+
+// userTzNameを初期化
+if (userTimezone && userTimezone !== 'Asia/Tokyo') {
+  try {
+    userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+  } catch(e) {}
+}
 
 // タイムゾーン自動取得
 function detectTimezone() {
