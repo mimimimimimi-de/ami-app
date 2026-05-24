@@ -536,10 +536,16 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function detectTimezone() {
+  // GASから取得したtimezoneがすでにある場合は上書きしない
+  if (userTimezone && userTimezone !== 'Asia/Tokyo') return;
   try {
-    userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const now = new Date();
-    userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // デバイスのタイムゾーンはフォールバックとしてのみ使用
+    if (!userTimezone) {
+      userTimezone = detected;
+      const now = new Date();
+      userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    }
   } catch (e) {}
 }
 
@@ -605,6 +611,7 @@ async function loadCancelData() {
 
     if (data.timezone && data.timezone !== '' && data.timezone !== 'Asia/Tokyo') {
       userTimezone = data.timezone;
+      localStorage.setItem("userTimezone", data.timezone);
       try {
         const now = new Date();
         userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
