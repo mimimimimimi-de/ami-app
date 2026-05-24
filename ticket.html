@@ -516,7 +516,7 @@ body {
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
-  <div style="font-size:14px;color:#666;text-align:center;">決済ページを準備中...<br><span style="font-size:12px;color:#aaa;">Preparing checkout...</span></div>
+  <div style="font-size:14px;color:#666;text-align:center;">決済ページを準備中...<br><span id="overlayCheckoutSub" style="font-size:12px;color:#aaa;">Preparing checkout...</span></div>
 </div>
 
 <div class="header">
@@ -615,6 +615,7 @@ const TICKET_TRANS = {
     policy3: "1 ticket is automatically deducted per booking",
     policy4: "You can choose to use tickets when booking",
     buyBtn: "Proceed to Payment",
+    checkoutLoading: "Preparing checkout...",
     loading: "Loading price...",
     perLesson: "per lesson"
   },
@@ -634,6 +635,7 @@ const TICKET_TRANS = {
     policy3: "每次预约自动扣减1次",
     policy4: "预约时可选择使用次券",
     buyBtn: "前往付款",
+    checkoutLoading: "正在准备结账...",
     loading: "正在获取价格...",
     perLesson: "每次"
   },
@@ -653,6 +655,7 @@ const TICKET_TRANS = {
     policy3: "예약 시 잔여 횟수가 자동으로 1회 차감됩니다",
     policy4: "횟수권이 있는 경우 예약 시 사용 방법을 선택할 수 있습니다",
     buyBtn: "결제 진행",
+    checkoutLoading: "결제 페이지를 준비 중...",
     loading: "요금 확인 중...",
     perLesson: "회당"
   },
@@ -672,6 +675,7 @@ const TICKET_TRANS = {
     policy3: "จำนวนคูปองจะถูกหัก 1 ครั้งโดยอัตโนมัติเมื่อจอง",
     policy4: "หากมีคูปอง สามารถเลือกใช้ได้เมื่อจอง",
     buyBtn: "ดำเนินการชำระเงิน",
+    checkoutLoading: "กำลังเตรียมหน้าชำระเงิน...",
     loading: "กำลังตรวจสอบราคา...",
     perLesson: "ต่อครั้ง"
   },
@@ -691,6 +695,7 @@ const TICKET_TRANS = {
     policy3: "1 ticket est automatiquement déduit par réservation",
     policy4: "Vous pouvez choisir d'utiliser des tickets lors de la réservation",
     buyBtn: "Procéder au paiement",
+    checkoutLoading: "Préparation du paiement...",
     loading: "Chargement du prix...",
     perLesson: "par leçon"
   },
@@ -710,6 +715,7 @@ const TICKET_TRANS = {
     policy3: "1 Ticket wird automatisch pro Buchung abgezogen",
     policy4: "Sie können wählen, Tickets bei der Buchung zu verwenden",
     buyBtn: "Zur Zahlung",
+    checkoutLoading: "Zahlung wird vorbereitet...",
     loading: "Preis wird geladen...",
     perLesson: "pro Unterricht"
   }
@@ -762,6 +768,9 @@ function applyTicketLang() {
 
   // 購入ボタンサブ
   setEl("buyBtnSub", T.buyBtn);
+
+  // 決済オーバーレイサブ
+  setEl("overlayCheckoutSub", T.checkoutLoading || "Preparing checkout...");
 }
 
 window.addEventListener("DOMContentLoaded", () => {
