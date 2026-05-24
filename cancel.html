@@ -777,7 +777,7 @@ async function sendAbsence() {
         <p style="font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">欠席連絡を送りました</p>
         <p style="font-size:12px;color:#aaa;margin-bottom:20px;">${T.absenceSent || "Absence notification sent to teacher."}</p>
         <button id="absenceDoneBtn" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:14px;padding:14px;text-align:center;font-size:15px;font-weight:700;color:#fff;cursor:pointer;display:block;">
-          OK
+          閉じる <span style="font-size:11px;font-weight:400;opacity:0.85;">Close</span>
         </button>
       </div>`;
     document.body.appendChild(doneModal);
@@ -786,6 +786,7 @@ async function sendAbsence() {
       doneModal.remove();
       if (btn) btn.disabled = false;
       if (btn2) btn2.disabled = false;
+      closePage();
     });
   }); // absenceModal OK button
 }
