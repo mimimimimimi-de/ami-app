@@ -377,8 +377,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="price">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <h2>料金の確認</h2>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="priceTitleSub">Confirm Lesson Fee</p>
     <div style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:20px;margin:20px 0;text-align:center;">
       <div style="font-size:13px;color:#888;margin-bottom:4px;" id="lesson"></div>
       <div class="price" id="priceText" style="margin:8px 0;">-</div>
@@ -426,8 +426,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   </div>
 
   <div class="card hidden" id="confirmPage">
-    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:0 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <h2>予約内容の最終確認</h2>
+    <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 6px;" id="confirmTitleSub">Confirm Your Booking</p>
     <div id="confirm"></div>
 
     <div class="payment-section" id="paymentSection" style="display:none">
@@ -1139,7 +1139,10 @@ function generateCalendar() {
 
   for (let i = 0; i < 7; i++) {
     const d = addDays(today, weekOffset + i);
-    days.push(d);
+    const dateStr = formatFull(d);
+    if (d.getDay() !== 0 || temporaryDates.includes(dateStr)) {
+      days.push(d);
+    }
   }
 
   const timeSet = new Set();
@@ -1148,10 +1151,9 @@ function generateCalendar() {
     const dateStr = formatFull(day);
     const isSunday = day.getDay() === 0;
     const isTemporary = temporaryDates.includes(dateStr);
-    // 臨時営業の場合はその時間を使用、通常日曜は空（×のみ表示）
-    const windows = isTemporary
+    const windows = (isSunday && isTemporary)
       ? (temporaryWindows[dateStr] || [])
-      : (isSunday ? [] : getTimeWindows(day));
+      : getTimeWindows(day);
     const blockMinutes = getBlockMinutes(selectedMinutes);
     windows.forEach(w => {
       const startMin = timeToMinutes(w.start);
@@ -1184,7 +1186,7 @@ function generateCalendar() {
         const date = formatFull(day);
         const isSunday = day.getDay() === 0;
         const isTemporary = temporaryDates.includes(date);
-        const windows = isTemporary ? (temporaryWindows[date] || []) : (isSunday ? [] : getTimeWindows(day));
+        const windows = (isSunday && isTemporary) ? (temporaryWindows[date] || []) : getTimeWindows(day);
         const blockMinutes = getBlockMinutes(selectedMinutes);
         const inWindow = windows.some(w => {
           const t = timeToMinutes(time);
