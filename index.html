@@ -1002,19 +1002,22 @@ async function openCalendar() {
   // GASからデータを順番に取得
   try {
     const busyRes = await fetch(GAS_URL + "?t=" + Date.now());
+    if (!busyRes.ok) throw new Error('busySlots fetch failed: ' + busyRes.status);
     const busyItems = await busyRes.json();
 
     const tempRes = await fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now());
+    if (!tempRes.ok) throw new Error('tempDates fetch failed: ' + tempRes.status);
     const tempData = await tempRes.json();
 
-    const ticketRes = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
+    const ticketRes = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId || '') + "&t=" + Date.now());
+    if (!ticketRes.ok) throw new Error('tickets fetch failed: ' + ticketRes.status);
     const ticketData = await ticketRes.json();
 
     calendarData = { busyItems, tempData };
     ticketCache = ticketData;
   } catch(e) {
     console.error("カレンダー読み込みエラー:", e);
-    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
+    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br><span style="font-size:11px;">${e.message}</span></p>`;
     return;
   }
 
