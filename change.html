@@ -467,9 +467,15 @@ function closePage() {
   window.location.href = "https://liff.line.me/2009890655-O8QZVlRf";
 }
 
+const LIFF_ID_CHANGE = "2009890655-qGSzLFWc";
+
 // LIFF初期化
 async function initLiffSilent() {
-  // LIFF初期化不要
+  try {
+    await liff.init({ liffId: LIFF_ID_CHANGE });
+  } catch(e) {
+    console.log('LIFF init:', e);
+  }
 }
 
 // タイムゾーン自動取得
