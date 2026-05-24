@@ -575,7 +575,15 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  window.location.href = "https://liff.line.me/2009890655-O8QZVlRf";
+  try {
+    if (typeof liff !== 'undefined' && liff.isInClient()) {
+      liff.closeWindow();
+    } else {
+      window.close();
+    }
+  } catch(e) {
+    window.close();
+  }
 }
 
 async function loadCancelData() {
