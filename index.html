@@ -999,26 +999,18 @@ async function openCalendar() {
       </div>
     </div>`;
 
-  // GASからデータを順番に取得
+  // GASからデータを一括取得（空き情報＋回数券を同時に）
   try {
-    const busyRes = await fetch(GAS_URL + "?t=" + Date.now());
-    if (!busyRes.ok) throw new Error('busySlots fetch failed: ' + busyRes.status);
-    const busyItems = await busyRes.json();
-
-    const tempRes = await fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now());
-    if (!tempRes.ok) throw new Error('tempDates fetch failed: ' + tempRes.status);
-    const tempData = await tempRes.json();
-
-    const ticketRes = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId || '') + "&t=" + Date.now());
-    if (!ticketRes.ok) throw new Error('tickets fetch failed: ' + ticketRes.status);
-    const ticketData = await ticketRes.json();
-
+    const [busyItems, tempData, ticketRes] = await Promise.all([
+      fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
+      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json()),
+      fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now()).then(r => r.json())
+    ]);
     calendarData = { busyItems, tempData };
-    ticketCache = ticketData;
+    ticketCache = ticketRes;
   } catch(e) {
-    console.error("カレンダー読み込みエラー:", e);
-    alert("エラー: " + e.message + "\nuserId: " + userId);
-    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br><span style="font-size:11px;">${e.message}</span></p>`;
+    console.error(e);
+    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
     return;
   }
 
