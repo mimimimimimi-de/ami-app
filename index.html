@@ -999,17 +999,21 @@ async function openCalendar() {
       </div>
     </div>`;
 
-  // GASからデータを一括取得（空き情報＋回数券を同時に）
+  // GASからデータを順番に取得
   try {
-    const [busyItems, tempData, ticketRes] = await Promise.all([
-      fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
-      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json()),
-      fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now()).then(r => r.json())
-    ]);
+    const busyRes = await fetch(GAS_URL + "?t=" + Date.now());
+    const busyItems = await busyRes.json();
+
+    const tempRes = await fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now());
+    const tempData = await tempRes.json();
+
+    const ticketRes = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
+    const ticketData = await ticketRes.json();
+
     calendarData = { busyItems, tempData };
-    ticketCache = ticketRes;
+    ticketCache = ticketData;
   } catch(e) {
-    console.error(e);
+    console.error("カレンダー読み込みエラー:", e);
     calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
     return;
   }
