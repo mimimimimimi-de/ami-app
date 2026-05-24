@@ -1469,7 +1469,7 @@ async function checkout() {
     return;
   }
 
-  showProcessing("決済ページを準備しています...", (window._currentT || {}).preparingPayment || "Preparing payment page...");
+  showProcessing("空き枠を確保しています...", (window._currentT || {}).preparingPayment || "Reserving slot...");
 
   try {
     const ok = await ensureUserId();
@@ -1481,15 +1481,47 @@ async function checkout() {
       return;
     }
 
+    // ① 仮予約作成（カレンダーをブロック）
+    const lessonLabel = selectedMinutes + "分レッスン";
+    const tempRes = await fetch(
+      GAS_URL + "?action=createTempReservation" +
+      "&userId=" + encodeURIComponent(userId) +
+      "&name=" + encodeURIComponent(displayName) +
+      "&date=" + encodeURIComponent(selectedDate) +
+      "&time=" + encodeURIComponent(selectedTime) +
+      "&lesson=" + encodeURIComponent(lessonLabel) +
+      "&price=" + encodeURIComponent(selectedPrice) +
+      "&t=" + Date.now()
+    );
+    const tempData = await tempRes.json();
+
+    if (!tempData.ok) {
+      hideProcessing();
+      statusEl.className = "status error";
+      const T = window._currentT || {};
+      statusEl.textContent = (T.slotTaken || "この時間はすでに埋まっています。別の時間を選んでください。") + "\nThis slot is no longer available.";
+      checkoutBtn.disabled = false;
+      // カレンダーを再読み込みして最新の空き状況を反映
+      calendarData = null;
+      openCalendar();
+      return;
+    }
+
+    const tempReservationId = tempData.reservationId;
+
     localStorage.setItem("selectedDate", selectedDate);
     localStorage.setItem("selectedTime", selectedTime);
     localStorage.setItem("lessonType", selectedMinutes);
     localStorage.setItem("price", selectedPrice);
     localStorage.setItem("userId", userId);
+    localStorage.setItem("tempReservationId", tempReservationId);
+
+    // ② Stripe決済セッション作成
+    showProcessing("決済ページを準備しています...", "Preparing payment page...");
 
     const res = await fetch("/api/create-checkout-session", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId, lang: window._currentLang || "en" })
+      body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId, lang: window._currentLang || "en", tempReservationId })
     });
 
     const data = await res.json();
