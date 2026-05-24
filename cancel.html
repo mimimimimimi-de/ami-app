@@ -572,6 +572,11 @@ function formatTimeDisplay(dateStr, timeStr) {
 }
 
 async function initLiffSilent() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+  } catch(e) {
+    console.log('LIFF init error:', e);
+  }
 }
 
 function closePage() {
