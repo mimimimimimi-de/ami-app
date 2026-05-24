@@ -373,39 +373,95 @@ body {
 
 /* 購入ボタン */
 .buy-btn {
+  all: unset;
   width: 100%;
-  padding: 18px;
-  background: var(--green);
+  box-sizing: border-box;
+  padding: 0;
+  height: 64px;
+  background: linear-gradient(110deg, #06C755 0%, #039b44 60%, #02883c 100%);
   color: #fff;
-  border: none;
-  border-radius: 18px;
-  font-size: 17px;
+  border-radius: 20px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 8px 28px var(--green-glow);
-  transition: all 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 3px;
+  justify-content: space-between;
+  padding: 0 22px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 6px 24px rgba(6,199,85,0.28), inset 0 1px 0 rgba(255,255,255,0.15);
   letter-spacing: 0.01em;
 }
 
-.buy-btn:hover:not(:disabled) {
-  background: var(--green2);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(6,199,85,0.3);
+.buy-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
 }
 
-.buy-btn:active:not(:disabled) { transform: translateY(0); }
-.buy-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.buy-btn:hover:not(:disabled)::before {
+  left: 130%;
+}
 
-.buy-btn span {
-  font-size: 12px;
+.buy-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(6,199,85,0.36), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.buy-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(6,199,85,0.22);
+}
+
+.buy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.buy-btn-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.buy-btn-label {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.buy-btn-sub {
+  font-size: 11px;
   font-weight: 400;
-  opacity: 0.85;
+  opacity: 0.82;
+  letter-spacing: 0.02em;
+}
+
+.buy-btn-arrow {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s, background 0.2s;
+  backdrop-filter: blur(4px);
+}
+
+.buy-btn:hover:not(:disabled) .buy-btn-arrow {
+  transform: translateX(3px);
+  background: rgba(255,255,255,0.28);
 }
 
 .status {
@@ -474,7 +530,7 @@ body {
   <div class="hero-banner">
     <span class="hero-emoji">🎟️</span>
     <h2 id="bannerTitle">まとめて買ってお得に！<span id="bannerTitleSub"></span></h2>
-    <p id="bannerDesc">有効期限2ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.8;">Valid for 2 months · Non-refundable · Auto-deducted when booking</span></p>
+    <p id="bannerDesc">有効期限2ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span id="bannerDescSub" style="font-size:11px;opacity:0.8;">Valid for 2 months · Non-refundable · Auto-deducted when booking</span></p>
     <div class="discount-badge">
       🎉 5回以上で5%OFF / 10回以上で10%OFF<br>
       <span id="discountSubText" style="font-size:10px;font-weight:400;opacity:0.9;">5+ lessons: 5% OFF · 10+ lessons: 10% OFF</span>
@@ -483,7 +539,7 @@ body {
 
   <!-- レッスン選択 -->
   <div class="card">
-    <div class="section-label"><span class="num">1</span> レッスンの種類 <span style="font-size:10px;color:#aaa;font-weight:400;">Lesson Type</span></div>
+    <div class="section-label"><span class="num">1</span> レッスンの種類 <span id="sectionSub1" style="font-size:10px;color:#aaa;font-weight:400;">Lesson Type</span></div>
     <div class="lesson-toggle">
       <button class="lesson-btn active" id="btn25" onclick="selectLesson(25)" type="button">
         <div class="duration">25<span>分</span></div>
@@ -498,7 +554,7 @@ body {
 
   <!-- 回数入力 -->
   <div class="card">
-    <div class="section-label"><span class="num">2</span> 回数を選ぶ <span style="font-size:10px;color:#aaa;font-weight:400;">Number of Lessons (min. 2)</span></div>
+    <div class="section-label"><span class="num">2</span> 回数を選ぶ <span id="sectionSub2" style="font-size:10px;color:#aaa;font-weight:400;">Number of Lessons (min. 2)</span></div>
     <div class="count-row">
       <button class="count-btn" id="minusBtn" onclick="changeCount(-1)" type="button">－</button>
       <input class="count-input" type="number" id="countInput" value="8" min="2" max="99" oninput="onCountInput()">
@@ -525,8 +581,13 @@ body {
 
   <!-- 購入ボタン -->
   <button class="buy-btn" id="buyBtn" onclick="checkout()" disabled type="button">
-    🎟️ 決済へ進む
-    <span>Proceed to Payment</span>
+    <div class="buy-btn-left">
+      <div class="buy-btn-label">🎟️ 決済へ進む</div>
+      <div class="buy-btn-sub" id="buyBtnSub">Proceed to Payment</div>
+    </div>
+    <div class="buy-btn-arrow">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </div>
   </button>
 
   <div class="status" id="status"></div>
@@ -664,26 +725,23 @@ function applyTicketLang() {
   const T = l === "ja" ? TICKET_TRANS["en"] : (TICKET_TRANS[l] || TICKET_TRANS["en"]);
   window._ticketT = T;
 
-  const set = (selector, text) => { const el = document.querySelector(selector); if (el) el.textContent = text; };
+  const setEl = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
 
-  // タイトル
-  const titleSpan = document.querySelector("h1 span");
-  if (titleSpan) titleSpan.textContent = T.title;
+  // ヘッダーサブ
+  setEl("headerSub", T.title);
+
+  // バナータイトルサブ
+  setEl("bannerTitleSub", T.bannerTitle);
+
+  // バナー説明サブ
+  setEl("bannerDescSub", T.bannerDesc);
 
   // 割引サブテキスト
-  const discountSubText = document.getElementById("discountSubText");
-  if (discountSubText) discountSubText.textContent = T.discountSub || "5+ lessons: 5% OFF · 10+ lessons: 10% OFF";
+  setEl("discountSubText", T.discountSub || "5+ lessons: 5% OFF · 10+ lessons: 10% OFF");
 
-  // バナー
-  const bannerTitle = document.querySelector(".info-banner h2 span");
-  if (bannerTitle) bannerTitle.textContent = T.bannerTitle;
-  const bannerDesc = document.querySelector(".info-banner p span");
-  if (bannerDesc) bannerDesc.textContent = T.bannerDesc;
-
-  // カードタイトル
-  const cardTitles = document.querySelectorAll(".card-title");
-  if (cardTitles[0]) cardTitles[0].textContent = "① レッスンの種類 / " + T.lessonType;
-  if (cardTitles[1]) cardTitles[1].textContent = "② 回数を選ぶ（最低2回）/ " + T.countLabel;
+  // セクションラベルのサブテキスト
+  setEl("sectionSub1", T.lessonType);
+  setEl("sectionSub2", T.countLabel);
 
   // 回数注意書き
   const countNote = document.querySelector(".count-note");
@@ -702,9 +760,8 @@ function applyTicketLang() {
     `・予約時に残り回数が自動で1回減ります / ${T.policy3}<br>` +
     `・回数券がある場合、予約時に使用方法を選べます / ${T.policy4}`;
 
-  // 購入ボタン
-  const buyBtnSpan = document.querySelector("#buyBtn span");
-  if (buyBtnSpan) buyBtnSpan.textContent = T.buyBtn;
+  // 購入ボタンサブ
+  setEl("buyBtnSub", T.buyBtn);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
