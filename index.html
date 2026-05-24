@@ -1139,10 +1139,7 @@ function generateCalendar() {
 
   for (let i = 0; i < 7; i++) {
     const d = addDays(today, weekOffset + i);
-    const dateStr = formatFull(d);
-    if (d.getDay() !== 0 || temporaryDates.includes(dateStr)) {
-      days.push(d);
-    }
+    days.push(d);
   }
 
   const timeSet = new Set();
@@ -1151,9 +1148,10 @@ function generateCalendar() {
     const dateStr = formatFull(day);
     const isSunday = day.getDay() === 0;
     const isTemporary = temporaryDates.includes(dateStr);
-    const windows = (isSunday && isTemporary)
+    // 臨時営業の場合はその時間を使用、通常日曜は空（×のみ表示）
+    const windows = isTemporary
       ? (temporaryWindows[dateStr] || [])
-      : getTimeWindows(day);
+      : (isSunday ? [] : getTimeWindows(day));
     const blockMinutes = getBlockMinutes(selectedMinutes);
     windows.forEach(w => {
       const startMin = timeToMinutes(w.start);
@@ -1186,7 +1184,7 @@ function generateCalendar() {
         const date = formatFull(day);
         const isSunday = day.getDay() === 0;
         const isTemporary = temporaryDates.includes(date);
-        const windows = (isSunday && isTemporary) ? (temporaryWindows[date] || []) : getTimeWindows(day);
+        const windows = isTemporary ? (temporaryWindows[date] || []) : (isSunday ? [] : getTimeWindows(day));
         const blockMinutes = getBlockMinutes(selectedMinutes);
         const inWindow = windows.some(w => {
           const t = timeToMinutes(time);
