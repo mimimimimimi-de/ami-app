@@ -580,15 +580,7 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  try {
-    if (liff.isInClient()) {
-      liff.closeWindow();
-    } else {
-      history.back();
-    }
-  } catch(e) {
-    history.back();
-  }
+  window.location.href = 'https://liff.line.me/2009890655-O8QZVlRf';
 }
 
 async function loadCancelData() {
