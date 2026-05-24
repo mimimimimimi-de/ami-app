@@ -268,41 +268,80 @@
       };
 
       try {
-        setStatus("空き状況を確認しています...", ST ? ST.checkingSlot : "Checking availability...");
+        setStatus("予約を確定しています...", ST ? ST.checkingSlot : "Confirming reservation...");
         document.getElementById("processingOverlay").classList.add("show");
 
-        // 空き確認と予約保存を順番に実行
-        const checkRes = await fetch(
-          GAS_URL + "?action=checkSlotAvailable" +
-          "&date=" + encodeURIComponent(date) +
-          "&time=" + encodeURIComponent(time) +
-          "&lesson=" + encodeURIComponent(lessonLabel) +
-          "&t=" + Date.now()
-        );
-        const checkData = await checkRes.json();
+        const tempReservationId = localStorage.getItem("tempReservationId");
 
-        if (!checkData.available) {
-          statusEl.classList.add("error");
-          setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
-          if (paymentIntentId) {
-            await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ paymentIntentId: paymentIntentId })
-            });
+        if (tempReservationId) {
+          // 仮予約を確定（カレンダーブロック解除→Meet付き本番イベント作成）
+          const confirmRes = await fetch(
+            GAS_URL + "?action=confirmTempReservation" +
+            "&reservationId=" + encodeURIComponent(tempReservationId) +
+            "&t=" + Date.now()
+          );
+          const confirmData = await confirmRes.json();
+
+          if (!confirmData.ok) {
+            // 万が一の競合（他の人が先に確定した場合）→ 返金
+            statusEl.classList.add("error");
+            setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
+            if (paymentIntentId) {
+              await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ paymentIntentId: paymentIntentId })
+              });
+            }
+            document.getElementById("closeBtn").style.display = "block";
+            return;
           }
-          document.getElementById("closeBtn").style.display = "block";
-          return;
+
+          // confirmTempReservationがmeetUrlを返すのでreservationDataに反映
+          if (confirmData.meetUrl) reservationData.meetUrl = confirmData.meetUrl;
+
+          // LINEに予約確定通知を送る
+          setStatus("予約内容を保存しています...", ST ? ST.saving : "Saving reservation...");
+          await fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ ...reservationData, action: "notifyOnly" })
+          });
+
+        } else {
+          // tempReservationIdがない場合（旧フロー互換）→ 通常の空きチェック+保存
+          const checkRes = await fetch(
+            GAS_URL + "?action=checkSlotAvailable" +
+            "&date=" + encodeURIComponent(date) +
+            "&time=" + encodeURIComponent(time) +
+            "&lesson=" + encodeURIComponent(lessonLabel) +
+            "&t=" + Date.now()
+          );
+          const checkData = await checkRes.json();
+
+          if (!checkData.available) {
+            statusEl.classList.add("error");
+            setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
+            if (paymentIntentId) {
+              await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ paymentIntentId: paymentIntentId })
+              });
+            }
+            document.getElementById("closeBtn").style.display = "block";
+            return;
+          }
+
+          setStatus("予約内容を保存しています...", ST ? ST.saving : "Saving reservation...");
+          await fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify(reservationData)
+          });
         }
-
-        setStatus("予約内容を保存しています...", ST ? ST.saving : "Saving reservation...");
-
-        await fetch(GAS_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify(reservationData)
-        });
 
         statusEl.classList.remove("error");
         setStatus("✅ 予約を保存しました。\nLINEに予約完了メッセージを送信しました。", ST ? ST.saved : ((window._successT && window._successT.saved) || "Booking saved. Notification sent via LINE."));
