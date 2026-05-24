@@ -14,11 +14,11 @@
   --green: #06C755;
   --green2: #04a344;
   --green-light: #e8faf0;
-  --green-glow: rgba(6,199,85,0.2);
-  --bg: #f5f6f7;
+  --green-glow: rgba(6,199,85,0.18);
+  --bg: #f0f2f0;
   --card: #ffffff;
   --text: #1a1a1a;
-  --text2: #777;
+  --text2: #888;
   --border: #e8e8e8;
   --red: #d93025;
 }
@@ -28,35 +28,44 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-bottom: 40px;
+  padding-bottom: 48px;
 }
 
+/* ヘッダー */
 .header {
   background: #fff;
-  border-bottom: 2px solid var(--green);
   padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid #ececec;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
 }
 
 .header-icon {
-  width: 34px;
-  height: 34px;
+  width: 36px; height: 36px;
   background: var(--green);
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
 }
 
 .header h1 {
   font-size: 16px;
   font-weight: 700;
+  line-height: 1.3;
+}
+
+.header h1 span {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text2);
+  letter-spacing: 0.04em;
 }
 
 .content {
@@ -65,134 +74,211 @@ body {
   padding: 20px 16px;
 }
 
-/* 説明バナー */
-.info-banner {
-  background: linear-gradient(135deg, #06C755, #04a344);
-  border-radius: 20px;
-  padding: 20px;
+/* ヒーローバナー */
+.hero-banner {
+  background: linear-gradient(135deg, #06C755 0%, #039b44 100%);
+  border-radius: 22px;
+  padding: 24px 20px;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   position: relative;
   overflow: hidden;
 }
 
-.info-banner::after {
-  content: '🎟️';
+.hero-banner::before {
+  content: '';
   position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 48px;
-  opacity: 0.3;
+  top: -30px; right: -30px;
+  width: 140px; height: 140px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
 }
 
-.info-banner h2 {
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: -20px;
+  width: 90px; height: 90px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+
+.hero-emoji {
+  font-size: 32px;
+  margin-bottom: 8px;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-banner h2 {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
 }
 
-.info-banner p {
-  font-size: 13px;
-  opacity: 0.9;
+.hero-banner h2 span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.hero-banner p {
+  font-size: 12.5px;
+  opacity: 0.88;
   line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+}
+
+.discount-badge {
+  display: inline-block;
+  margin-top: 12px;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(4px);
+}
+
+/* セクションラベル */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-label .num {
+  width: 20px; height: 20px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 /* カード */
 .card {
-  background: var(--card);
+  background: #fff;
   border-radius: 20px;
-  padding: 22px 18px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 20px 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
   margin-bottom: 14px;
+  border: 1px solid rgba(0,0,0,0.04);
 }
 
-.card-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text2);
-  margin-bottom: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* レッスンタイプ選択 */
+/* レッスンボタン */
 .lesson-toggle {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-bottom: 4px;
 }
 
 .lesson-btn {
-  padding: 14px;
-  border-radius: 14px;
+  padding: 16px 10px;
+  border-radius: 16px;
   border: 2px solid var(--border);
-  background: #fff;
+  background: #fafafa;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.15s;
+  transition: all 0.18s;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.lesson-btn .min {
-  font-size: 24px;
+.lesson-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--green);
+  opacity: 0;
+  transition: opacity 0.18s;
+  border-radius: 14px;
+}
+
+.lesson-btn.active {
+  border-color: var(--green);
+  background: #fff;
+  box-shadow: 0 4px 16px var(--green-glow);
+}
+
+.lesson-btn .duration {
+  font-size: 28px;
   font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
   line-height: 1;
 }
 
-.lesson-btn .min span {
-  font-size: 14px;
-  font-weight: 400;
+.lesson-btn .duration span {
+  font-size: 13px;
+  font-weight: 500;
 }
+
+.lesson-btn.active .duration { color: var(--green2); }
 
 .lesson-btn .unit-price {
   font-size: 12px;
   color: var(--text2);
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
-.lesson-btn.active {
-  border-color: var(--green);
-  background: var(--green-light);
-}
-
-.lesson-btn.active .min {
-  color: var(--green2);
-}
+.lesson-btn.active .unit-price { color: var(--green2); }
 
 /* 回数入力 */
 .count-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .count-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 46px; height: 46px;
+  border-radius: 14px;
   border: 2px solid var(--border);
-  background: #fff;
+  background: #fafafa;
   font-size: 20px;
   font-weight: 700;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: inherit;
+  display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
   flex-shrink: 0;
+  color: var(--text2);
 }
 
-.count-btn:hover { border-color: var(--green); color: var(--green); }
+.count-btn:hover:not(:disabled) {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-light);
+}
+
 .count-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .count-input {
   flex: 1;
   text-align: center;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   border: 2px solid var(--border);
@@ -200,93 +286,127 @@ body {
   padding: 10px;
   outline: none;
   color: var(--text);
+  background: #fafafa;
   transition: border 0.15s;
 }
 
-.count-input:focus { border-color: var(--green); }
+.count-input:focus {
+  border-color: var(--green);
+  background: #fff;
+}
 
 .count-note {
   font-size: 12px;
   color: var(--text2);
-  margin-top: 8px;
+  margin-top: 10px;
   text-align: center;
 }
 
-/* 合計金額 */
+/* 合計カード */
 .total-card {
-  background: var(--green-light);
-  border: 2px solid rgba(6,199,85,0.3);
+  background: linear-gradient(135deg, #f0fdf6 0%, #e4f9ed 100%);
+  border: 1.5px solid rgba(6,199,85,0.25);
   border-radius: 20px;
   padding: 20px;
   margin-bottom: 14px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.total-card::before {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 80px; height: 80px;
+  background: rgba(6,199,85,0.08);
+  border-radius: 50%;
 }
 
 .total-label {
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--green2);
-  font-weight: 600;
-  margin-bottom: 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  position: relative;
 }
 
 .total-price {
-  font-size: 40px;
+  font-size: 44px;
   font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   color: var(--green2);
   line-height: 1;
+  position: relative;
 }
 
-.total-price span {
-  font-size: 20px;
-}
+.total-price span { font-size: 20px; }
 
 .total-detail {
   font-size: 12px;
   color: var(--green2);
-  margin-top: 6px;
-  opacity: 0.8;
+  margin-top: 8px;
+  opacity: 0.75;
+  position: relative;
 }
 
 /* 注意事項 */
 .policy-card {
-  background: #fff8f0;
-  border: 1px solid #f3c98b;
+  background: #fffbf0;
+  border: 1px solid #f0dea0;
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 16px;
-  font-size: 13px;
-  color: #5f4200;
-  line-height: 1.8;
+  font-size: 12.5px;
+  color: #5a4200;
+  line-height: 1.9;
 }
 
 .policy-card strong {
   display: block;
-  margin-bottom: 4px;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #3d2d00;
 }
 
 /* 購入ボタン */
 .buy-btn {
   width: 100%;
-  padding: 17px;
+  padding: 18px;
   background: var(--green);
   color: #fff;
   border: none;
-  border-radius: 16px;
+  border-radius: 18px;
   font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 8px 24px var(--green-glow);
+  box-shadow: 0 8px 28px var(--green-glow);
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 3px;
+  letter-spacing: 0.01em;
 }
 
-.buy-btn:hover { background: var(--green2); transform: translateY(-1px); }
-.buy-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.buy-btn:hover:not(:disabled) {
+  background: var(--green2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(6,199,85,0.3);
+}
+
+.buy-btn:active:not(:disabled) { transform: translateY(0); }
+.buy-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.buy-btn span {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.85;
+}
 
 .status {
   margin-top: 14px;
@@ -299,31 +419,40 @@ body {
 
 .status.error { color: var(--red); }
 
-/* ローディング */
+/* ローディングオーバーレイ */
 .loading-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.88);
   z-index: 100;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  backdrop-filter: blur(4px);
 }
 
 .loading-overlay.show { display: flex; }
 
 .spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--border);
+  width: 36px; height: 36px;
+  border: 3px solid #e0e0e0;
   border-top-color: var(--green);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.en-sub {
+  display: block;
+  font-size: 0.72em;
+  color: #999;
+  font-weight: 400;
+  margin-top: 3px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
 </style>
 </head>
 
@@ -331,47 +460,49 @@ body {
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
-  <div style="font-size:14px;color:#666;">決済ページを準備中...</div>
+  <div style="font-size:14px;color:#666;text-align:center;">決済ページを準備中...<br><span style="font-size:12px;color:#aaa;">Preparing checkout...</span></div>
 </div>
 
 <div class="header">
   <div class="header-icon">🎟️</div>
-  <h1>回数券を購入<span style="display:block;font-size:11px;font-weight:400;color:#666;">Buy Lesson Tickets</span></h1>
+  <h1>回数券を購入<span id="headerSub">Buy Lesson Tickets</span></h1>
 </div>
 
 <div class="content">
 
-  <div class="info-banner">
-    <h2 id="bannerTitle">まとめて買ってお得に！<span id="bannerTitleSub" style="display:block;font-size:13px;font-weight:400;opacity:0.9;"></span></h2>
-    <p id="bannerDesc">有効期限2ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.85;">Valid for 2 months · Non-refundable · Auto-deducted when booking</span></p>
-    <div style="margin-top:10px;background:rgba(255,255,255,0.2);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:700;">
+  <!-- ヒーローバナー -->
+  <div class="hero-banner">
+    <span class="hero-emoji">🎟️</span>
+    <h2 id="bannerTitle">まとめて買ってお得に！<span id="bannerTitleSub"></span></h2>
+    <p id="bannerDesc">有効期限2ヶ月・返金不可<br>予約時に自動で残り回数が減ります<br><span style="font-size:11px;opacity:0.8;">Valid for 2 months · Non-refundable · Auto-deducted when booking</span></p>
+    <div class="discount-badge">
       🎉 5回以上で5%OFF / 10回以上で10%OFF<br>
-      <span id="discountSubText" style="font-size:11px;font-weight:400;opacity:0.9;">5+ lessons: 5% OFF · 10+ lessons: 10% OFF</span>
+      <span id="discountSubText" style="font-size:10px;font-weight:400;opacity:0.9;">5+ lessons: 5% OFF · 10+ lessons: 10% OFF</span>
     </div>
   </div>
 
   <!-- レッスン選択 -->
   <div class="card">
-    <div class="card-title">① レッスンの種類 / Lesson Type</div>
+    <div class="section-label"><span class="num">1</span> レッスンの種類 <span style="font-size:10px;color:#aaa;font-weight:400;">Lesson Type</span></div>
     <div class="lesson-toggle">
-      <button class="lesson-btn active" id="btn25" onclick="selectLesson(25)">
-        <div class="min">25<span>分</span></div>
-        <div class="unit-price" id="price25">料金確認中...</div>
+      <button class="lesson-btn active" id="btn25" onclick="selectLesson(25)" type="button">
+        <div class="duration">25<span>分</span></div>
+        <div class="unit-price" id="price25">確認中...</div>
       </button>
-      <button class="lesson-btn" id="btn50" onclick="selectLesson(50)">
-        <div class="min">50<span>分</span></div>
-        <div class="unit-price" id="price50">料金確認中...</div>
+      <button class="lesson-btn" id="btn50" onclick="selectLesson(50)" type="button">
+        <div class="duration">50<span>分</span></div>
+        <div class="unit-price" id="price50">確認中...</div>
       </button>
     </div>
   </div>
 
   <!-- 回数入力 -->
   <div class="card">
-    <div class="card-title">② 回数を選ぶ（最低2回）/ Number of Lessons (min. 2)</div>
+    <div class="section-label"><span class="num">2</span> 回数を選ぶ <span style="font-size:10px;color:#aaa;font-weight:400;">Number of Lessons (min. 2)</span></div>
     <div class="count-row">
-      <button class="count-btn" id="minusBtn" onclick="changeCount(-1)">－</button>
+      <button class="count-btn" id="minusBtn" onclick="changeCount(-1)" type="button">－</button>
       <input class="count-input" type="number" id="countInput" value="8" min="2" max="99" oninput="onCountInput()">
-      <button class="count-btn" onclick="changeCount(1)">＋</button>
+      <button class="count-btn" onclick="changeCount(1)" type="button">＋</button>
     </div>
     <div class="count-note">2回以上から購入できます</div>
   </div>
@@ -393,8 +524,9 @@ body {
   </div>
 
   <!-- 購入ボタン -->
-  <button class="buy-btn" id="buyBtn" onclick="checkout()" disabled>
-    🎟️ 決済へ進む<span style="display:block;font-size:12px;opacity:0.85;">Proceed to Payment</span>
+  <button class="buy-btn" id="buyBtn" onclick="checkout()" disabled type="button">
+    🎟️ 決済へ進む
+    <span>Proceed to Payment</span>
   </button>
 
   <div class="status" id="status"></div>
