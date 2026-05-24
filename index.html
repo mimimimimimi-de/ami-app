@@ -1497,7 +1497,7 @@ async function checkout() {
       "&date=" + encodeURIComponent(selectedDate) +
       "&time=" + encodeURIComponent(selectedTime) +
       "&lesson=" + encodeURIComponent(lessonLabel) +
-      "&price=" + encodeURIComponent(selectedPrice) +
+      "&price=" + encodeURIComponent("$" + selectedPrice) +
       "&t=" + Date.now()
     );
     const tempData = await tempRes.json();
