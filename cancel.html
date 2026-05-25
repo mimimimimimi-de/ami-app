@@ -584,8 +584,15 @@ function closePage() {
 }
 
 async function loadCancelData() {
+  // LIFFはURLパラメータをliff.state経由で渡す場合があるので両方確認
   const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
+  if (!reservationId) {
+    try {
+      const liffState = new URLSearchParams(liff.state || '');
+      reservationId = liffState.get("id");
+    } catch(e) {}
+  }
 
   if (!reservationId) {
     const cachedL0 = localStorage.getItem("userLang") || "ja";

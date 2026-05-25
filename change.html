@@ -538,8 +538,15 @@ async function loadChangeData() {
   if (urlLang) localStorage.setItem("userLang", urlLang);
   applyChangeLang(localStorage.getItem("userLang") || "ja");
 
+  // LIFFはURLパラメータをliff.state経由で渡す場合があるので両方確認
   const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
+  if (!reservationId) {
+    try {
+      const liffState = new URLSearchParams(liff.state || '');
+      reservationId = liffState.get("id");
+    } catch(e) {}
+  }
 
   if (!reservationId) {
     const cachedL = localStorage.getItem("userLang") || "ja";

@@ -736,8 +736,15 @@ let weekOffset = 0;
 let liffReady = false;
 let myTickets = [];
 let selectedPayment = "stripe";
-let userTimezone = null;
+let userTimezone = localStorage.getItem("userTimezone") || null;
 let userTzName = null;
+
+// userTzNameを初期化
+if (userTimezone && userTimezone !== 'Asia/Tokyo') {
+  try {
+    userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+  } catch(e) {}
+}
 
 // タイムゾーン自動取得
 function detectTimezone() {
@@ -992,18 +999,26 @@ async function openCalendar() {
       </div>
     </div>`;
 
-  // GASからデータを一括取得（空き情報＋回数券を同時に）
+  // GASからデータを順番に取得
   try {
-    const [busyItems, tempData, ticketRes] = await Promise.all([
-      fetch(GAS_URL + "?t=" + Date.now()).then(r => r.json()),
-      fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now()).then(r => r.json()),
-      fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId) + "&t=" + Date.now()).then(r => r.json())
-    ]);
+    const busyRes = await fetch(GAS_URL + "?t=" + Date.now());
+    if (!busyRes.ok) throw new Error('busySlots fetch failed: ' + busyRes.status);
+    const busyItems = await busyRes.json();
+
+    const tempRes = await fetch(GAS_URL + "?action=getTemporaryDates&t=" + Date.now());
+    if (!tempRes.ok) throw new Error('tempDates fetch failed: ' + tempRes.status);
+    const tempData = await tempRes.json();
+
+    const ticketRes = await fetch(GAS_URL + "?action=getMyTickets&userId=" + encodeURIComponent(userId || '') + "&t=" + Date.now());
+    if (!ticketRes.ok) throw new Error('tickets fetch failed: ' + ticketRes.status);
+    const ticketData = await ticketRes.json();
+
     calendarData = { busyItems, tempData };
-    ticketCache = ticketRes;
+    ticketCache = ticketData;
   } catch(e) {
-    console.error(e);
-    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br>Failed to load calendar.</p>`;
+    console.error("カレンダー読み込みエラー:", e);
+    alert("エラー: " + e.message + "\nuserId: " + userId);
+    calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br><span style="font-size:11px;">${e.message}</span></p>`;
     return;
   }
 
@@ -1229,6 +1244,18 @@ async function pickSlot(date, time) {
   const parts = date.split("-");
   const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
   const lessonLabel = selectedMinutes + "分レッスン";
+
+  // userTimezoneが未設定の場合はlocalStorageから再取得
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') {
+    const cached = localStorage.getItem("userTimezone");
+    if (cached && cached !== 'Asia/Tokyo') {
+      userTimezone = cached;
+      try {
+        userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    }
+  }
+
   const localTimeDisplay = formatTimeWithTz(date, time);
   const T = window._currentT || {};
 
@@ -1252,7 +1279,10 @@ async function pickSlot(date, time) {
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
           <span style="font-size:12px;color:#999;">時間 <span style="font-size:11px;color:#ccc;">/ ${T.time || "Time"}</span></span>
-          <span style="font-size:14px;font-weight:600;color:#222;">${localTimeDisplay}</span>
+          <span style="font-size:14px;font-weight:600;color:#222;text-align:right;">
+            ${time} (JST)
+            ${userTimezone && userTimezone !== 'Asia/Tokyo' ? `<br><span style="font-size:12px;font-weight:400;color:#aaa;">${formatTimeWithTz(date, time).replace(time + ' (JST) / ', '')}</span>` : ''}
+          </span>
         </div>
       </div>
     </div>
@@ -1429,7 +1459,10 @@ async function checkout() {
             <div style="height:0.5px;background:#eee;"></div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
               <span style="font-size:12px;color:#999;">時間 <span style="font-size:11px;color:#ccc;">/ ${T.time || "Time"}</span></span>
-              <span style="font-size:14px;font-weight:600;color:#222;">${localTimeDisplay}</span>
+              <span style="font-size:14px;font-weight:600;color:#222;text-align:right;">
+                ${selectedTime} (JST)
+                ${userTimezone && userTimezone !== 'Asia/Tokyo' ? `<br><span style="font-size:12px;font-weight:400;color:#aaa;">${formatTimeWithTz(selectedDate, selectedTime).replace(selectedTime + ' (JST) / ', '')}</span>` : ''}
+              </span>
             </div>
             <div style="height:0.5px;background:#eee;"></div>
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
@@ -1490,7 +1523,7 @@ async function checkout() {
       "&date=" + encodeURIComponent(selectedDate) +
       "&time=" + encodeURIComponent(selectedTime) +
       "&lesson=" + encodeURIComponent(lessonLabel) +
-      "&price=" + encodeURIComponent(selectedPrice) +
+      "&price=" + encodeURIComponent("$" + selectedPrice) +
       "&t=" + Date.now()
     );
     const tempData = await tempRes.json();
