@@ -559,10 +559,7 @@ async function loadChangeData() {
     } catch(e) {}
   }
 
-  // デバッグ：IDが取れない場合はアラートで表示
-  if (!reservationId) {
-    alert("DEBUG URL: " + window.location.href);
-  }
+  // IDが取れない場合はそのまま続行（エラーメッセージで表示）
 
   if (!reservationId) {
     const cachedL = localStorage.getItem("userLang") || "ja";
