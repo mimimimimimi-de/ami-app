@@ -810,7 +810,12 @@ async function sendAbsence() {
       doneModal.remove();
       if (btn) btn.disabled = false;
       if (btn2) btn2.disabled = false;
-      closePage();
+      // ポップアップを閉じるだけ（マイ予約には遷移しない）
+      try {
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        }
+      } catch(e) {}
     });
   }); // absenceModal OK button
 }
