@@ -531,8 +531,9 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("absenceBtn").addEventListener("click", sendAbsence);
   document.getElementById("absenceBtn2").addEventListener("click", sendAbsence);
   detectTimezone();
-  initLiffSilent();
-  loadCancelData();
+  initLiffSilent().then(() => {
+    loadCancelData();
+  });
 });
 
 function detectTimezone() {

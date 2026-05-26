@@ -278,6 +278,7 @@
           const confirmRes = await fetch(
             GAS_URL + "?action=confirmTempReservation" +
             "&reservationId=" + encodeURIComponent(tempReservationId) +
+            "&paymentIntentId=" + encodeURIComponent(paymentIntentId || '') +
             "&t=" + Date.now()
           );
           const confirmData = await confirmRes.json();

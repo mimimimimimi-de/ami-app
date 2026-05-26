@@ -140,7 +140,7 @@ button {
 
 .calendar-table {
   width: 100%;
-  min-width: 480px;
+  min-width: 320px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
@@ -828,7 +828,6 @@ document.getElementById("calendar").addEventListener("click", function(e) {
 
 // 初期化
 detectTimezone();
-initLiffSilent();
 
 // localStorageのキャッシュからすぐ言語・タイムゾーンを適用
 const cachedLang = localStorage.getItem("userLang");
@@ -841,7 +840,10 @@ if (cachedTz && cachedTz !== 'Asia/Tokyo') {
   } catch(e) {}
 }
 
-loadChangeData();
+// liff.init完了後にloadChangeData
+initLiffSilent().then(() => {
+  loadChangeData();
+});
 </script>
 </body>
 </html>
