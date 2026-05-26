@@ -559,11 +559,9 @@ async function loadChangeData() {
     } catch(e) {}
   }
 
-  // デバッグ：IDが取れない場合はURLを表示
+  // デバッグ：IDが取れない場合はアラートで表示
   if (!reservationId) {
-    console.log("URL:", window.location.href);
-    console.log("search:", window.location.search);
-    console.log("liff.state:", liff.state);
+    alert("DEBUG URL: " + window.location.href);
   }
 
   if (!reservationId) {
