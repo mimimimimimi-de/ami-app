@@ -331,10 +331,7 @@ td.available:active { background: #d4f5e0; }
       <span id="deleteNoteSub" style="font-size:11px;"></span>
     </p>
 
-    <div style="margin-top:16px;padding:14px;background:#f8f8f8;border-radius:12px;text-align:center;">
-      <p style="margin:0;font-size:14px;color:#666;">右上の <strong>×</strong> で閉じてください</p>
-      <p id="closeSub" style="margin:4px 0 0;font-size:12px;color:#aaa;"></p>
-    </div>
+    <p style="margin:16px 0 0;text-align:center;font-size:13px;color:#999;">右上の × で閉じてください<br><span id="closeSub" style="font-size:11px;color:#bbb;"></span></p>
   </div>
 
 </div>
@@ -443,6 +440,8 @@ function applyChangeLang(lang) {
   set("closeSub", T.closeMsg || "Tap × to close");
   set("prevWeekSub", T.prevWeek);
   set("nextWeekSub", T.nextWeek);
+  set("deleteNoteSub", T.deleteNote || "Please manually delete the previous event from Google Calendar.");
+  set("closeSub", T.closeMsg || "Tap × to close");
   set("aboutChangesSub", "/ " + T.aboutChanges);
   set("changeLine1Sub", T.changeLine1);
   set("changeLine2Sub", T.changeLine2);
