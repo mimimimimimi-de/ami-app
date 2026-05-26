@@ -464,10 +464,6 @@ let userTzName = null;
 
 // LINEブラウザ判定（LIFF IDなし）
 function closePage() {
-  const source = new URLSearchParams(window.location.search).get('source');
-  if (source === 'line') {
-    try { liff.closeWindow(); return; } catch(e) {}
-  }
   window.location.href = 'https://liff.line.me/2009890655-O8QZVlRf';
 }
 
