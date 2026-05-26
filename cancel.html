@@ -582,13 +582,9 @@ async function initLiffSilent() {
 
 function closePage() {
   try {
-    if (liff.isInClient()) {
-      liff.closeWindow();
-    } else {
-      history.back();
-    }
+    liff.closeWindow();
   } catch(e) {
-    history.back();
+    window.close();
   }
 }
 
