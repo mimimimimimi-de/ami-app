@@ -601,7 +601,6 @@ async function loadChangeData() {
 
     const jstTime = data.reservation.time;
     const localTime = getLocalTimeLabel(data.reservation.date, jstTime);
-    const timeDisplay = localTime ? `${jstTime} (JST) / ${localTime} (${userTzName || ''})` : jstTime;
     const T = window._changeT || {};
     document.getElementById("reservationInfo").innerHTML = `
       <div style="display:flex;flex-direction:column;gap:12px;">
@@ -612,7 +611,10 @@ async function loadChangeData() {
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
           <span style="font-size:12px;color:#999;flex-shrink:0;">現在の日時<br><span style="font-size:11px;color:#ccc;">${T.currentTime || "Current Time"}</span></span>
-          <div style="font-size:13px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${formatShort(data.reservation.date)} ${timeDisplay}</div>
+          <div style="text-align:right;margin-left:12px;">
+            <div style="font-size:13px;font-weight:600;color:#444;">${formatShort(data.reservation.date)} ${jstTime} (JST)</div>
+            ${localTime ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${localTime} (${userTzName || ''})</div>` : ''}
+          </div>
         </div>
       </div>
     `;
@@ -751,7 +753,8 @@ function handleSlotTap(date, time) {
   modal.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
   modal.innerHTML = `
     <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;">
-      <p style="font-size:16px;font-weight:700;margin-bottom:8px;">📅 ${displayDate} ${timeDisplay}</p>
+      <p style="font-size:16px;font-weight:700;margin-bottom:4px;">📅 ${displayDate} ${time} (JST)</p>
+      ${localTime ? `<p style="font-size:12px;color:#aaa;margin:0 0 8px;">${localTime} (${userTzName || ''})</p>` : '<p style="margin:0 0 8px;"></p>'}
       <p style="font-size:14px;color:#666;margin-bottom:20px;">に変更しますか？<br><span style="font-size:12px;color:#aaa;">${T.confirmMsg || "Change to this time?"}</span></p>
       <div style="display:flex;gap:10px;">
         <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">戻る<span style="display:block;font-size:11px;font-weight:400;color:#888;">${T.back || "Back"}</span></button>
@@ -793,7 +796,10 @@ async function executeChange(date, time) {
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
           <span style="font-size:12px;color:#999;flex-shrink:0;">新しい日時<br><span style="font-size:11px;color:#ccc;">${T.newTime || "New Time"}</span></span>
-          <div style="font-size:13px;font-weight:600;color:#444;text-align:right;margin-left:12px;">${formatShort(date)} ${timeDisplay}</div>
+          <div style="text-align:right;margin-left:12px;">
+            <div style="font-size:13px;font-weight:600;color:#444;">${formatShort(date)} ${time} (JST)</div>
+            ${localTime ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${localTime} (${userTzName || ''})</div>` : ''}
+          </div>
         </div>
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
