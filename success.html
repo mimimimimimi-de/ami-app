@@ -283,6 +283,7 @@
             "&t=" + Date.now()
           );
           const confirmData = await confirmRes.json();
+          alert("tempId: " + tempReservationId + "\nresult: " + JSON.stringify(confirmData));
 
           if (!confirmData.ok) {
             // 万が一の競合（他の人が先に確定した場合）→ 返金
