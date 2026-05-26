@@ -773,6 +773,10 @@ function renderUserCard(u) {
   const price50 = u.price50 ? `$${u.price50}` : null;
   const tzDisplay = u.timezone ? `🌍 ${u.timezone}` : '🌍 タイムゾーン未設定';
 
+  const ticketCount = u.tickets ? u.tickets.length : 0;
+  const validCount = u.tickets ? u.tickets.filter(t => t.isValid).length : 0;
+  const ticketSummary = ticketCount === 0 ? '回数券なし' : `${validCount}種類有効 / 計${ticketCount}枚`;
+
   const ticketsHtml = u.tickets && u.tickets.length > 0
     ? u.tickets.map(t => {
         const expiry = new Date(t.expiry + "T23:59:59+09:00");
@@ -834,7 +838,14 @@ function renderUserCard(u) {
         <button class="price-save-btn" onclick="saveUserPrice('${escHtml(u.userId)}')">💾 保存してLINE通知を送る</button>
         <div class="price-save-status" id="priceStatus-${escHtml(u.userId)}"></div>
       </div>
-      <div class="ticket-list" style="margin-top:12px;">${ticketsHtml}</div>
+      <div class="ticket-list" style="margin-top:12px;">
+        <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'; this.querySelector('.toggle-icon').textContent=this.nextElementSibling.style.display==='none'?'▶':'▼';"
+          style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:8px 10px;background:#f8f8f8;border-radius:8px;font-size:13px;color:#555;user-select:none;">
+          <span>🎟️ 回数券 <span style="font-size:11px;color:#999;">${ticketSummary}</span></span>
+          <span class="toggle-icon" style="font-size:11px;color:#aaa;">▶</span>
+        </div>
+        <div style="display:none;margin-top:6px;">${ticketsHtml}</div>
+      </div>
     </div>`;
 }
 
