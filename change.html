@@ -140,7 +140,7 @@ button {
 
 .calendar-table {
   width: 100%;
-  min-width: 320px;
+  min-width: 480px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
@@ -538,12 +538,23 @@ async function loadChangeData() {
   if (urlLang) localStorage.setItem("userLang", urlLang);
   applyChangeLang(localStorage.getItem("userLang") || "ja");
 
-  // LIFFはURLパラメータをliff.state経由で渡す場合があるので両方確認
+  // LIFFのURLパラメータ取得（複数パターン対応）
   const params = new URLSearchParams(window.location.search);
   reservationId = params.get("id");
+  
+  // liff.state経由（liff.line.me/ID?id=XXX で開いた場合）
   if (!reservationId) {
     try {
-      const liffState = new URLSearchParams(liff.state || '');
+      const liffStateRaw = params.get("liff.state") || "";
+      const liffStateParams = new URLSearchParams(decodeURIComponent(liffStateRaw));
+      reservationId = liffStateParams.get("id");
+    } catch(e) {}
+  }
+  
+  // liff.getAppData()経由
+  if (!reservationId) {
+    try {
+      const liffState = new URLSearchParams((liff.state || '').replace(/^\?/, ''));
       reservationId = liffState.get("id");
     } catch(e) {}
   }
