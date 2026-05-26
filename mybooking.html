@@ -808,6 +808,9 @@ function renderList() {
   const list = document.getElementById("listEl");
 
   let filtered = allReservations.filter(r => {
+    // 仮予約は表示しない
+    if (r.status === "仮予約") return false;
+
     const dt = new Date(`${r.date}T${r.time}:00+09:00`);
     const isCancelled = r.status === "キャンセル";
     const isUpcoming = !isCancelled && dt > now;
