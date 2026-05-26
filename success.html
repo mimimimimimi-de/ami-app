@@ -254,8 +254,6 @@
           new Promise((_, reject) => setTimeout(() => reject(new Error("getProfile timeout")), 10000))
         ]);
 
-        alert("profile: " + (profile ? profile.userId : "null"));
-
         if (!profile || !profile.userId) {
           throw new Error("LINE userIdを取得できませんでした。");
         }
@@ -266,6 +264,9 @@
         setStatus("LINE情報の取得に失敗しました。\nLINEアプリ内で開き直して、もう一度お試しください。", ST ? ST.liffError : "");
         return;
       }
+
+      const tempReservationId = localStorage.getItem("tempReservationId");
+      alert("tempReservationId: " + tempReservationId);
 
       const reservationData = {
         name: profile.displayName || "LINEユーザー",
@@ -286,9 +287,6 @@
         setStatus("予約を確定しています...", ST ? ST.checkingSlot : "Confirming reservation...");
         document.getElementById("processingOverlay").classList.add("show");
 
-        const tempReservationId = localStorage.getItem("tempReservationId");
-        alert("tempReservationId: " + tempReservationId);
-
         if (tempReservationId) {
           // 仮予約を確定（カレンダーブロック解除→Meet付き本番イベント作成）
           const confirmRes = await fetch(
@@ -298,8 +296,6 @@
             "&t=" + Date.now()
           );
           const confirmData = await confirmRes.json();
-          alert("tempId: " + tempReservationId + "\nresult: " + JSON.stringify(confirmData));
-
           if (!confirmData.ok) {
             // 万が一の競合（他の人が先に確定した場合）→ 返金
             statusEl.classList.add("error");
