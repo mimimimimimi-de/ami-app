@@ -1389,6 +1389,25 @@ async function checkout() {
         return;
       }
 
+      // ダブルブッキングチェック
+      showProcessing("空き枠を確認しています...", (window._currentT || {}).checkingSlot || "Checking availability...");
+      const slotRes = await fetch(
+        GAS_URL + "?action=checkSlotAvailable" +
+        "&date=" + encodeURIComponent(selectedDate) +
+        "&time=" + encodeURIComponent(selectedTime) +
+        "&lesson=" + encodeURIComponent(selectedMinutes + "分レッスン") +
+        "&t=" + Date.now()
+      );
+      const slotData = await slotRes.json();
+      if (!slotData.available) {
+        hideProcessing();
+        statusEl.className = "status error";
+        statusEl.textContent = "申し訳ありません。この時間はすでに埋まっています。\n別の時間を選んでください。\nSorry, this slot is no longer available.";
+        checkoutBtn.disabled = false;
+        calendarData = null;
+        return;
+      }
+
       const useRes = await fetch(GAS_URL + "?action=useTicket&ticketId=" + encodeURIComponent(selectedPayment) + "&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
       const useData = await useRes.json();
 
