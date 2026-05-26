@@ -236,11 +236,25 @@
         setStatus("LINE情報を確認しています...", ST ? ST.checkingLine : "Verifying LINE info...");
 
         if (!liff.isLoggedIn()) {
+          // ログインリダイレクト（無限ループ防止）
+          const hasRedirected = sessionStorage.getItem("liffLoginRedirected");
+          if (hasRedirected) {
+            statusEl.classList.add("error");
+            setStatus("LINE情報の取得に失敗しました。\nLINEアプリ内で開き直してください。", ST ? ST.liffError : "");
+            document.getElementById("closeBtn").style.display = "block";
+            return;
+          }
+          sessionStorage.setItem("liffLoginRedirected", "1");
           liff.login({ redirectUri: window.location.href });
           return;
         }
 
-        profile = await liff.getProfile();
+        profile = await Promise.race([
+          liff.getProfile(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("getProfile timeout")), 10000))
+        ]);
+
+        alert("profile: " + (profile ? profile.userId : "null"));
 
         if (!profile || !profile.userId) {
           throw new Error("LINE userIdを取得できませんでした。");
