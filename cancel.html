@@ -307,9 +307,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
       📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
     </button>
 
-    <button type="button" onclick="closePage()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;border-radius:12px;padding:16px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:block;margin-top:8px;">
-      閉じる <span id="closeBtnSub" style="font-size:11px;font-weight:400;opacity:0.8;"></span>
-    </button>
+    <div style="margin-top:8px;padding:14px;background:#f8f8f8;border-radius:12px;text-align:center;">
+      <p style="margin:0;font-size:14px;color:#666;">右上の <strong>×</strong> で閉じてください</p>
+      <p id="closeBtnSub" style="margin:4px 0 0;font-size:12px;color:#aaa;"></p>
+    </div>
   </div>
 
 </div>
@@ -328,7 +329,7 @@ const CANCEL_TRANS = {
     ticketNotify: "If you cannot attend, please notify the teacher directly via LINE in advance.",
     pastDeadline: "Past the cancellation deadline", pastDeadlineMsg: "If you cannot attend, please contact the teacher directly via LINE as soon as possible.",
     absenceTitle: "If past the cancellation deadline", absenceMsg: "Please notify the teacher directly via LINE as soon as possible.",
-    absenceBtn: "Notify Teacher of Absence", close: "Close", loading: "Loading...", notFound: "Reservation not found.", failedLoad: "Failed to load. Please contact the teacher.",
+    absenceBtn: "Notify Teacher of Absence", close: "Close", closeMsg: "Tap × to close", loading: "Loading...", notFound: "Reservation not found.", failedLoad: "Failed to load. Please contact the teacher.",
     back: "Back",
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
@@ -348,7 +349,7 @@ const CANCEL_TRANS = {
     ticketNotify: "如无法出席，请提前通过LINE直接通知老师.",
     pastDeadline: "已超过取消期限", pastDeadlineMsg: "如无法出席，请尽快通过LINE直接联系老师.",
     absenceTitle: "超过取消期限后缺席", absenceMsg: "请尽快通过LINE直接联系老师.",
-    absenceBtn: "通知老师缺席", close: "关闭", loading: "加载中...", notFound: "未找到预约。", failedLoad: "加载失败，请联系老师。",
+    absenceBtn: "通知老师缺席", close: "关闭", closeMsg: "点击 × 关闭", loading: "加载中...", notFound: "未找到预约。", failedLoad: "加载失败，请联系老师。",
     back: "返回",
     canClose: "可以关闭此页面.", cancelled: "已取消", cannotCancel: "无法取消",
     successMsg: "取消完成.", refundDone: "退款处理完成.",
@@ -368,7 +369,7 @@ const CANCEL_TRANS = {
     ticketNotify: "참석하지 못하는 경우 미리 LINE으로 선생님께 직접 연락해주세요.",
     pastDeadline: "취소 기한이 지났습니다", pastDeadlineMsg: "참석하지 못하는 경우 가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
     absenceTitle: "취소 기한 이후 결석하는 경우", absenceMsg: "가능한 빨리 LINE으로 선생님께 직접 연락해주세요.",
-    absenceBtn: "선생님께 결석 연락하기", close: "닫기", loading: "불러오는 중...", notFound: "예약을 찾을 수 없습니다.", failedLoad: "불러오기 실패. 선생님께 연락해 주세요.",
+    absenceBtn: "선생님께 결석 연락하기", close: "닫기", closeMsg: "× 를 눌러 닫기", loading: "불러오는 중...", notFound: "예약을 찾을 수 없습니다.", failedLoad: "불러오기 실패. 선생님께 연락해 주세요.",
     back: "뒤로",
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
@@ -388,7 +389,7 @@ const CANCEL_TRANS = {
     ticketNotify: "หากไม่สามารถเข้าร่วมได้ กรุณาแจ้งครูโดยตรงผ่าน LINE ล่วงหน้า",
     pastDeadline: "เกินกำหนดการยกเลิก", pastDeadlineMsg: "หากไม่สามารถเข้าร่วมได้ กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
     absenceTitle: "หากขาดเรียนหลังเกินกำหนด", absenceMsg: "กรุณาติดต่อครูโดยตรงผ่าน LINE โดยเร็วที่สุด",
-    absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด", loading: "กำลังโหลด...", notFound: "ไม่พบการจอง", failedLoad: "โหลดล้มเหลว กรุณาติดต่อครู",
+    absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด", closeMsg: "กด × เพื่อปิด", loading: "กำลังโหลด...", notFound: "ไม่พบการจอง", failedLoad: "โหลดล้มเหลว กรุณาติดต่อครู",
     back: "ย้อนกลับ",
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
@@ -408,7 +409,7 @@ const CANCEL_TRANS = {
     ticketNotify: "Si vous ne pouvez pas assister, veuillez notifier le professeur directement via LINE à l'avance.",
     pastDeadline: "Délai d'annulation dépassé", pastDeadlineMsg: "Si vous ne pouvez pas assister, veuillez contacter le professeur directement via LINE dès que possible.",
     absenceTitle: "Si absence après le délai", absenceMsg: "Veuillez notifier le professeur directement via LINE dès que possible.",
-    absenceBtn: "Notifier le professeur de l'absence", close: "Fermer", loading: "Chargement...", notFound: "Réservation introuvable.", failedLoad: "Échec du chargement. Contactez le professeur.",
+    absenceBtn: "Notifier le professeur de l'absence", close: "Fermer", closeMsg: "Appuyez sur × pour fermer", loading: "Chargement...", notFound: "Réservation introuvable.", failedLoad: "Échec du chargement. Contactez le professeur.",
     back: "Retour",
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
@@ -428,7 +429,7 @@ const CANCEL_TRANS = {
     ticketNotify: "Wenn Sie nicht teilnehmen können, benachrichtigen Sie den Lehrer bitte im Voraus direkt über LINE.",
     pastDeadline: "Stornierungsfrist überschritten", pastDeadlineMsg: "Wenn Sie nicht teilnehmen können, kontaktieren Sie den Lehrer so schnell wie möglich direkt über LINE.",
     absenceTitle: "Bei Abwesenheit nach der Frist", absenceMsg: "Bitte benachrichtigen Sie den Lehrer so schnell wie möglich direkt über LINE.",
-    absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen", loading: "Wird geladen...", notFound: "Buchung nicht gefunden.", failedLoad: "Laden fehlgeschlagen. Bitte kontaktieren Sie den Lehrer.",
+    absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen", closeMsg: "× zum Schließen drücken", loading: "Wird geladen...", notFound: "Buchung nicht gefunden.", failedLoad: "Laden fehlgeschlagen. Bitte kontaktieren Sie den Lehrer.",
     back: "Zurück",
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
@@ -501,7 +502,7 @@ function applyCancelLang(forceLang) {
   const canCloseSub = document.getElementById("canCloseSub");
   if (canCloseSub) canCloseSub.textContent = T.canClose || "You can close this page.";
   const closeSub = document.getElementById("closeBtnSub");
-  if (closeSub) closeSub.textContent = T.close || "Close";
+  if (closeSub) closeSub.textContent = T.closeMsg || "Tap × to close";
 }
 
 let reservationId = "";
@@ -836,7 +837,7 @@ function showResult(isSuccess, message) {
   const closeSub = document.getElementById("closeBtnSub");
 
   if (canCloseSub) canCloseSub.textContent = T.canClose || "You can close this page.";
-  if (closeSub) closeSub.textContent = T.close || "Close";
+  if (closeSub) closeSub.textContent = T.closeMsg || "Tap × to close";
 
   if (isSuccess) {
     iconWrap.style.background = "#e8faf0";
