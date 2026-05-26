@@ -1550,7 +1550,7 @@ async function checkout() {
     localStorage.setItem("tempReservationId", tempReservationId);
 
     // ② Stripe決済セッション作成
-    showProcessing("決済ページを準備しています...", "Preparing payment page...");
+    showProcessing("決済ページを準備しています...", (window._currentT || {}).preparingPayment || "Preparing payment page...");
 
     const res = await fetch("/api/create-checkout-session", {
       method: "POST", headers: { "Content-Type": "application/json" },
