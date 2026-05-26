@@ -581,7 +581,11 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  liff.closeWindow();
+  const source = new URLSearchParams(window.location.search).get('source');
+  if (source === 'line') {
+    try { liff.closeWindow(); return; } catch(e) {}
+  }
+  window.location.href = 'https://liff.line.me/2009890655-O8QZVlRf';
 }
 
 async function loadCancelData() {
