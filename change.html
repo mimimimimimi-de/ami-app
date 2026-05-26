@@ -559,6 +559,13 @@ async function loadChangeData() {
     } catch(e) {}
   }
 
+  // デバッグ：IDが取れない場合はURLを表示
+  if (!reservationId) {
+    console.log("URL:", window.location.href);
+    console.log("search:", window.location.search);
+    console.log("liff.state:", liff.state);
+  }
+
   if (!reservationId) {
     const cachedL = localStorage.getItem("userLang") || "ja";
     const T_nf = CHANGE_TRANS[cachedL] || CHANGE_TRANS["en"];
