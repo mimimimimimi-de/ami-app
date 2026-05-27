@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>退会申請</title>
+<title>受講終了のご連絡</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,13 +70,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, 
   <div id="mainView" style="display:none;">
     <div class="header">
       <div class="header-icon">🚪</div>
-      <h1>退会申請
-        <span id="headerSub">Unsubscribe Request</span>
+      <h1>受講終了のご連絡
+        <span id="headerSub">End of Lessons</span>
       </h1>
     </div>
 
     <div class="card">
-      <div class="section-title">退会理由を選んでください
+      <div class="section-title">レッスンをやめる理由を教えてください
         <span id="reasonTitleSub">Please select your reason</span>
       </div>
       <div class="reason-list" id="reasonList">
@@ -120,23 +120,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, 
     </div>
 
     <div class="warning-box">
-      <p>⚠️ 退会申請後、先生に通知が送られます。
+      <p>⚠️ 送信後、先生に通知が送られます。
         <span id="warningSub">After submitting, the teacher will be notified.</span>
       </p>
     </div>
 
-    <button type="button" class="submit-btn" id="submitBtn" onclick="submitRequest()">退会申請を送る
+    <button type="button" class="submit-btn" id="submitBtn" onclick="submitRequest()">送信する
       <span id="submitSub" style="display:block;font-size:11px;font-weight:400;opacity:0.85;margin-top:2px;">Send Unsubscribe Request</span>
     </button>
-    <button type="button" class="cancel-btn" onclick="closePage()">キャンセル<span id="cancelBtnSub" style="font-size:11px;color:#aaa;margin-left:6px;"></span></button>
+    <button type="button" class="cancel-btn" onclick="closePage()">戻る<span id="cancelBtnSub" style="font-size:11px;color:#aaa;margin-left:6px;"></span></button>
   </div>
 
   <!-- 完了画面 -->
   <div id="doneView" class="done-view">
     <div class="done-icon">📨</div>
-    <div class="done-title">申請を送りました</div>
+    <div class="done-title">先生に送りました</div>
     <div class="done-sub" id="doneSub">Request sent successfully</div>
-    <div class="done-msg">先生に退会申請が届きました。先生からの連絡をお待ちください。
+    <div class="done-msg">先生にメッセージを送りました。
       <span id="doneMsgSub">The teacher has been notified. Please wait for their response.</span>
     </div>
     <p style="font-size:13px;color:#999;margin-bottom:16px;">右上の × で閉じてください<br><span id="closeHintSub" style="font-size:11px;color:#bbb;"></span></p>
@@ -154,76 +154,76 @@ let userLang = localStorage.getItem("userLang") || "ja";
 
 const TRANS = {
   en: {
-    headerSub: "Unsubscribe Request",
-    reasonTitleSub: "Please select your reason",
+    headerSub: "End of Lessons",
+    reasonTitleSub: "Please tell us why",
     reason1: "Got too busy", reason2: "Price is too high",
     reason3: "Achieved my goal", reason4: "Switching to another service", reason5: "Other",
-    warningSub: "After submitting, the teacher will be notified.",
-    submitSub: "Send Unsubscribe Request",
-    doneSub: "Request sent successfully",
-    doneMsgSub: "The teacher has been notified. Please wait for their response.",
+    warningSub: "After sending, the teacher will be notified.",
+    submitSub: "Send",
+    doneSub: "Message sent to teacher",
+    doneMsgSub: "The teacher has been notified.",
     closeHintSub: "Tap × to close",
-    otherPlaceholder: "Please enter your reason", cancelBtn: "/ Cancel"
+    otherPlaceholder: "Please enter your reason", cancelBtn: "/ Go back"
   },
   zh: {
-    headerSub: "退订申请",
-    reasonTitleSub: "请选择退订原因",
+    headerSub: "终止课程",
+    reasonTitleSub: "请告诉我们原因",
     reason1: "太忙了", reason2: "价格太高",
     reason3: "达成目标", reason4: "换其他服务", reason5: "其他",
     warningSub: "提交后，老师将收到通知。",
-    submitSub: "发送退订申请",
-    doneSub: "申请发送成功",
-    doneMsgSub: "老师已收到通知，请等待回复。",
+    submitSub: "发送",
+    doneSub: "已发送给老师",
+    doneMsgSub: "老师已收到通知。",
     closeHintSub: "点击 × 关闭",
-    otherPlaceholder: "请输入退订原因", cancelBtn: "/ 取消"
+    otherPlaceholder: "请输入退订原因", cancelBtn: "/ 返回"
   },
   ko: {
-    headerSub: "탈퇴 신청",
-    reasonTitleSub: "탈퇴 이유를 선택해 주세요",
+    headerSub: "수강 종료 안내",
+    reasonTitleSub: "이유를 알려주세요",
     reason1: "바빠졌어요", reason2: "가격이 높아요",
     reason3: "목표를 달성했어요", reason4: "다른 서비스로 변경", reason5: "기타",
     warningSub: "신청 후 선생님께 알림이 전송됩니다.",
-    submitSub: "탈퇴 신청 보내기",
-    doneSub: "신청이 전송되었습니다",
-    doneMsgSub: "선생님께 알림이 전송되었습니다. 연락을 기다려 주세요.",
+    submitSub: "보내기",
+    doneSub: "선생님께 전송되었습니다",
+    doneMsgSub: "선생님께 전달되었습니다.",
     closeHintSub: "× 를 눌러 닫기",
-    otherPlaceholder: "탈퇴 이유를 입력해 주세요", cancelBtn: "/ 취소"
+    otherPlaceholder: "탈퇴 이유를 입력해 주세요", cancelBtn: "/ 돌아가기"
   },
   th: {
-    headerSub: "คำขอยกเลิกการเรียน",
-    reasonTitleSub: "กรุณาเลือกเหตุผล",
+    headerSub: "แจ้งสิ้นสุดการเรียน",
+    reasonTitleSub: "กรุณาบอกเหตุผล",
     reason1: "ยุ่งเกินไป", reason2: "ราคาสูงเกินไป",
     reason3: "บรรลุเป้าหมายแล้ว", reason4: "เปลี่ยนไปใช้บริการอื่น", reason5: "อื่นๆ",
     warningSub: "หลังส่งคำขอ ครูจะได้รับแจ้ง",
-    submitSub: "ส่งคำขอยกเลิก",
-    doneSub: "ส่งคำขอสำเร็จ",
-    doneMsgSub: "ครูได้รับแจ้งแล้ว กรุณารอการติดต่อกลับ",
+    submitSub: "ส่ง",
+    doneSub: "ส่งถึงครูแล้ว",
+    doneMsgSub: "ครูได้รับแจ้งแล้ว",
     closeHintSub: "กด × เพื่อปิด",
-    otherPlaceholder: "กรุณาระบุเหตุผล", cancelBtn: "/ ยกเลิก"
+    otherPlaceholder: "กรุณาระบุเหตุผล", cancelBtn: "/ กลับ"
   },
   fr: {
-    headerSub: "Demande de désinscription",
-    reasonTitleSub: "Veuillez sélectionner votre raison",
+    headerSub: "Fin des leçons",
+    reasonTitleSub: "Veuillez nous indiquer la raison",
     reason1: "Trop occupé(e)", reason2: "Prix trop élevé",
     reason3: "Objectif atteint", reason4: "Passage à un autre service", reason5: "Autre",
     warningSub: "Après la soumission, le professeur sera notifié.",
-    submitSub: "Envoyer la demande",
-    doneSub: "Demande envoyée avec succès",
-    doneMsgSub: "Le professeur a été notifié. Veuillez attendre sa réponse.",
+    submitSub: "Envoyer",
+    doneSub: "Message envoyé au professeur",
+    doneMsgSub: "Le professeur a été notifié.",
     closeHintSub: "Appuyez sur × pour fermer",
-    otherPlaceholder: "Veuillez entrer votre raison", cancelBtn: "/ Annuler"
+    otherPlaceholder: "Veuillez entrer votre raison", cancelBtn: "/ Retour"
   },
   de: {
-    headerSub: "Abmeldungsantrag",
-    reasonTitleSub: "Bitte wählen Sie Ihren Grund",
+    headerSub: "Ende des Unterrichts",
+    reasonTitleSub: "Bitte teilen Sie uns den Grund mit",
     reason1: "Zu beschäftigt", reason2: "Preis zu hoch",
     reason3: "Ziel erreicht", reason4: "Wechsel zu einem anderen Dienst", reason5: "Sonstiges",
     warningSub: "Nach der Einreichung wird der Lehrer benachrichtigt.",
-    submitSub: "Antrag senden",
-    doneSub: "Antrag erfolgreich gesendet",
-    doneMsgSub: "Der Lehrer wurde benachrichtigt. Bitte warten Sie auf seine Antwort.",
+    submitSub: "Senden",
+    doneSub: "Nachricht an Lehrer gesendet",
+    doneMsgSub: "Der Lehrer wurde benachrichtigt.",
     closeHintSub: "× zum Schließen drücken",
-    otherPlaceholder: "Bitte geben Sie Ihren Grund ein", cancelBtn: "/ Abbrechen"
+    otherPlaceholder: "Bitte geben Sie Ihren Grund ein", cancelBtn: "/ Zurück"
   }
 };
 
