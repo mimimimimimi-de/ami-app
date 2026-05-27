@@ -795,6 +795,29 @@ function hideProcessing() {
   document.getElementById("processingOverlay").classList.remove("show");
 }
 
+function showInfoModal(titleJa, titleSub, msgJa, msgSub, btnLabel) {
+  const existing = document.getElementById('infoModal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'infoModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <div style="width:52px;height:52px;border-radius:50%;background:#fff8e6;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;">⚠️</div>
+      <div style="font-size:17px;font-weight:700;color:#333;line-height:1.4;">${titleJa}</div>
+      ${titleSub ? `<div style="font-size:12px;color:#aaa;margin-top:4px;">${titleSub}</div>` : ''}
+      <div style="margin:16px 0;padding:14px;background:#f8f8f8;border-radius:12px;text-align:left;">
+        <div style="font-size:13px;color:#555;line-height:1.7;">${msgJa}</div>
+        ${msgSub ? `<div style="font-size:11px;color:#bbb;margin-top:6px;line-height:1.6;">${msgSub}</div>` : ''}
+      </div>
+      <button onclick="document.getElementById('infoModal').remove()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:block;text-align:center;">
+        ${btnLabel || 'OK'}
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
 function go(id) {
   document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
