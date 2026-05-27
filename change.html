@@ -213,6 +213,8 @@ button {
   font-weight: 800;
   cursor: pointer;
   padding: 0;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 td.available {
@@ -699,7 +701,7 @@ function renderCalendar() {
       visibleDates.forEach(d => {
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
-          html += '<td class="available"><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '">○</button></td>';
+          html += '<td class="available"><button type="button" class="slot-btn" data-date="' + d.date + '" data-time="' + time + '"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6.5" stroke="#06C755" stroke-width="2"/></svg></button></td>';
         } else {
           html += "<td class='unavailable'>×</td>";
         }
