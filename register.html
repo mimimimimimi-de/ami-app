@@ -416,7 +416,7 @@ body {
 
   <div class="logo-area">
     <div class="logo-icon">🇯🇵</div>
-    <h1><span>Japanese Lesson</span></h1>
+    <h1>Ami's<br><span>Japanese Lesson</span></h1>
     <p>日本語レッスン予約システム<br><span class="en-sub"></span></p>
   </div>
 
@@ -424,6 +424,38 @@ body {
 
     <!-- 登録前 -->
     <div id="registerView">
+
+      <!-- 言語選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="lang-label">🌐 言語を選んでください</div>
+        <div class="lang-label-sub">Select your language</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
+          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
+          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
+          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
+          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
+          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
+        </div>
+      </div>
+
+      <!-- タイムゾーン選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
+        <div class="tz-label-en">Select your timezone</div>
+        <div class="tz-dropdown">
+          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
+            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="tz-popup" id="tzPopup">
+            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
+            <div class="tz-list" id="tzList"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
@@ -444,37 +476,6 @@ body {
           <div class="step-text">
             <div class="title">予約スタート！<span class="en-sub"></span></div>
             <div class="desc">先生からLINEが届いたら予約できるようになります。<span class="en-sub"></span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 言語選択 -->
-      <div class="tz-section" style="margin-bottom:16px;">
-        <div class="lang-label">🌐 言語を選んでください</div>
-        <div class="lang-label-sub">Select your language</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
-          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
-          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
-          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
-          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
-          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
-          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
-        </div>
-      </div>
-
-      <!-- タイムゾーン選択 -->
-      <div class="tz-section">
-        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
-        <div class="tz-label-en">Select your timezone</div>
-        <div class="tz-dropdown">
-          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
-            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
-            <span class="arrow">▼</span>
-          </button>
-          <div class="tz-popup" id="tzPopup">
-            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
-            <div class="tz-list" id="tzList"></div>
           </div>
         </div>
       </div>
@@ -654,12 +655,12 @@ function applyLang(lang) {
     { title: "step3title", titleJa: "予約スタート！", desc: "step3desc", descJa: "先生からLINEが届いたら予約できるようになります。" }
   ];
   steps.forEach((s, i) => {
-    const subTitle = isJa ? LANG_TEXT.en[s.title] : T[s.title];
-    const subDesc  = isJa ? LANG_TEXT.en[s.desc]  : T[s.desc];
-    if (stepTitles[i]) stepTitles[i].innerHTML =
-      `${LANG_TEXT.ja[s.title]}<span class="en-sub">${subTitle || ""}</span>`;
-    if (stepDescs[i]) stepDescs[i].innerHTML =
-      `${LANG_TEXT.ja[s.desc]}<span class="en-sub">${subDesc || ""}</span>`;
+    if (stepTitles[i]) stepTitles[i].innerHTML = isJa
+      ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
+    if (stepDescs[i]) stepDescs[i].innerHTML = isJa
+      ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
   });
 
   // オーバーレイサブテキスト
@@ -680,25 +681,25 @@ function applyLang(lang) {
 
   // 登録ボタン
   const regBtn = document.getElementById("registerBtn");
-  const regBtnSub = isJa ? LANG_TEXT.en.registerBtn : T.registerBtn;
-  if (regBtn) regBtn.innerHTML =
-    `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);">${regBtnSub || ""}</span>`;
+  if (regBtn) regBtn.innerHTML = isJa
+    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`
+    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`;
 
   // 注意書き
   const note = document.querySelector(".note");
-  const noteSub = isJa ? LANG_TEXT.en.note : T.note;
-  if (note) note.innerHTML =
-    `${LANG_TEXT.ja.note}<br><span class="en-sub">${noteSub || ""}</span>`;
+  if (note) note.innerHTML = isJa
+    ? `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`;
 
   // 登録完了画面
   const doneH2 = document.querySelector("#doneView h2");
-  const doneTitleSub = isJa ? LANG_TEXT.en.doneTitle : T.doneTitle;
-  if (doneH2) doneH2.innerHTML =
-    `${LANG_TEXT.ja.doneTitle}<span class="en-sub">${doneTitleSub || ""}</span>`;
+  if (doneH2) doneH2.innerHTML = isJa
+    ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`;
   const doneP = document.querySelector("#doneView p");
-  const doneMsgSub = isJa ? LANG_TEXT.en.doneMsg : T.doneMsg;
-  if (doneP) doneP.innerHTML =
-    `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub">${doneMsgSub || ""}</span>`;
+  if (doneP) doneP.innerHTML = isJa
+    ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`
+    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`;
 
   // 登録済み画面
   const subAlreadyTitle = document.getElementById("subAlreadyTitle");
