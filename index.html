@@ -135,20 +135,23 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
+  table-layout: fixed;
 }
 
 .calendar-table th {
   background: #f8faf9;
   color: #333;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 8px 4px;
+  padding: 6px 2px;
   border-bottom: 2px solid #d0e8d8;
   white-space: nowrap;
   line-height: 1.4;
   position: sticky;
   top: 0;
   z-index: 3;
+  width: 44px;
+  overflow: hidden;
 }
 
 .calendar-table td {
