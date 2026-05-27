@@ -1395,7 +1395,7 @@ async function checkout() {
       }
 
       // ダブルブッキングチェック
-      showProcessing("空き枠を確認しています...", (window._currentT || {}).checkingSlot || "Checking availability...");
+      showProcessing("空き枠を確認しています...", (window._currentT || {}).checkingSlots || "Checking availability...");
       const slotRes = await fetch(
         GAS_URL + "?action=checkSlotAvailable" +
         "&date=" + encodeURIComponent(selectedDate) +
