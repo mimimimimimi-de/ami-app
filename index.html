@@ -962,7 +962,13 @@ function applyPriceData(data, minutes) {
   setNextBtnLoading(false);
   if (!data.ok || !data.price) {
     document.getElementById("priceText").textContent = "料金未設定 / " + (TL.feeNotSet || "Not Set");
-    alert("料金がまだ設定されていません。\n先生が設定後に予約できます。\n\nFee not set yet. You can book after the teacher sets your fee.");
+    showInfoModal(
+      '料金がまだ設定されていません',
+      TL.feeNotSet || 'Fee not set yet',
+      '先生が料金を設定後に予約できます。しばらくお待ちください。',
+      'You can book after the teacher sets your fee. Please wait.',
+      'OK'
+    );
     return;
   }
   selectedPrice = Number(data.price);
@@ -982,7 +988,17 @@ let calendarData = null; // GASから取得したデータをキャッシュ
 let ticketCache = null; // 回数券キャッシュ
 
 async function openCalendar() {
-  if (!selectedPrice) { alert("料金が設定されていません。先生にご連絡ください。\nFee not set. Please contact the teacher."); return; }
+  if (!selectedPrice) {
+    const TL2 = window._currentT || {};
+    showInfoModal(
+      '料金が設定されていません',
+      TL2.feeNotSet || 'Fee not set',
+      '先生にご連絡ください。',
+      'Please contact the teacher.',
+      'OK'
+    );
+    return;
+  }
   weekOffset = 0;
   go("calendarPage");
 
