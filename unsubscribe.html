@@ -134,10 +134,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, 
   <!-- 完了画面 -->
   <div id="doneView" class="done-view">
     <div class="done-icon">📨</div>
-    <div class="done-title">先生に送りました</div>
-    <div class="done-sub" id="doneSub">Request sent successfully</div>
-    <div class="done-msg">先生にメッセージを送りました。
-      <span id="doneMsgSub">The teacher has been notified. Please wait for their response.</span>
+    <div class="done-title">先生にメッセージを送りました</div>
+    <div class="done-sub" id="doneSub" style="color:#d93025;opacity:0.8;font-size:12px;"></div>
+    <div class="done-msg">ご受講ありがとうございました。またいつでもお待ちしております。
+      <span id="doneMsgSub"></span>
     </div>
     <p style="font-size:13px;color:#999;margin-bottom:16px;">右上の × で閉じてください<br><span id="closeHintSub" style="font-size:11px;color:#bbb;"></span></p>
   </div>
@@ -160,8 +160,8 @@ const TRANS = {
     reason3: "Achieved my goal", reason4: "Switching to another service", reason5: "Other",
     warningSub: "After sending, the teacher will be notified.",
     submitSub: "Send",
-    doneSub: "Message sent to teacher",
-    doneMsgSub: "The teacher has been notified.",
+    doneSub: "メッセージを送りました",
+    doneMsgSub: "Thank you for learning with us. We look forward to welcoming you back!",
     closeHintSub: "Tap × to close",
     otherPlaceholder: "Please enter your reason", cancelBtn: "/ Go back"
   },
@@ -172,8 +172,8 @@ const TRANS = {
     reason3: "达成目标", reason4: "换其他服务", reason5: "其他",
     warningSub: "提交后，老师将收到通知。",
     submitSub: "发送",
-    doneSub: "已发送给老师",
-    doneMsgSub: "老师已收到通知。",
+    doneSub: "已发送消息",
+    doneMsgSub: "感谢您的学习。期待再次见到您！",
     closeHintSub: "点击 × 关闭",
     otherPlaceholder: "请输入退订原因", cancelBtn: "/ 返回"
   },
@@ -184,8 +184,8 @@ const TRANS = {
     reason3: "목표를 달성했어요", reason4: "다른 서비스로 변경", reason5: "기타",
     warningSub: "신청 후 선생님께 알림이 전송됩니다.",
     submitSub: "보내기",
-    doneSub: "선생님께 전송되었습니다",
-    doneMsgSub: "선생님께 전달되었습니다.",
+    doneSub: "메시지를 보냈습니다",
+    doneMsgSub: "수강해 주셔서 감사합니다. 언제든지 환영합니다！",
     closeHintSub: "× 를 눌러 닫기",
     otherPlaceholder: "탈퇴 이유를 입력해 주세요", cancelBtn: "/ 돌아가기"
   },
@@ -196,8 +196,8 @@ const TRANS = {
     reason3: "บรรลุเป้าหมายแล้ว", reason4: "เปลี่ยนไปใช้บริการอื่น", reason5: "อื่นๆ",
     warningSub: "หลังส่งคำขอ ครูจะได้รับแจ้ง",
     submitSub: "ส่ง",
-    doneSub: "ส่งถึงครูแล้ว",
-    doneMsgSub: "ครูได้รับแจ้งแล้ว",
+    doneSub: "ส่งข้อความแล้ว",
+    doneMsgSub: "ขอบคุณที่เรียนกับเรา ยินดีต้อนรับกลับมาเสมอ！",
     closeHintSub: "กด × เพื่อปิด",
     otherPlaceholder: "กรุณาระบุเหตุผล", cancelBtn: "/ กลับ"
   },
@@ -208,8 +208,8 @@ const TRANS = {
     reason3: "Objectif atteint", reason4: "Passage à un autre service", reason5: "Autre",
     warningSub: "Après la soumission, le professeur sera notifié.",
     submitSub: "Envoyer",
-    doneSub: "Message envoyé au professeur",
-    doneMsgSub: "Le professeur a été notifié.",
+    doneSub: "Message envoyé",
+    doneMsgSub: "Merci pour votre apprentissage. Nous vous attendons toujours！",
     closeHintSub: "Appuyez sur × pour fermer",
     otherPlaceholder: "Veuillez entrer votre raison", cancelBtn: "/ Retour"
   },
@@ -220,8 +220,8 @@ const TRANS = {
     reason3: "Ziel erreicht", reason4: "Wechsel zu einem anderen Dienst", reason5: "Sonstiges",
     warningSub: "Nach der Einreichung wird der Lehrer benachrichtigt.",
     submitSub: "Senden",
-    doneSub: "Nachricht an Lehrer gesendet",
-    doneMsgSub: "Der Lehrer wurde benachrichtigt.",
+    doneSub: "Nachricht gesendet",
+    doneMsgSub: "Danke für Ihre Teilnahme. Wir freuen uns auf ein Wiedersehen！",
     closeHintSub: "× zum Schließen drücken",
     otherPlaceholder: "Bitte geben Sie Ihren Grund ein", cancelBtn: "/ Zurück"
   }
@@ -292,9 +292,14 @@ async function submitRequest() {
 
   // 完了画面
   const T = TRANS[userLang] || TRANS["en"];
-  document.getElementById("doneSub").textContent = T.doneSub || "Request sent successfully";
-  document.getElementById("doneMsgSub").textContent = T.doneMsgSub || "The teacher has been notified.";
+  document.getElementById("doneSub").textContent = T.doneSub || "Message sent";
+  document.getElementById("doneMsgSub").textContent = T.doneMsgSub || "Thank you for learning with us. We look forward to welcoming you back!";
   document.getElementById("closeHintSub").textContent = T.closeHintSub || "Tap × to close";
+  // 本文を直接設定（キャッシュ対策）
+  const doneMsg = document.querySelector(".done-msg");
+  if (doneMsg) {
+    doneMsg.innerHTML = 'ご受講ありがとうございました。またいつでもお待ちしております。<span id="doneMsgSub" style="display:block;font-size:11px;color:#bbb;margin-top:6px;">' + (T.doneMsgSub || '') + '</span>';
+  }
   document.getElementById("mainView").style.display = "none";
   document.getElementById("doneView").style.display = "block";
 }
