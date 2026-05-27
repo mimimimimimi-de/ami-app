@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>退会申請</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; background: #f5f6f7; color: #222; min-height: 100vh; }
+
+.container { max-width: 460px; margin: 0 auto; padding: 24px 16px; }
+
+.header { text-align: center; padding: 32px 0 24px; }
+.header-icon { width: 64px; height: 64px; border-radius: 50%; background: #fff0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; }
+.header h1 { font-size: 22px; font-weight: 700; color: #d93025; }
+.header h1 span { display: block; font-size: 13px; font-weight: 400; color: #aaa; margin-top: 4px; }
+
+.card { background: #fff; border-radius: 20px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+.section-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 12px; }
+.section-title span { display: block; font-size: 11px; font-weight: 400; color: #aaa; margin-top: 2px; }
+
+.reason-list { display: flex; flex-direction: column; gap: 10px; }
+.reason-btn { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #eee; border-radius: 14px; background: #fff; cursor: pointer; transition: all 0.15s; text-align: left; width: 100%; }
+.reason-btn.selected { border-color: #d93025; background: #fff5f5; }
+.reason-btn .check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.reason-btn.selected .check { border-color: #d93025; background: #d93025; }
+.reason-btn.selected .check::after { content: "✓"; color: #fff; font-size: 12px; font-weight: 700; }
+.reason-text { font-size: 14px; color: #333; line-height: 1.4; }
+.reason-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+
+.other-input { width: 100%; border: 1.5px solid #eee; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #333; resize: none; margin-top: 10px; font-family: inherit; transition: border-color 0.15s; outline: none; display: none; }
+.other-input:focus { border-color: #d93025; }
+.other-input.show { display: block; }
+
+.warning-box { background: #fff8e6; border: 1px solid #f3c98b; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.warning-box p { font-size: 13px; color: #666; line-height: 1.7; }
+.warning-box p span { display: block; font-size: 11px; color: #aaa; margin-top: 4px; }
+
+.submit-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; background: #d93025; color: #fff; margin-bottom: 12px; opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
+.submit-btn.active { opacity: 1; pointer-events: auto; }
+.cancel-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; background: #f0f0f0; color: #555; }
+
+/* 完了画面 */
+.done-view { display: none; text-align: center; padding: 40px 0; }
+.done-icon { width: 72px; height: 72px; border-radius: 50%; background: #fff0f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+.done-title { font-size: 20px; font-weight: 700; color: #d93025; margin-bottom: 8px; }
+.done-sub { font-size: 13px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+.done-msg { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; font-size: 13px; color: #555; line-height: 1.7; text-align: left; }
+.done-msg span { display: block; font-size: 11px; color: #bbb; margin-top: 4px; }
+.close-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; background: #f0f0f0; color: #555; }
+
+/* ローディング */
+.loading { text-align: center; padding: 60px 20px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: #d93025; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ローディング -->
+  <div id="loadingView" class="loading">
+    <div class="spinner"></div>
+    <p style="color:#aaa;font-size:13px;">読み込み中...</p>
+  </div>
+
+  <!-- メインフォーム -->
+  <div id="mainView" style="display:none;">
+    <div class="header">
+      <div class="header-icon">🚪</div>
+      <h1>退会申請
+        <span id="headerSub">Unsubscribe Request</span>
+      </h1>
+    </div>
+
+    <div class="card">
+      <div class="section-title">退会理由を選んでください
+        <span id="reasonTitleSub">Please select your reason</span>
+      </div>
+      <div class="reason-list" id="reasonList">
+        <button type="button" class="reason-btn" data-value="busy" onclick="selectReason(this)">
+          <div class="check"></div>
+          <div>
+            <div class="reason-text">😅 忙しくなった</div>
+            <div class="reason-sub" data-key="reason1">Got too busy</div>
+          </div>
+        </button>
+        <button type="button" class="reason-btn" data-value="price" onclick="selectReason(this)">
+          <div class="check"></div>
+          <div>
+            <div class="reason-text">💰 料金が高い</div>
+            <div class="reason-sub" data-key="reason2">Price is too high</div>
+          </div>
+        </button>
+        <button type="button" class="reason-btn" data-value="goal" onclick="selectReason(this)">
+          <div class="check"></div>
+          <div>
+            <div class="reason-text">🎉 目標を達成した</div>
+            <div class="reason-sub" data-key="reason3">Achieved my goal</div>
+          </div>
+        </button>
+        <button type="button" class="reason-btn" data-value="other_service" onclick="selectReason(this)">
+          <div class="check"></div>
+          <div>
+            <div class="reason-text">🔄 他のサービスに変更</div>
+            <div class="reason-sub" data-key="reason4">Switching to another service</div>
+          </div>
+        </button>
+        <button type="button" class="reason-btn" data-value="other" onclick="selectReason(this)">
+          <div class="check"></div>
+          <div>
+            <div class="reason-text">✏️ その他</div>
+            <div class="reason-sub" data-key="reason5">Other</div>
+          </div>
+        </button>
+      </div>
+      <textarea id="otherInput" class="other-input" placeholder="退会理由を入力してください / Please enter your reason" rows="3"></textarea>
+    </div>
+
+    <div class="warning-box">
+      <p>⚠️ 退会申請後、先生に通知が送られます。回数券の残り枚数・返金については先生にご相談ください。
+        <span id="warningSub">After submitting, the teacher will be notified. Please contact the teacher about remaining tickets and refunds.</span>
+      </p>
+    </div>
+
+    <button type="button" class="submit-btn" id="submitBtn" onclick="submitRequest()">退会申請を送る
+      <span id="submitSub" style="display:block;font-size:11px;font-weight:400;opacity:0.85;margin-top:2px;">Send Unsubscribe Request</span>
+    </button>
+    <button type="button" class="cancel-btn" onclick="closePage()">キャンセル / Cancel</button>
+  </div>
+
+  <!-- 完了画面 -->
+  <div id="doneView" class="done-view">
+    <div class="done-icon">📨</div>
+    <div class="done-title">申請を送りました</div>
+    <div class="done-sub" id="doneSub">Request sent successfully</div>
+    <div class="done-msg">先生に退会申請が届きました。先生からの連絡をお待ちください。
+      <span id="doneMsgSub">The teacher has been notified. Please wait for their response.</span>
+    </div>
+    <p style="font-size:13px;color:#999;margin-bottom:16px;">右上の × で閉じてください<br><span id="closeHintSub" style="font-size:11px;color:#bbb;"></span></p>
+  </div>
+</div>
+
+<script>
+const LIFF_ID = "2009890655-0ymZ1xko";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzRX0UZSwDW3h9V7tUGA1grjhNlfU9e60H4hGzABbAJl0cWn40VFwy4D2mY-vgEvSY/exec";
+
+let userId = "";
+let displayName = "";
+let selectedReason = "";
+let userLang = localStorage.getItem("userLang") || "ja";
+
+const TRANS = {
+  en: {
+    headerSub: "Unsubscribe Request",
+    reasonTitleSub: "Please select your reason",
+    reason1: "Got too busy", reason2: "Price is too high",
+    reason3: "Achieved my goal", reason4: "Switching to another service", reason5: "Other",
+    warningSub: "After submitting, the teacher will be notified. Please contact the teacher about remaining tickets and refunds.",
+    submitSub: "Send Unsubscribe Request",
+    doneSub: "Request sent successfully",
+    doneMsgSub: "The teacher has been notified. Please wait for their response.",
+    closeHintSub: "Tap × to close",
+    otherPlaceholder: "Please enter your reason"
+  },
+  zh: {
+    headerSub: "退订申请",
+    reasonTitleSub: "请选择退订原因",
+    reason1: "太忙了", reason2: "价格太高",
+    reason3: "达成目标", reason4: "换其他服务", reason5: "其他",
+    warningSub: "提交后，老师将收到通知。关于剩余次券和退款，请联系老师。",
+    submitSub: "发送退订申请",
+    doneSub: "申请发送成功",
+    doneMsgSub: "老师已收到通知，请等待回复。",
+    closeHintSub: "点击 × 关闭",
+    otherPlaceholder: "请输入退订原因"
+  },
+  ko: {
+    headerSub: "탈퇴 신청",
+    reasonTitleSub: "탈퇴 이유를 선택해 주세요",
+    reason1: "바빠졌어요", reason2: "가격이 높아요",
+    reason3: "목표를 달성했어요", reason4: "다른 서비스로 변경", reason5: "기타",
+    warningSub: "신청 후 선생님께 알림이 전송됩니다. 남은 횟수권 및 환불은 선생님께 문의해 주세요.",
+    submitSub: "탈퇴 신청 보내기",
+    doneSub: "신청이 전송되었습니다",
+    doneMsgSub: "선생님께 알림이 전송되었습니다. 연락을 기다려 주세요.",
+    closeHintSub: "× 를 눌러 닫기",
+    otherPlaceholder: "탈퇴 이유를 입력해 주세요"
+  },
+  th: {
+    headerSub: "คำขอยกเลิกการเรียน",
+    reasonTitleSub: "กรุณาเลือกเหตุผล",
+    reason1: "ยุ่งเกินไป", reason2: "ราคาสูงเกินไป",
+    reason3: "บรรลุเป้าหมายแล้ว", reason4: "เปลี่ยนไปใช้บริการอื่น", reason5: "อื่นๆ",
+    warningSub: "หลังส่งคำขอ ครูจะได้รับแจ้ง โปรดติดต่อครูเกี่ยวกับคูปองที่เหลือและการคืนเงิน",
+    submitSub: "ส่งคำขอยกเลิก",
+    doneSub: "ส่งคำขอสำเร็จ",
+    doneMsgSub: "ครูได้รับแจ้งแล้ว กรุณารอการติดต่อกลับ",
+    closeHintSub: "กด × เพื่อปิด",
+    otherPlaceholder: "กรุณาระบุเหตุผล"
+  },
+  fr: {
+    headerSub: "Demande de désinscription",
+    reasonTitleSub: "Veuillez sélectionner votre raison",
+    reason1: "Trop occupé(e)", reason2: "Prix trop élevé",
+    reason3: "Objectif atteint", reason4: "Passage à un autre service", reason5: "Autre",
+    warningSub: "Après la soumission, le professeur sera notifié. Contactez le professeur pour les tickets restants et les remboursements.",
+    submitSub: "Envoyer la demande",
+    doneSub: "Demande envoyée avec succès",
+    doneMsgSub: "Le professeur a été notifié. Veuillez attendre sa réponse.",
+    closeHintSub: "Appuyez sur × pour fermer",
+    otherPlaceholder: "Veuillez entrer votre raison"
+  },
+  de: {
+    headerSub: "Abmeldungsantrag",
+    reasonTitleSub: "Bitte wählen Sie Ihren Grund",
+    reason1: "Zu beschäftigt", reason2: "Preis zu hoch",
+    reason3: "Ziel erreicht", reason4: "Wechsel zu einem anderen Dienst", reason5: "Sonstiges",
+    warningSub: "Nach der Einreichung wird der Lehrer benachrichtigt. Bitte kontaktieren Sie den Lehrer wegen verbleibender Tickets und Rückerstattungen.",
+    submitSub: "Antrag senden",
+    doneSub: "Antrag erfolgreich gesendet",
+    doneMsgSub: "Der Lehrer wurde benachrichtigt. Bitte warten Sie auf seine Antwort.",
+    closeHintSub: "× zum Schließen drücken",
+    otherPlaceholder: "Bitte geben Sie Ihren Grund ein"
+  }
+};
+
+function applyLang(lang) {
+  const T = TRANS[lang] || TRANS["en"];
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+  set("headerSub", T.headerSub);
+  set("reasonTitleSub", T.reasonTitleSub);
+  set("warningSub", T.warningSub);
+  set("submitSub", T.submitSub);
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (T[key]) el.textContent = T[key];
+  });
+  const otherInput = document.getElementById("otherInput");
+  if (otherInput) otherInput.placeholder = T.otherPlaceholder + " / " + (TRANS["ja"] ? "退会理由を入力してください" : "");
+}
+
+function selectReason(btn) {
+  document.querySelectorAll(".reason-btn").forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  selectedReason = btn.getAttribute("data-value");
+  const otherInput = document.getElementById("otherInput");
+  if (selectedReason === "other") {
+    otherInput.classList.add("show");
+  } else {
+    otherInput.classList.remove("show");
+  }
+  document.getElementById("submitBtn").classList.add("active");
+}
+
+async function submitRequest() {
+  const otherText = document.getElementById("otherInput").value.trim();
+  if (selectedReason === "other" && !otherText) {
+    alert("退会理由を入力してください。");
+    return;
+  }
+
+  const reasonLabels = {
+    busy: "忙しくなった",
+    price: "料金が高い",
+    goal: "目標を達成した",
+    other_service: "他のサービスに変更",
+    other: "その他"
+  };
+
+  const reasonText = selectedReason === "other"
+    ? "その他：" + otherText
+    : reasonLabels[selectedReason] || selectedReason;
+
+  document.getElementById("submitBtn").classList.remove("active");
+  document.getElementById("submitBtn").textContent = "送信中...";
+
+  try {
+    await fetch(GAS_URL + "?action=sendUnsubscribe" +
+      "&userId=" + encodeURIComponent(userId) +
+      "&name=" + encodeURIComponent(displayName) +
+      "&reason=" + encodeURIComponent(reasonText) +
+      "&lang=" + encodeURIComponent(userLang) +
+      "&t=" + Date.now()
+    );
+  } catch(e) {
+    console.error(e);
+  }
+
+  // 完了画面
+  const T = TRANS[userLang] || TRANS["en"];
+  document.getElementById("doneSub").textContent = T.doneSub || "Request sent successfully";
+  document.getElementById("doneMsgSub").textContent = T.doneMsgSub || "The teacher has been notified.";
+  document.getElementById("closeHintSub").textContent = T.closeHintSub || "Tap × to close";
+  document.getElementById("mainView").style.display = "none";
+  document.getElementById("doneView").style.display = "block";
+}
+
+function closePage() {
+  window.location.replace("https://liff.line.me/2009890655-O8QZVlRf");
+}
+
+async function init() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: window.location.href });
+      return;
+    }
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+    displayName = profile.displayName;
+
+    // GASからlang取得
+    try {
+      const res = await fetch(GAS_URL + "?action=getUserPrice&userId=" + encodeURIComponent(userId) + "&lessonType=25&name=" + encodeURIComponent(displayName) + "&t=" + Date.now());
+      const data = await res.json();
+      if (data.lang) {
+        userLang = data.lang;
+        localStorage.setItem("userLang", data.lang);
+      }
+    } catch(e) {}
+
+    applyLang(userLang);
+    document.getElementById("loadingView").style.display = "none";
+    document.getElementById("mainView").style.display = "block";
+  } catch(e) {
+    console.error(e);
+    document.getElementById("loadingView").innerHTML = '<p style="color:#d93025;text-align:center;padding:40px;">読み込みに失敗しました。<br>LINEアプリから開き直してください。</p>';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
