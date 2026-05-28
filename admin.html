@@ -526,6 +526,7 @@ body {
   <div class="tab-row">
     <button class="tab-btn active" onclick="switchTab('reservations', this)">📋 予約一覧</button>
     <button class="tab-btn" onclick="switchTab('users', this)">👥 生徒一覧</button>
+    <button class="tab-btn" onclick="window.location.href='karte.html'">📋 カルテ</button>
     <button class="tab-btn" onclick="switchTab('report', this)">📝 レッスン後</button>
   </div>
 
@@ -963,6 +964,7 @@ function renderUserCard(u) {
         <div class="price-save-status" id="priceStatus-${escHtml(u.userId)}"></div>
       </div>
       <div class="ticket-list" style="margin-top:12px;">
+        <button onclick="window.location.href='karte.html?userId=${escHtml(u.userId)}'" style="width:100%;margin-top:10px;padding:10px;background:#f8faf9;border:1px solid #d7f3df;border-radius:10px;color:#06C755;font-size:13px;font-weight:600;cursor:pointer;">📋 カルテを見る</button>
         <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'; this.querySelector('.toggle-icon').textContent=this.nextElementSibling.style.display==='none'?'▶':'▼';"
           style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:8px 10px;background:#f8f8f8;border-radius:8px;font-size:13px;color:#555;user-select:none;">
           <span>🎟️ 回数券 <span style="font-size:11px;color:#999;">${ticketSummary}</span></span>
