@@ -1095,7 +1095,7 @@ function prevWeek() {
 
 function nextWeek() {
   const T = window._currentT || {};
-  if (weekOffset >= 28) {
+  if (weekOffset >= 21) {
     alert("予約できるのは1か月先までです。\n" + (T.nextWeekError || "Bookings are available up to 1 month ahead."));
     return;
   }
