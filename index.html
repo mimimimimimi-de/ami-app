@@ -148,7 +148,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   white-space: nowrap;
   line-height: 1.4;
   position: sticky;
-  top: 0;
+  top: var(--cal-note-height, 0px);
   z-index: 3;
   width: 44px;
   overflow: hidden;
@@ -1294,7 +1294,9 @@ function generateCalendar() {
   };
   const _userLang = localStorage.getItem('userLang') || 'en';
   const dayNoteSub = DAY_NOTE_TRANS[_userLang] || DAY_NOTE_TRANS['en'];
-  const noteHtml = showLocalTime ? `<div style="font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border-bottom:1px solid #f0f0f0;line-height:1.6;position:sticky;top:0;z-index:5;">🌍 現地時間 (${userTzName || userTimezone}) を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ${dayNoteSub}</div>` : '';
+  const noteHeight = showLocalTime ? 36 : 0;
+  const noteHtml = showLocalTime ? `<div style="font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border-bottom:1px solid #f0f0f0;line-height:1.6;position:sticky;top:0;z-index:6;">🌍 現地時間 (${userTzName || userTimezone}) を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ${dayNoteSub}</div>` : '';
+  calendar.style.setProperty('--cal-note-height', (showLocalTime ? '36px' : '0px'));
   calendar.innerHTML = noteHtml + html;
 
   // 左上角セルを縦横両方sticky固定
