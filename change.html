@@ -513,7 +513,7 @@ function detectTimezone() {
 }
 
 function getLocalTimeLabel(dateStr, timeStr) {
-  if (!userTimezone || userTimezone === 'Asia/Tokyo') return '';
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') return null;
   try {
     const jstDate = new Date(`${dateStr}T${timeStr}:00+09:00`);
     const localTime = jstDate.toLocaleTimeString('en-US', {
@@ -521,11 +521,14 @@ function getLocalTimeLabel(dateStr, timeStr) {
     });
     const localDate = jstDate.toLocaleDateString('en-CA', { timeZone: userTimezone });
     if (localDate !== dateStr) {
-      const parts = localDate.split('-');
-      return `${Number(parts[1])}/${Number(parts[2])} ${localTime}`;
+      const jstDateObj = new Date(dateStr + 'T00:00:00+09:00');
+      const localDateObj = new Date(localDate + 'T00:00:00');
+      const diff = Math.round((localDateObj - jstDateObj) / (1000 * 60 * 60 * 24));
+      const badge = diff < 0 ? ' (-1)' : ' (+1)';
+      return { time: localTime, badge: badge, diff: diff };
     }
-    return localTime;
-  } catch (e) { return ''; }
+    return { time: localTime, badge: '', diff: 0 };
+  } catch (e) { return null; }
 }
 
 function formatShort(dateStr) {
@@ -687,8 +690,10 @@ function renderCalendar() {
   } else {
     times.forEach(time => {
       const firstDate = visibleDates.find(d => d.date);
-      const localTime = showLocalTime && firstDate ? getLocalTimeLabel(firstDate.date, time) : '';
-      html += "<tr><td>" + time + (localTime ? "<br><span style='font-size:11px;color:#aaa;'>" + localTime + "</span>" : "") + "</td>";
+      const localTimeObj = showLocalTime && firstDate ? getLocalTimeLabel(firstDate.date, time) : null;
+      const localTimeStr = localTimeObj ? localTimeObj.time + (localTimeObj.badge ? "<span style='color:#e67e22;font-weight:700;'>" + localTimeObj.badge + "</span>" : '') : '';
+      const localTimeColor = localTimeObj && localTimeObj.diff !== 0 ? '#e67e22' : '#aaa';
+      html += "<tr><td>" + time + (localTimeStr ? "<br><span style='font-size:11px;color:" + localTimeColor + ";'>" + localTimeStr + "</span>" : "") + "</td>";
       visibleDates.forEach(d => {
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
@@ -702,7 +707,8 @@ function renderCalendar() {
   }
 
   html += "</tbody></table>";
-  calendar.innerHTML = html;
+  const noteHtml = showLocalTime ? '<div style="font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border-bottom:1px solid #f0f0f0;line-height:1.6;">🌍 現地時間 (' + (userTzName || userTimezone) + ') を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; prev.day / next day</div>' : '';
+  calendar.innerHTML = noteHtml + html;
 
   setTimeout(() => {
     const cornerTh = calendar.querySelector("thead tr th:first-child");
