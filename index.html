@@ -417,7 +417,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
     <div class="scroll-hint">← 横にスクロールして他の日を確認<br><span class="scroll-hint-sub" style="font-size:11px;opacity:0.8;">Scroll to see more days →</span></div>
 
-    <div id="calendar">
+    <div id="calNote" style="display:none;font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border:1px solid #f0f0f0;border-radius:8px;margin-bottom:6px;line-height:1.6;"></div>
+
+    <div id="calendar" style="overflow-x:auto;border-radius:12px;border:1px solid #eee;">
       <div class="cal-loading">
         <div class="cal-spinner"></div>
         <div class="cal-loading-text">
@@ -1295,9 +1297,17 @@ function generateCalendar() {
   const _userLang = localStorage.getItem('userLang') || 'en';
   const dayNoteSub = DAY_NOTE_TRANS[_userLang] || DAY_NOTE_TRANS['en'];
   const noteHeight = showLocalTime ? 36 : 0;
-  const noteHtml = showLocalTime ? `<div style="font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border-bottom:1px solid #f0f0f0;line-height:1.6;position:sticky;top:0;z-index:6;">🌍 現地時間 (${userTzName || userTimezone}) を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ${dayNoteSub}</div>` : '';
-  calendar.style.setProperty('--cal-note-height', (showLocalTime ? '36px' : '0px'));
-  calendar.innerHTML = noteHtml + html;
+  const calNote = document.getElementById('calNote');
+  if (calNote) {
+    if (showLocalTime) {
+      calNote.style.display = 'block';
+      calNote.innerHTML = `🌍 現地時間 (${userTzName || userTimezone}) を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ${dayNoteSub}`;
+    } else {
+      calNote.style.display = 'none';
+    }
+  }
+  calendar.style.setProperty('--cal-note-height', '0px');
+  calendar.innerHTML = html;
 
   // 左上角セルを縦横両方sticky固定
   setTimeout(() => {
