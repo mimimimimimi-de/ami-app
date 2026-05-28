@@ -716,7 +716,8 @@ function renderCalendar() {
     de: 'Vortag / nächster Tag',
     es: 'día ant. / día sig.'
   };
-  const dayNoteSub2 = DAY_NOTE_TRANS2[userLang || 'en'] || DAY_NOTE_TRANS2['en'];
+  const _userLang2 = localStorage.getItem('userLang') || 'en';
+  const dayNoteSub2 = DAY_NOTE_TRANS2[_userLang2] || DAY_NOTE_TRANS2['en'];
   const noteHtml = showLocalTime ? '<div style="font-size:10px;color:#aaa;padding:6px 10px;background:#fafafa;border-bottom:1px solid #f0f0f0;line-height:1.6;">🌍 現地時間 (' + (userTzName || userTimezone) + ') を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ' + dayNoteSub2 + '</div>' : '';
   calendar.innerHTML = noteHtml + html;
 
