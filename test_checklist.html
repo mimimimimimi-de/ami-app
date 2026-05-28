@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ami Lesson システム テストチェックリスト</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans JP', sans-serif; background: #f5f6f7; color: #1a1a1a; font-size: 14px; }
+
+/* 固定ヘッダー */
+.sticky-header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 2px solid #06C755; padding: 10px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.sticky-header h1 { font-size: 16px; font-weight: 700; color: #06C755; margin-bottom: 8px; }
+.progress-bar-wrap { background: #f0f0f0; border-radius: 20px; height: 10px; margin-bottom: 6px; }
+.progress-bar { background: #06C755; border-radius: 20px; height: 10px; transition: width 0.3s; }
+.progress-text { font-size: 12px; color: #666; display: flex; justify-content: space-between; }
+.reset-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; color: #666; cursor: pointer; margin-top: 6px; }
+
+.container { max-width: 680px; margin: 0 auto; padding: 16px; }
+
+/* セクション */
+.section { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer; }
+.section-title { font-size: 15px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px; }
+.section-count { font-size: 12px; color: #aaa; }
+.section-count.done { color: #06C755; font-weight: 700; }
+.section-toggle { font-size: 12px; color: #aaa; transition: transform 0.2s; }
+.section-toggle.collapsed { transform: rotate(-90deg); }
+.section-body { display: flex; flex-direction: column; gap: 8px; }
+.section-body.collapsed { display: none; }
+
+/* チェックアイテム */
+.check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #f0f0f0; background: #fafafa; cursor: pointer; transition: all 0.15s; user-select: none; }
+.check-item:hover { border-color: #d0e8d8; }
+.check-item.checked { background: #f1fff6; border-color: #06C755; }
+.check-item.failed { background: #fff5f5; border-color: #d93025; }
+.check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; background: #fff; margin-top: 1px; transition: all 0.15s; }
+.check-item.checked .check-box { background: #06C755; border-color: #06C755; }
+.check-item.checked .check-box::after { content: "✓"; color: #fff; font-weight: 700; }
+.check-item.failed .check-box { background: #d93025; border-color: #d93025; }
+.check-item.failed .check-box::after { content: "✗"; color: #fff; font-weight: 700; }
+.check-content { flex: 1; }
+.check-title { font-size: 13px; font-weight: 600; color: #333; line-height: 1.4; }
+.check-item.checked .check-title { color: #06C755; }
+.check-item.failed .check-title { color: #d93025; }
+.check-desc { font-size: 11px; color: #aaa; margin-top: 3px; line-height: 1.5; }
+.check-actions { display: flex; gap: 6px; margin-top: 6px; }
+.btn-ok { background: #06C755; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.btn-ng { background: #d93025; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.btn-reset-item { background: #f0f0f0; color: #666; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+
+.priority-high { border-left: 3px solid #d93025; }
+.priority-med { border-left: 3px solid #f5a623; }
+</style>
+</head>
+<body>
+
+<!-- 固定ヘッダー -->
+<div class="sticky-header">
+  <h1>🧪 Ami Lesson テストチェックリスト</h1>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-text">
+    <span id="progressText">0 / 0 完了</span>
+    <span id="failText" style="color:#d93025;"></span>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">🔄 全てリセット</button>
+</div>
+
+<div class="container">
+
+<!-- 1. 新規登録 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">👤 新規登録</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-0">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">言語選択が最初に表示される</div>
+        <div class="check-desc">登録画面を開くと言語選択→タイムゾーン選択→ステップ説明の順</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">言語・タイムゾーンがスプレッドシートに保存される</div>
+        <div class="check-desc">登録後にusersシートのE列(timezone)・F列(lang)に値が入っているか確認</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">登録完了後に先生グループLINEに通知が届く</div>
+        <div class="check-desc">名前・言語・タイムゾーンが通知に含まれているか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">各言語でサブテキストが正しく表示される</div>
+        <div class="check-desc">英語・韓国語・タイ語などで登録画面を開きサブテキストが表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 予約 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">📅 予約（単回決済）</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-1">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">料金未設定時にカスタムモーダルが表示される</div>
+        <div class="check-desc">「料金がまだ設定されていません」のポップアップが多言語で表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">カレンダーが正しく表示される（4週分）</div>
+        <div class="check-desc">今日から4週分・○と×が均一サイズ・時間列が広め</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">現地時間が表示される（タイムゾーンが日本以外の場合）</div>
+        <div class="check-desc">(-1)(+1)バッジ・説明文がカレンダー上に表示される。下スクロール後も説明文が残る</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">決済完了後に予約確定LINEメッセージが届く</div>
+        <div class="check-desc">FlexMessage・タイトル多言語・レッスン/日時のサブテキスト・ボタン3つ</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">ダブルブッキング防止が機能する</div>
+        <div class="check-desc">同じ時間帯に2つの予約が入らないか確認</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">仮予約が5分後に自動削除される</div>
+        <div class="check-desc">cleanTempReservationsトリガーが設定されているか・仮予約が残らないか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 回数券 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">🎟️ 回数券</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-2">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">回数券で予約できる</div>
+        <div class="check-desc">回数券選択→空き枠確認→予約確定の流れが正常か</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">回数券残り2以下でアラートが届く（レッスン種類別）</div>
+        <div class="check-desc">25分・50分それぞれ別カウントで2以下になった時にLINE通知が届くか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">有効期限当日まで使用できる</div>
+        <div class="check-desc">有効期限当日の23:59まで予約可能か</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">購入完了LINEメッセージが届く</div>
+        <div class="check-desc">有効期限・回数・JST基準の注意書き・多言語サブテキスト</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. マイ予約 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">📋 マイ予約</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-3">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">予約一覧にJST+現地時間が表示される</div>
+        <div class="check-desc">タイムゾーンが日本以外の場合、現地時間も表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">「🚪 受講を終了する」ボタンが表示される</div>
+        <div class="check-desc">マイ予約下部にボタンがあるか・押すと受講終了画面に遷移するか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. キャンセル -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">❌ キャンセル</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-4">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">キャンセル完了後に返金処理が行われる</div>
+        <div class="check-desc">Stripeで返金が確認できるか・手数料が差し引かれているか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">キャンセル完了LINEメッセージが届く</div>
+        <div class="check-desc">FlexMessage・返金処理完了・多言語サブテキスト・再予約ボタン</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">完了画面に「右上の×で閉じてください」が表示される</div>
+        <div class="check-desc">閉じるボタンの代わりにテキストが表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">欠席連絡を送るとLINEトーク画面に戻る</div>
+        <div class="check-desc">「閉じる」ボタンでLINEのトーク画面に戻るか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. 予約変更 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">🔄 予約変更</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-5">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">変更カレンダーが正しく表示される（4週分・空白なし）</div>
+        <div class="check-desc">○と×が均一・時間列が広め・空白列がない</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">現地時間の説明文+日付がスクロール後も残る</div>
+        <div class="check-desc">説明文がカレンダー上に固定・縦スクロール後も消えないか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">変更完了LINEメッセージが届く</div>
+        <div class="check-desc">新しい日時・多言語サブテキスト・ボタン3つ</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. リマインド -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">🔔 リマインド</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-6">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">前日20時にリマインドが届く</div>
+        <div class="check-desc">sendRemindersトリガーが設定済みか・FlexMessage形式か</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">当日8時にリマインドが届く</div>
+        <div class="check-desc">8時〜9時のトリガーが設定済みか・hour===8のコードか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. 受講終了 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">🚪 受講終了</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-7">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">理由を選んで送信できる</div>
+        <div class="check-desc">5つの理由+その他（自由入力）が選択できるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">先生グループに通知・生徒にFlexMessageが届く</div>
+        <div class="check-desc">「またのご受講をお待ちしております」メッセージが届くか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. レッスン後メッセージ -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">📝 レッスン後メッセージ</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-8">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">管理画面の「レッスン後」タブから送信できる</div>
+        <div class="check-desc">生徒プルダウン選択→任意項目入力→送信が正常に動くか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">入力した項目だけLINEに表示される</div>
+        <div class="check-desc">空欄の項目は表示されないか確認</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">次回レッスンがある場合は日時+現地時間が表示される</div>
+        <div class="check-desc">JST+現地時間・タイムゾーン名が収まっているか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">次回レッスンがない場合は予約ボタンが表示される</div>
+        <div class="check-desc">「予約する」ボタンが表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. 生徒カルテ -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">👥 生徒カルテ</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-9">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">管理画面→カルテに遷移できる</div>
+        <div class="check-desc">「📋 カルテ」タブと生徒一覧の「カルテを見る」ボタンが動くか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">基本情報を編集・保存できる</div>
+        <div class="check-desc">編集ボタン→入力→保存後にスプレッドシートに反映されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-high" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">レッスン記録を追加・削除できる</div>
+        <div class="check-desc">日付・内容・メモを入力して保存・🗑で削除できるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. 管理画面 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">⚙️ 管理画面</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-10">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">生徒一覧で回数券が折り畳まれている</div>
+        <div class="check-desc">▶クリックで展開・タイムゾーン・言語が表示されるか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">料金設定後にLINEメッセージが届く</div>
+        <div class="check-desc">FlexMessage・クーポンメッセージが届くか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">GASのトリガーが正しく設定されている</div>
+        <div class="check-desc">sendReminders×2・cleanTempReservations×1・archiveOldReservations×1が設定済みか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 12. 多言語 -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <div class="section-title">🌍 多言語対応</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-count" id="count-11">0/0</span>
+      <span class="section-toggle">▼</span>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="check-item priority-med" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">スペイン語でLINEメッセージのサブテキストが表示される</div>
+        <div class="check-desc">スペイン語ユーザーの全LINEメッセージにスペイン語サブテキストが入るか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+    <div class="check-item priority-med" onclick="toggleItem(this)">
+      <div class="check-box"></div>
+      <div class="check-content">
+        <div class="check-title">韓国語で句点（。）が混入していない</div>
+        <div class="check-desc">韓国語ユーザーへのLINEメッセージに日本語句点が入っていないか</div>
+        <div class="check-actions"><button class="btn-ok" onclick="markOk(event,this)">OK</button><button class="btn-ng" onclick="markNg(event,this)">NG</button><button class="btn-reset-item" onclick="markReset(event,this)">-</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ローカルストレージに保存
+function saveState() {
+  const items = document.querySelectorAll('.check-item');
+  const state = {};
+  items.forEach((item, i) => {
+    state[i] = item.classList.contains('checked') ? 'ok' : item.classList.contains('failed') ? 'ng' : '';
+  });
+  localStorage.setItem('ami_test_state', JSON.stringify(state));
+  updateProgress();
+}
+
+function loadState() {
+  const state = JSON.parse(localStorage.getItem('ami_test_state') || '{}');
+  const items = document.querySelectorAll('.check-item');
+  items.forEach((item, i) => {
+    if (state[i] === 'ok') item.classList.add('checked');
+    else if (state[i] === 'ng') item.classList.add('failed');
+  });
+  updateProgress();
+  updateSectionCounts();
+}
+
+function updateProgress() {
+  const items = document.querySelectorAll('.check-item');
+  const total = items.length;
+  const done = document.querySelectorAll('.check-item.checked').length;
+  const failed = document.querySelectorAll('.check-item.failed').length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} / ${total} 完了 (${pct}%)`;
+  document.getElementById('failText').textContent = failed > 0 ? `⚠️ NG: ${failed}件` : '';
+  updateSectionCounts();
+}
+
+function updateSectionCounts() {
+  document.querySelectorAll('.section').forEach((sec, idx) => {
+    const items = sec.querySelectorAll('.check-item');
+    const done = sec.querySelectorAll('.check-item.checked').length;
+    const el = document.getElementById('count-' + idx);
+    if (el) {
+      el.textContent = `${done}/${items.length}`;
+      el.className = 'section-count' + (done === items.length && items.length > 0 ? ' done' : '');
+    }
+  });
+}
+
+function toggleItem(item) { /* クリックでの切り替えは不要 */ }
+
+function markOk(e, btn) {
+  e.stopPropagation();
+  const item = btn.closest('.check-item');
+  item.classList.remove('failed');
+  item.classList.toggle('checked');
+  saveState();
+}
+
+function markNg(e, btn) {
+  e.stopPropagation();
+  const item = btn.closest('.check-item');
+  item.classList.remove('checked');
+  item.classList.toggle('failed');
+  saveState();
+}
+
+function markReset(e, btn) {
+  e.stopPropagation();
+  const item = btn.closest('.check-item');
+  item.classList.remove('checked', 'failed');
+  saveState();
+}
+
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.section-toggle');
+  body.classList.toggle('collapsed');
+  toggle.classList.toggle('collapsed');
+}
+
+function resetAll() {
+  if (!confirm('全てのチェックをリセットしますか？')) return;
+  document.querySelectorAll('.check-item').forEach(item => item.classList.remove('checked', 'failed'));
+  localStorage.removeItem('ami_test_state');
+  updateProgress();
+}
+
+loadState();
+</script>
+</body>
+</html>
