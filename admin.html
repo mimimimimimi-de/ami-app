@@ -373,6 +373,20 @@ body {
 .ticket-expiry { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
 .no-ticket { font-size: 13px; color: var(--gray-text); text-align: center; padding: 8px; }
 
+/* レッスン後メッセージ */
+.report-section { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: var(--card-shadow); }
+.report-section h2 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.report-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-border); border-radius: 10px; font-size: 14px; margin-bottom: 14px; background: #fff; }
+.report-field { margin-bottom: 12px; }
+.report-field label { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; display: block; }
+.report-field textarea, .report-field input[type="text"] { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-border); border-radius: 10px; font-size: 13px; font-family: inherit; resize: vertical; transition: border-color 0.15s; }
+.report-field textarea:focus, .report-field input[type="text"]:focus { border-color: var(--green); outline: none; }
+.report-send-btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+.report-send-btn:disabled { opacity: 0.5; }
+.report-status { font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
+.report-status.ok { color: var(--green); }
+.report-status.err { color: var(--red); }
+
 /* モーダル */
 .modal-overlay {
   display: none;
@@ -512,6 +526,7 @@ body {
   <div class="tab-row">
     <button class="tab-btn active" onclick="switchTab('reservations', this)">📋 予約一覧</button>
     <button class="tab-btn" onclick="switchTab('users', this)">👥 生徒一覧</button>
+    <button class="tab-btn" onclick="switchTab('report', this)">📝 レッスン後</button>
   </div>
 
   <!-- 予約タブ -->
@@ -545,6 +560,53 @@ body {
     </div>
   </div>
 
+  <!-- レッスン後メッセージタブ -->
+  <div id="reportTab" style="display:none">
+    <div class="report-section">
+      <h2>📝 レッスン後メッセージを送る</h2>
+
+      <div class="report-field">
+        <label>生徒を選択</label>
+        <select class="report-select" id="reportStudentSelect">
+          <option value="">-- 生徒を選んでください --</option>
+        </select>
+      </div>
+
+      <div class="report-field">
+        <label>📚 今日勉強したこと</label>
+        <textarea id="reportStudied" rows="2" placeholder="例：て形・た形の活用"></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>✨ 新しい単語</label>
+        <textarea id="reportWords" rows="2" placeholder="例：食べる・飲む・行く・来る・帰る"></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>🔗 教科書URL</label>
+        <input type="text" id="reportUrl" placeholder="https://...">
+      </div>
+
+      <div class="report-field">
+        <label>📌 宿題</label>
+        <textarea id="reportHomework" rows="2" placeholder="例：ワークブック p.24〜26 を解いてみてください"></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>🔄 次回復習してほしいこと</label>
+        <textarea id="reportReview" rows="2" placeholder="例：て形の作り方をもう一度確認してください"></textarea>
+      </div>
+
+      <div class="report-field">
+        <label>💬 先生からの一言</label>
+        <textarea id="reportComment" rows="2" placeholder="例：今日はとても上手でした！"></textarea>
+      </div>
+
+      <button class="report-send-btn" id="reportSendBtn" onclick="sendLessonReport()">📩 送信する</button>
+      <div class="report-status" id="reportStatus"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -560,6 +622,58 @@ function switchTab(tab, btn) {
   btn.classList.add("active");
   document.getElementById("reservationsTab").style.display = tab === "reservations" ? "block" : "none";
   document.getElementById("usersTab").style.display = tab === "users" ? "block" : "none";
+  document.getElementById("reportTab").style.display = tab === "report" ? "block" : "none";
+}
+
+async function sendLessonReport() {
+  const userId = document.getElementById("reportStudentSelect").value;
+  if (!userId) { alert("生徒を選択してください。"); return; }
+
+  const studied   = document.getElementById("reportStudied").value.trim();
+  const words     = document.getElementById("reportWords").value.trim();
+  const url       = document.getElementById("reportUrl").value.trim();
+  const homework  = document.getElementById("reportHomework").value.trim();
+  const review    = document.getElementById("reportReview").value.trim();
+  const comment   = document.getElementById("reportComment").value.trim();
+
+  if (!studied && !words && !url && !homework && !review && !comment) {
+    alert("内容を1つ以上入力してください。"); return;
+  }
+
+  const btn = document.getElementById("reportSendBtn");
+  const statusEl = document.getElementById("reportStatus");
+  btn.disabled = true;
+  btn.textContent = "送信中...";
+  statusEl.textContent = "";
+  statusEl.className = "report-status";
+
+  try {
+    const params = new URLSearchParams({
+      action: "sendLessonReport",
+      userId, studied, words, url, homework, review, comment,
+      t: Date.now()
+    });
+    const res = await fetch(GAS_URL + "?" + params.toString());
+    const data = await res.json();
+    if (data.ok) {
+      statusEl.textContent = "✅ 送信しました！";
+      statusEl.className = "report-status ok";
+      document.getElementById("reportStudied").value = "";
+      document.getElementById("reportWords").value = "";
+      document.getElementById("reportUrl").value = "";
+      document.getElementById("reportHomework").value = "";
+      document.getElementById("reportReview").value = "";
+      document.getElementById("reportComment").value = "";
+    } else {
+      statusEl.textContent = "⚠️ " + (data.message || "送信に失敗しました。");
+      statusEl.className = "report-status err";
+    }
+  } catch (e) {
+    statusEl.textContent = "エラーが発生しました。";
+    statusEl.className = "report-status err";
+  }
+  btn.disabled = false;
+  btn.textContent = "📩 送信する";
 }
 
 async function loadAll() {
@@ -583,6 +697,16 @@ async function loadAll() {
 
     allReservations = resData.reservations || [];
     allUsers = userData.ok ? (userData.users || []) : [];
+
+    // レッスン後メッセージのプルダウンを更新
+    const sel = document.getElementById("reportStudentSelect");
+    sel.innerHTML = '<option value="">-- 生徒を選んでください --</option>';
+    allUsers.forEach(u => {
+      const opt = document.createElement("option");
+      opt.value = u.userId;
+      opt.textContent = u.name;
+      sel.appendChild(opt);
+    });
 
     updateSummary();
     renderReservations();
