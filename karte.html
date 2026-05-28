@@ -150,6 +150,27 @@ body { font-family: "Noto Sans JP", -apple-system, sans-serif; background: var(-
 
       <!-- レッスン記録 -->
       <div id="tab-lessons" class="tab-content">
+
+        <!-- 追加フォーム -->
+        <div style="background:#f8fdf9;border:1px solid #d7f3df;border-radius:14px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:#06C755;margin-bottom:10px;">➕ レッスン記録を追加</div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:4px;">日付</div>
+            <input type="text" id="logDate" style="width:100%;padding:9px 11px;border:1.5px solid #e8e8e8;border-radius:9px;font-size:13px;font-family:inherit;outline:none;">
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:4px;">レッスン内容</div>
+            <textarea id="logContent" rows="2" placeholder="例：て形・た形 / みんなの日本語 p.45〜48" style="width:100%;padding:9px 11px;border:1.5px solid #e8e8e8;border-radius:9px;font-size:13px;font-family:inherit;resize:vertical;outline:none;"></textarea>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:4px;">メモ</div>
+            <textarea id="logMemo" rows="2" placeholder="例：動詞グループが難しそう。次回も復習する。" style="width:100%;padding:9px 11px;border:1.5px solid #e8e8e8;border-radius:9px;font-size:13px;font-family:inherit;resize:vertical;outline:none;"></textarea>
+          </div>
+          <button onclick="addLessonLog()" style="width:100%;background:#06C755;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;" id="logAddBtn">保存する</button>
+          <div id="logAddStatus" style="font-size:12px;text-align:center;margin-top:6px;min-height:16px;"></div>
+        </div>
+
+        <!-- 記録リスト -->
         <div class="lesson-list" id="lessonList">
           <div class="empty">レッスン記録はありません</div>
         </div>
@@ -222,6 +243,7 @@ async function selectStudent(userId) {
   renderBasicInfo(k);
   hideEditForm();
   document.getElementById("karteDetail").classList.add("show");
+  setTodayDate();
   // レッスン記録を取得
   try {
     const res = await fetch(GAS_URL + "?action=getLessonLogs&userId=" + encodeURIComponent(userId) + "&t=" + Date.now());
@@ -257,25 +279,81 @@ function renderBasicInfo(k) {
 function renderLessonLogs(logs) {
   const el = document.getElementById("lessonList");
   if (!logs.length) { el.innerHTML = '<div class="empty">レッスン記録はありません</div>'; return; }
-  el.innerHTML = logs.map(log => {
-    const sections = [
-      { label: '📚 今日勉強したこと', val: log.studied },
-      { label: '✨ 新しい単語', val: log.words },
-      { label: '📌 宿題', val: log.homework },
-      { label: '🔄 次回復習', val: log.review },
-      { label: '💬 先生からの一言', val: log.comment },
-    ].filter(s => s.val);
-    return `<div class="lesson-item">
-      <div class="lesson-date">
-        ${escHtml(log.date)}
-        <span class="lesson-type-badge">${escHtml(log.lesson || '')}</span>
+  el.innerHTML = logs.map((log, idx) => `
+    <div class="lesson-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:700;color:#06C755;">${escHtml(log.date)}</div>
+        <button onclick="deleteLessonLog(${idx})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:0 4px;">🗑</button>
       </div>
-      ${sections.map(s => `<div class="lesson-section">
-        <div class="lesson-section-label">${s.label}</div>
-        <div class="lesson-section-val">${escHtml(s.val)}</div>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
+      ${log.content ? `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:2px;">📖 レッスン内容</div>
+      <div style="font-size:13px;color:#333;line-height:1.6;margin-bottom:8px;">${escHtml(log.content)}</div>` : ''}
+      ${log.memo ? `<div style="font-size:10px;color:#aaa;font-weight:600;margin-bottom:2px;">📝 メモ</div>
+      <div style="font-size:12px;color:#777;line-height:1.6;background:#f8f8f8;border-radius:8px;padding:8px 10px;">${escHtml(log.memo)}</div>` : ''}
+    </div>`).join('');
+}
+
+// 今日の日付をセット
+function setTodayDate() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, '0');
+  const d = String(today.getDate()).padStart(2, '0');
+  const el = document.getElementById("logDate");
+  if (el && !el.value) el.value = `${y}-${m}-${d}`;
+}
+
+async function addLessonLog() {
+  if (!selectedUserId) return;
+  const date = document.getElementById("logDate").value.trim();
+  const content = document.getElementById("logContent").value.trim();
+  const memo = document.getElementById("logMemo").value.trim();
+  if (!date && !content && !memo) { alert("内容を入力してください。"); return; }
+  const btn = document.getElementById("logAddBtn");
+  const statusEl = document.getElementById("logAddStatus");
+  btn.disabled = true;
+  btn.textContent = "保存中...";
+  statusEl.textContent = "";
+  try {
+    const params = new URLSearchParams({ action: "addLessonLog", userId: selectedUserId, date, content, memo, t: Date.now() });
+    const res = await fetch(GAS_URL + "?" + params.toString());
+    const data = await res.json();
+    if (data.ok) {
+      statusEl.textContent = "✅ 保存しました";
+      statusEl.style.color = "#06C755";
+      document.getElementById("logContent").value = "";
+      document.getElementById("logMemo").value = "";
+      // リストを再取得
+      const res2 = await fetch(GAS_URL + "?action=getLessonLogs&userId=" + encodeURIComponent(selectedUserId) + "&t=" + Date.now());
+      const data2 = await res2.json();
+      allLessons[selectedUserId] = data2.ok ? data2.logs : [];
+      renderLessonLogs(allLessons[selectedUserId]);
+      renderStudents();
+    } else {
+      statusEl.textContent = "⚠️ " + (data.message || "失敗しました");
+      statusEl.style.color = "#d93025";
+    }
+  } catch(e) {
+    statusEl.textContent = "エラーが発生しました";
+    statusEl.style.color = "#d93025";
+  }
+  btn.disabled = false;
+  btn.textContent = "保存する";
+}
+
+async function deleteLessonLog(idx) {
+  if (!selectedUserId) return;
+  if (!confirm("この記録を削除しますか？")) return;
+  try {
+    const params = new URLSearchParams({ action: "deleteLessonLog", userId: selectedUserId, idx, t: Date.now() });
+    const res = await fetch(GAS_URL + "?" + params.toString());
+    const data = await res.json();
+    if (data.ok) {
+      const res2 = await fetch(GAS_URL + "?action=getLessonLogs&userId=" + encodeURIComponent(selectedUserId) + "&t=" + Date.now());
+      const data2 = await res2.json();
+      allLessons[selectedUserId] = data2.ok ? data2.logs : [];
+      renderLessonLogs(allLessons[selectedUserId]);
+    }
+  } catch(e) {}
 }
 
 function showEditForm() {
