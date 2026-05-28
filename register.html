@@ -636,7 +636,9 @@ const LANG_TEXT = {
     step1title: "Primero regístrese", step1desc: "¡Solo toque el botón de abajo！<br>Registro automático con su cuenta LINE.",
     step2title: "El profesor establece la tarifa", step2desc: "Después del registro, el profesor establecerá su tarifa de lección.",
     step3title: "¡Comience a reservar！", step3desc: "Cuando reciba un mensaje LINE del profesor, podrá hacer reservas.",
-    registerBtn: "📝 Registrarse", registerBtnSub: "",
+    tzLabel: "🌍 Seleccione su zona horaria", tzLabelSub: "",
+    langLabel: "🌐 Seleccione su idioma", langLabelSub: "",
+    registerBtn: "Registrarse", registerBtnSub: "",
     doneTitle: "¡Registro completado！", doneTitleSub: "",
     doneMsg: "¡Registro exitoso！<br>Le notificaremos por LINE<br><span class='highlight'>cuando el profesor establezca su tarifa.</span>", doneMsgSub: "",
     alreadyTitle: "Ya registrado", alreadyTitleSub: "",
@@ -670,10 +672,10 @@ function applyLang(lang) {
   steps.forEach((s, i) => {
     if (stepTitles[i]) stepTitles[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.title] || ''}</span>`;
     if (stepDescs[i]) stepDescs[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.desc] || ''}</span>`;
   });
 
   // オーバーレイサブテキスト
