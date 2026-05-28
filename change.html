@@ -667,28 +667,16 @@ function renderCalendar() {
   }
 
   const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
+  // 7列に満たない場合はダミーで補完（列幅統一のため）
+  while (visibleDates.length < pageSize) {
+    visibleDates.push({ date: '', times: [], isFull: true, dummy: true });
+  }
 
-  // 表示する全スロットをGASの営業時間から生成（予約不可スロットも含む）
+  // GASから返ってきた予約可能スロットのみ表示
   const allTimeSet = new Set();
   visibleDates.forEach(d => {
-    const dow = new Date(d.date + 'T00:00:00+09:00').getDay();
-    // 平日: 07:00-11:00, 14:00-22:00 / 土曜: 08:00-12:00, 13:00-19:00
-    let windows = [];
-    if (dow >= 1 && dow <= 5) {
-      windows = [{ start: '07:00', end: '11:00' }, { start: '14:00', end: '22:00' }];
-    } else if (dow === 6) {
-      windows = [{ start: '08:00', end: '12:00' }, { start: '13:00', end: '19:00' }];
-    }
-    windows.forEach(w => {
-      let t = timeToMinutes(w.start);
-      const end = timeToMinutes(w.end);
-      while (t < end) {
-        allTimeSet.add(minutesToTime(t));
-        t += 15;
-      }
-    });
-    // GASから返ってきた予約可能スロットも追加（臨時営業など）
-    if (d.times) d.times.forEach(t => allTimeSet.add(t));
+    if (d.dummy || !d.times) return;
+    d.times.forEach(t => allTimeSet.add(t));
   });
 
   const times = Array.from(allTimeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
@@ -696,6 +684,7 @@ function renderCalendar() {
   // 1テーブルで生成（theadにsticky適用）
   let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
   visibleDates.forEach(d => {
+    if (d.dummy) { html += "<th></th>"; return; }
     const isSun = new Date(d.date + 'T00:00:00+09:00').getDay() === 0;
     const dayLabel = isSun
       ? "<span style='color:#e67e22;font-weight:700;'>日</span>"
@@ -711,6 +700,7 @@ function renderCalendar() {
       const localTime = showLocalTime && visibleDates.length > 0 ? getLocalTimeLabel(visibleDates[0].date, time) : '';
       html += "<tr><td>" + time + (localTime ? `<br><span style='font-size:11px;color:#aaa;'>${localTime}</span>` : '') + "</td>";
       visibleDates.forEach(d => {
+        if (d.dummy) { html += "<td style='background:#fafafa;'></td>"; return; }
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
           html += '<td class="available" data-date="' + d.date + '" data-time="' + time + '">○</td>';
