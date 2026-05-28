@@ -667,15 +667,15 @@ function renderCalendar() {
   }
 
   const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
-  // 7列に満たない場合はダミーで補完（列幅統一のため）
-  while (visibleDates.length < pageSize) {
-    visibleDates.push({ date: '', times: [], isFull: true, dummy: true });
-  }
+  const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
+
+
+
 
   // GASから返ってきた予約可能スロットのみ表示
   const allTimeSet = new Set();
   visibleDates.forEach(d => {
-    if (d.dummy || !d.times) return;
+    if (!d.times) return;
     d.times.forEach(t => allTimeSet.add(t));
   });
 
@@ -684,7 +684,7 @@ function renderCalendar() {
   // 1テーブルで生成（theadにsticky適用）
   let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
   visibleDates.forEach(d => {
-    if (d.dummy) { html += "<th></th>"; return; }
+  visibleDates.forEach(d => {
     const isSun = new Date(d.date + 'T00:00:00+09:00').getDay() === 0;
     const dayLabel = isSun
       ? "<span style='color:#e67e22;font-weight:700;'>日</span>"
@@ -700,7 +700,7 @@ function renderCalendar() {
       const localTime = showLocalTime && visibleDates.length > 0 ? getLocalTimeLabel(visibleDates[0].date, time) : '';
       html += "<tr><td>" + time + (localTime ? `<br><span style='font-size:11px;color:#aaa;'>${localTime}</span>` : '') + "</td>";
       visibleDates.forEach(d => {
-        if (d.dummy) { html += "<td style='background:#fafafa;'></td>"; return; }
+      visibleDates.forEach(d => {
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
           html += '<td class="available" data-date="' + d.date + '" data-time="' + time + '">○</td>';
