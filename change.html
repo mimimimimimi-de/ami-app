@@ -655,8 +655,6 @@ function renderCalendar() {
   const calendar = document.getElementById("calendar");
   const allDates = optionsData.dates || [];
   const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
-
-  // カレンダー読み込みサブテキストを設定
   const T = window._changeT || {};
   const subEl = document.getElementById("changeCalLoadingSub");
   if (subEl) subEl.textContent = T.checkingSlots || "Checking available slots...";
@@ -668,11 +666,6 @@ function renderCalendar() {
 
   const visibleDates = allDates.slice(weekOffset, weekOffset + pageSize);
 
-
-
-
-
-  // GASから返ってきた予約可能スロットのみ表示
   const allTimeSet = new Set();
   visibleDates.forEach(d => {
     if (!d.times) return;
@@ -681,14 +674,10 @@ function renderCalendar() {
 
   const times = Array.from(allTimeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
 
-  // 1テーブルで生成（theadにsticky適用）
-  let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style='font-size:10px;color:#aaa;'>${userTzName || ''}</span>` : '') + "</th>";
+  let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? "<br><span style='font-size:10px;color:#aaa;'>" + (userTzName || '') + "</span>" : "") + "</th>";
   visibleDates.forEach(d => {
     const isSun = new Date(d.date + 'T00:00:00+09:00').getDay() === 0;
-    const isSun = new Date(d.date + 'T00:00:00+09:00').getDay() === 0;
-    const dayLabel = isSun
-      ? "<span style='color:#e67e22;font-weight:700;'>日</span>"
-      : getDayLabel(d.date);
+    const dayLabel = isSun ? "<span style='color:#e67e22;font-weight:700;'>日</span>" : getDayLabel(d.date);
     html += "<th>" + formatShort(d.date) + "<br>(" + dayLabel + ")</th>";
   });
   html += "</tr></thead><tbody>";
@@ -697,10 +686,10 @@ function renderCalendar() {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
   } else {
     times.forEach(time => {
-      const localTime = showLocalTime && visibleDates.length > 0 ? getLocalTimeLabel(visibleDates[0].date, time) : '';
-      html += "<tr><td>" + time + (localTime ? `<br><span style='font-size:11px;color:#aaa;'>${localTime}</span>` : '') + "</td>";
+      const firstDate = visibleDates.find(d => d.date);
+      const localTime = showLocalTime && firstDate ? getLocalTimeLabel(firstDate.date, time) : '';
+      html += "<tr><td>" + time + (localTime ? "<br><span style='font-size:11px;color:#aaa;'>" + localTime + "</span>" : "") + "</td>";
       visibleDates.forEach(d => {
-        const canSelect = d.times && d.times.includes(time);
         const canSelect = d.times && d.times.includes(time);
         if (canSelect) {
           html += '<td class="available" data-date="' + d.date + '" data-time="' + time + '">○</td>';
@@ -715,7 +704,6 @@ function renderCalendar() {
   html += "</tbody></table>";
   calendar.innerHTML = html;
 
-  // 左上角セルを縦横両方sticky固定
   setTimeout(() => {
     const cornerTh = calendar.querySelector("thead tr th:first-child");
     if (cornerTh) {
