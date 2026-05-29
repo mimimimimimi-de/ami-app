@@ -264,6 +264,17 @@ td.available:active { background: #d4f5e0; }
 
 .done-icon { font-size: 44px; text-align: center; margin-bottom: 10px; }
 .error { color: #d93025; }
+
+/* カレンダーポップアップ */
+.cal-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; animation: calFadeIn 0.15s ease; }
+@keyframes calFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.cal-popup { background: #fff; border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); text-align: center; animation: calPopIn 0.2s ease; }
+@keyframes calPopIn { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.cal-popup-icon { font-size: 30px; margin-bottom: 10px; }
+.cal-popup-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; line-height: 1.4; }
+.cal-popup-sub { font-size: 11px; color: #aaa; margin-bottom: 18px; line-height: 1.5; }
+.cal-popup-btn { border: none; border-radius: 12px; padding: 11px 0; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; color: #fff; }
+
 </style>
 </head>
 
@@ -758,6 +769,24 @@ function renderCalendar() {
   }, 0);
 }
 
+
+function showCalPopup(icon, title, sub, btnLabel, btnColor) {
+  const existing = document.getElementById('calPopupOverlay');
+  if (existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'calPopupOverlay';
+  overlay.className = 'cal-popup-overlay';
+  overlay.innerHTML = `
+    <div class="cal-popup">
+      <div class="cal-popup-icon">${icon}</div>
+      <div class="cal-popup-title">${title}</div>
+      <div class="cal-popup-sub">${sub}</div>
+      <button class="cal-popup-btn" style="background:${btnColor};" onclick="document.getElementById('calPopupOverlay').remove()">${btnLabel}</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
 function prevWeek() {
   const T = window._changeT || {};
   if (weekOffset <= 0) {
@@ -772,7 +801,7 @@ function nextWeek() {
   const T = window._changeT || {};
   if (!optionsData || !optionsData.dates) return;
   if (weekOffset + pageSize >= optionsData.dates.length) {
-    alert("予約変更できるのは1か月先までです。\n" + (T.nextWeekError || "Cannot change more than 1 month ahead."));
+    showCalPopup("🗓", "予約できるのは1ヶ月先までです", T.nextWeekError || "Cannot change more than 1 month ahead.", "閉じる / " + (T.close || "Close"), "#06C755");
     return;
   }
   weekOffset += pageSize;
