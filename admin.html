@@ -632,7 +632,7 @@ async function sendLessonReport() {
 
   const studied   = document.getElementById("reportStudied").value.trim();
   const words     = document.getElementById("reportWords").value.trim();
-  const url       = document.getElementById("reportUrl").value.trim();
+  const textbookUrl = document.getElementById("reportUrl").value.trim();
   const homework  = document.getElementById("reportHomework").value.trim();
   const review    = document.getElementById("reportReview").value.trim();
   const comment   = document.getElementById("reportComment").value.trim();
@@ -651,7 +651,7 @@ async function sendLessonReport() {
   try {
     const params = new URLSearchParams({
       action: "sendLessonReport",
-      userId, studied, words, url, homework, review, comment,
+      userId, studied, words, url: textbookUrl, homework, review, comment,
       t: Date.now()
     });
     const res = await fetch(GAS_URL + "?" + params.toString());
