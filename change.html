@@ -357,7 +357,7 @@ const CHANGE_TRANS = {
     changeLine2: "New Meet link will be issued", timesShown: "Times shown in JST",
     prevWeek: "Prev", nextWeek: "Next", scrollHint: "Scroll to see more days →",
     doneTitle: "Reservation Changed", doneLine: "New booking details sent via LINE. You can close this page.",
-    deleteNote: "Please manually delete the previous lesson from your Google Calendar.", closeMsg: "Tap × to close",
+    deleteNote: "Please manually delete the previous lesson from your Google Calendar.", closeMsg: "Tap × to close", pastDeadline: "Cannot change: less than 12h before lesson.",
     close: "Close", loading: "Loading...", checkingSlots: "Checking available slots...", notFound: "Reservation not found.", failedLoad: "Failed to load.",
     confirmMsg: "Change to this time?", status: "Changed", statusLabel: "Status", newTime: "New Time",
     addCalendar: "Add to Calendar", currentLesson: "Current Lesson", currentTime: "Current Time",
@@ -370,7 +370,7 @@ const CHANGE_TRANS = {
     changeLine2: "更改后将发放新的Meet链接", timesShown: "时间以JST显示",
     prevWeek: "上一周", nextWeek: "下一周", scrollHint: "横向滚动查看更多日期 →",
     doneTitle: "预约已更改", doneLine: "新预约内容已通过LINE发送.可以关闭此页面.",
-    deleteNote: "请从Google日历手动删除以前的课程.", closeMsg: "点击 × 关闭",
+    deleteNote: "请从Google日历手动删除以前的课程.", closeMsg: "点击 × 关闭", pastDeadline: "无法更改：距课程开始不足12小时。",
     close: "关闭", loading: "加载中...", checkingSlots: "正在检查可用时段...", notFound: "未找到预约。", failedLoad: "加载失败。",
     confirmMsg: "更改为此时间？", status: "已更改", statusLabel: "状态", newTime: "新时间",
     addCalendar: "添加到Google日历", currentLesson: "当前课程", currentTime: "当前时间",
@@ -383,7 +383,7 @@ const CHANGE_TRANS = {
     changeLine2: "변경 후 새 Meet 링크가 발급됩니다", timesShown: "JST 기준으로 표시",
     prevWeek: "이전 주", nextWeek: "다음 주", scrollHint: "옆으로 스크롤하여 다른 날짜 확인 →",
     doneTitle: "예약이 변경되었습니다", doneLine: "새 예약 내용을 LINE으로 전송했습니다. 이 페이지를 닫아도 됩니다.",
-    deleteNote: "이전 레슨을 Google 캘린더에서 수동으로 삭제해주세요.", closeMsg: "× 를 눌러 닫기",
+    deleteNote: "이전 레슨을 Google 캘린더에서 수동으로 삭제해주세요.", closeMsg: "× 를 눌러 닫기", pastDeadline: "변경 불가: 레슨 시작 12시간 전을 지났습니다.",
     close: "닫기", loading: "불러오는 중...", checkingSlots: "가능한 시간대를 확인하고 있습니다...", notFound: "예약을 찾을 수 없습니다.", failedLoad: "불러오기 실패。",
     confirmMsg: "이 시간으로 변경할까요?", status: "변경 완료", statusLabel: "상태", newTime: "새 일시",
     addCalendar: "Google 캘린더에 추가", currentLesson: "현재 레슨", currentTime: "현재 일시",
@@ -396,7 +396,7 @@ const CHANGE_TRANS = {
     changeLine2: "จะมีลิงก์ Meet ใหม่หลังการเปลี่ยน", timesShown: "แสดงเวลาตาม JST",
     prevWeek: "สัปดาห์ก่อน", nextWeek: "สัปดาห์ถัดไป", scrollHint: "เลื่อนเพื่อดูวันอื่น →",
     doneTitle: "เปลี่ยนการจองแล้ว", doneLine: "ส่งรายละเอียดการจองใหม่ทาง LINE แล้ว สามารถปิดหน้านี้ได้",
-    deleteNote: "กรุณาลบบทเรียนเก่าออกจาก Google Calendar ด้วยตนเอง", closeMsg: "กด × เพื่อปิด",
+    deleteNote: "กรุณาลบบทเรียนเก่าออกจาก Google Calendar ด้วยตนเอง", closeMsg: "กด × เพื่อปิด", pastDeadline: "ไม่สามารถเปลี่ยนได้: น้อยกว่า 12 ชั่วโมงก่อนบทเรียน",
     close: "ปิด", loading: "กำลังโหลด...", checkingSlots: "กำลังตรวจสอบเวลาว่าง...", notFound: "ไม่พบการจอง", failedLoad: "โหลดล้มเหลว",
     confirmMsg: "เปลี่ยนเป็นเวลานี้ใช่ไหม?", status: "เปลี่ยนแล้ว", statusLabel: "สถานะ", newTime: "เวลาใหม่",
     addCalendar: "เพิ่มใน Google Calendar", currentLesson: "บทเรียนปัจจุบัน", currentTime: "เวลาปัจจุบัน",
@@ -409,7 +409,7 @@ const CHANGE_TRANS = {
     changeLine2: "Un nouveau lien Meet sera émis", timesShown: "Heures affichées en JST",
     prevWeek: "Semaine précédente", nextWeek: "Semaine suivante", scrollHint: "Faites défiler pour voir plus de jours →",
     doneTitle: "Réservation modifiée", doneLine: "Nouveaux détails de réservation envoyés via LINE. Vous pouvez fermer cette page.",
-    deleteNote: "Veuillez supprimer manuellement l'ancien cours de Google Agenda.", closeMsg: "Appuyez sur × pour fermer",
+    deleteNote: "Veuillez supprimer manuellement l'ancien cours de Google Agenda.", closeMsg: "Appuyez sur × pour fermer", pastDeadline: "Impossible de modifier: moins de 12h avant le cours.",
     close: "Fermer", loading: "Chargement...", checkingSlots: "Vérification des créneaux disponibles...", notFound: "Réservation introuvable.", failedLoad: "Échec du chargement.",
     confirmMsg: "Changer pour ce créneau ?", status: "Modifié", statusLabel: "Statut", newTime: "Nouvel horaire",
     addCalendar: "Ajouter à Google Agenda", currentLesson: "Leçon actuelle", currentTime: "Heure actuelle",
@@ -422,7 +422,7 @@ const CHANGE_TRANS = {
     changeLine2: "Nach der Änderung wird ein neuer Meet-Link ausgestellt", timesShown: "Zeiten in JST angezeigt",
     prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", scrollHint: "Scrollen Sie, um mehr Tage zu sehen →",
     doneTitle: "Buchung geändert", doneLine: "Neue Buchungsdetails per LINE gesendet. Sie können diese Seite schließen.",
-    deleteNote: "Bitte löschen Sie die vorherige Unterrichtsstunde manuell aus Google Kalender.", closeMsg: "× zum Schließen drücken",
+    deleteNote: "Bitte löschen Sie die vorherige Unterrichtsstunde manuell aus Google Kalender.", closeMsg: "× zum Schließen drücken", pastDeadline: "Änderung nicht möglich: weniger als 12h vor der Stunde.",
     close: "Schließen", loading: "Wird geladen...", checkingSlots: "Verfügbare Zeitslots werden überprüft...", notFound: "Buchung nicht gefunden.", failedLoad: "Laden fehlgeschlagen.",
     confirmMsg: "Zu diesem Zeitslot wechseln?", status: "Geändert", statusLabel: "Status", newTime: "Neue Zeit",
     addCalendar: "Zu Google Kalender hinzufügen", currentLesson: "Aktueller Unterricht", currentTime: "Aktuelle Zeit",
@@ -434,7 +434,7 @@ const CHANGE_TRANS = {
     changeLine2: "Se emitirá un nuevo enlace de Meet después del cambio", timesShown: "Horas mostradas en JST",
     prevWeek: "Semana anterior", nextWeek: "Semana siguiente", scrollHint: "Desplácese para ver más días →",
     doneTitle: "Reserva modificada", doneLine: "Nuevos detalles enviados por LINE. Puede cerrar esta página.",
-    deleteNote: "Por favor, elimine manualmente la lección anterior de Google Calendar.", closeMsg: "Toca × para cerrar",
+    deleteNote: "Por favor, elimine manualmente la lección anterior de Google Calendar.", closeMsg: "Toca × para cerrar", pastDeadline: "No se puede cambiar: menos de 12h antes de la lección.",
     close: "Cerrar", loading: "Cargando...", checkingSlots: "Verificando horarios disponibles...", notFound: "Reserva no encontrada.", failedLoad: "Error al cargar.",
     confirmMsg: "¿Cambiar a este horario?", status: "Modificada", statusLabel: "Estado", newTime: "Nueva hora",
     addCalendar: "Añadir a Google Calendar", currentLesson: "Lección actual", currentTime: "Hora actual",
@@ -602,8 +602,21 @@ async function loadChangeData() {
     if (!data.ok) {
       const cachedL = localStorage.getItem("userLang") || "ja";
       const T_err = CHANGE_TRANS[cachedL] || CHANGE_TRANS["en"];
-      document.getElementById("reservationInfo").innerHTML = `<span class='error'>予約が見つかりませんでした。<br><span style='font-size:12px;color:#e74c3c;'>${T_err.notFound || "Reservation not found."}</span></span>`;
+      const isDeadline = data.message && data.message.includes('12時間前');
+      const jaMsg = isDeadline
+        ? 'レッスン開始12時間前を過ぎているため、変更できません。'
+        : (data.message || '予約が見つかりませんでした。');
+      const enMsg = isDeadline
+        ? (T_err.pastDeadline || 'Cannot change: less than 12h before lesson.')
+        : (T_err.notFound || 'Reservation not found.');
+      document.getElementById("reservationInfo").innerHTML = `
+        <div style="background:#fff8e6;border:1px solid #f3c98b;border-radius:14px;padding:16px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:8px;">⏰</div>
+          <div style="font-size:15px;font-weight:700;color:#e67e22;">${jaMsg}</div>
+          <div style="font-size:12px;color:#aaa;margin-top:6px;">${enMsg}</div>
+        </div>`;
       document.getElementById("calendar").innerHTML = "";
+      document.getElementById("calNote").style.display = "none";
       return;
     }
 
