@@ -298,6 +298,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     <div id="resultMessage" style="background:#f8f8f8;border-radius:14px;padding:16px;font-size:13px;color:#555;white-space:pre-line;line-height:1.8;margin-bottom:16px;"></div>
 
+    <p style="text-align:center;font-size:13px;color:#aaa;margin:0 0 16px;">
+      このページは閉じて大丈夫です。<br>
+      <span id="canCloseSub" style="font-size:11px;"></span>
+    </p>
+
     <button class="absence" type="button" id="absenceBtn2" style="display:none;">
       📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
     </button>
@@ -324,6 +329,7 @@ const CANCEL_TRANS = {
     absenceBtn: "Notify Teacher of Absence", close: "Close", closeMsg: "Tap × to close", loading: "Loading...", notFound: "Reservation not found.", failedLoad: "Failed to load. Please contact the teacher.",
     back: "Back",
     canClose: "You can close this page.", cancelled: "Cancelled", cannotCancel: "Cannot Cancel",
+    alreadyCancelled: "This reservation has already been cancelled.", refundFailed: "Refund failed. Please contact the teacher.",
     successMsg: "Cancellation complete.", refundDone: "Refund has been processed.",
     absenceSent: "Absence notification sent to the teacher.", sendFailed: "Failed to send. Please contact the teacher directly via LINE.",
     absenceConfirm: "Send absence notification to the teacher?",
@@ -344,6 +350,7 @@ const CANCEL_TRANS = {
     absenceBtn: "通知老师缺席", close: "关闭", closeMsg: "点击 × 关闭", loading: "加载中...", notFound: "未找到预约。", failedLoad: "加载失败，请联系老师。",
     back: "返回",
     canClose: "可以关闭此页面.", cancelled: "已取消", cannotCancel: "无法取消",
+    alreadyCancelled: "此预约已经取消。", refundFailed: "退款失败，请联系老师。",
     successMsg: "取消完成.", refundDone: "退款处理完成.",
     absenceSent: "缺席通知已发送给老师.", sendFailed: "发送失败。请通过LINE直接联系老师。",
     absenceConfirm: "向老师发送缺席通知？",
@@ -364,6 +371,7 @@ const CANCEL_TRANS = {
     absenceBtn: "선생님께 결석 연락하기", close: "닫기", closeMsg: "× 를 눌러 닫기", loading: "불러오는 중...", notFound: "예약을 찾을 수 없습니다.", failedLoad: "불러오기 실패. 선생님께 연락해 주세요.",
     back: "뒤로",
     canClose: "이 페이지를 닫아도 됩니다.", cancelled: "취소되었습니다", cannotCancel: "취소 불가",
+    alreadyCancelled: "이 예약은 이미 취소되었습니다.", refundFailed: "환불에 실패했습니다. 선생님께 연락해주세요.",
     successMsg: "취소가 완료되었습니다.", refundDone: "환불 처리가 완료되었습니다.",
     absenceSent: "결석 알림이 선생님께 전송되었습니다.", sendFailed: "전송 실패. LINE으로 선생님께 직접 연락해 주세요.",
     absenceConfirm: "선생님께 결석 알림을 보내시겠습니까?",
@@ -384,6 +392,7 @@ const CANCEL_TRANS = {
     absenceBtn: "แจ้งครูว่าขาดเรียน", close: "ปิด", closeMsg: "กด × เพื่อปิด", loading: "กำลังโหลด...", notFound: "ไม่พบการจอง", failedLoad: "โหลดล้มเหลว กรุณาติดต่อครู",
     back: "ย้อนกลับ",
     canClose: "สามารถปิดหน้านี้ได้", cancelled: "ยกเลิกแล้ว", cannotCancel: "ไม่สามารถยกเลิก",
+    alreadyCancelled: "การจองนี้ถูกยกเลิกแล้ว", refundFailed: "การคืนเงินล้มเหลว กรุณาติดต่อครู",
     successMsg: "การยกเลิกเสร็จสมบูรณ์", refundDone: "การคืนเงินเสร็จสมบูรณ์",
     absenceSent: "ส่งการแจ้งขาดเรียนให้ครูแล้ว", sendFailed: "ส่งล้มเหลว กรุณาติดต่อครูโดยตรงทาง LINE",
     absenceConfirm: "ส่งการแจ้งขาดเรียนให้ครูหรือไม่?",
@@ -404,6 +413,7 @@ const CANCEL_TRANS = {
     absenceBtn: "Notifier le professeur de l'absence", close: "Fermer", closeMsg: "Appuyez sur × pour fermer", loading: "Chargement...", notFound: "Réservation introuvable.", failedLoad: "Échec du chargement. Contactez le professeur.",
     back: "Retour",
     canClose: "Vous pouvez fermer cette page.", cancelled: "Annulé", cannotCancel: "Annulation impossible",
+    alreadyCancelled: "Cette réservation a déjà été annulée.", refundFailed: "Remboursement échoué. Veuillez contacter le professeur.",
     successMsg: "Annulation terminée.", refundDone: "Le remboursement a été traité.",
     absenceSent: "Notification d'absence envoyée au professeur.", sendFailed: "Échec de l'envoi. Contactez directement le professeur via LINE.",
     absenceConfirm: "Envoyer une notification d'absence au professeur ?",
@@ -424,6 +434,7 @@ const CANCEL_TRANS = {
     absenceBtn: "Lehrer über Abwesenheit informieren", close: "Schließen", closeMsg: "× zum Schließen drücken", loading: "Wird geladen...", notFound: "Buchung nicht gefunden.", failedLoad: "Laden fehlgeschlagen. Bitte kontaktieren Sie den Lehrer.",
     back: "Zurück",
     canClose: "Sie können diese Seite schließen.", cancelled: "Storniert", cannotCancel: "Stornierung nicht möglich",
+    alreadyCancelled: "Diese Buchung wurde bereits storniert.", refundFailed: "Erstattung fehlgeschlagen. Bitte kontaktieren Sie den Lehrer.",
     successMsg: "Stornierung abgeschlossen.", refundDone: "Die Rückerstattung wurde verarbeitet.",
     absenceSent: "Abwesenheitsbenachrichtigung wurde an den Lehrer gesendet.", sendFailed: "Senden fehlgeschlagen. Bitte den Lehrer direkt über LINE kontaktieren.",
     absenceConfirm: "Abwesenheitsbenachrichtigung an den Lehrer senden?",
@@ -444,6 +455,7 @@ const CANCEL_TRANS = {
     absenceBtn: "Notificar ausencia al profesor", close: "Cerrar", closeMsg: "Toca × para cerrar", loading: "Cargando...", notFound: "Reserva no encontrada.", failedLoad: "Error al cargar. Por favor, contacte al profesor.",
     back: "Volver",
     canClose: "Puede cerrar esta página.", cancelled: "Cancelada", cannotCancel: "No se puede cancelar",
+    alreadyCancelled: "Esta reserva ya ha sido cancelada.", refundFailed: "Reembolso fallido. Por favor contacte al profesor.",
     successMsg: "Cancelación completada.", refundDone: "Reembolso procesado.",
     absenceSent: "Notificación de ausencia enviada al profesor.", sendFailed: "Error al enviar. Por favor, contacte al profesor directamente por LINE.",
     absenceConfirm: "¿Enviar notificación de ausencia al profesor?",
@@ -752,6 +764,12 @@ async function executeCancel() {
         : '';
       const successMsg = `キャンセルが完了しました。\n${T.successMsg || "Cancellation complete."}\n\n【日時 / ${T.time || "Time"}】\n${timeDisplay}\n\n返金処理も完了しました。\n${T.refundDone || "Refund has been processed."}`;
       showResult(true, successMsg);
+    } else if (isAlreadyCancelled) {
+      const subMsg = T.alreadyCancelled || "This reservation has already been cancelled.";
+      showResult(false, "すでにキャンセル済みです。\n" + subMsg);
+    } else if (isRefundFailed) {
+      const subMsg = T.refundFailed || "Refund failed. Please contact the teacher.";
+      showResult(false, "キャンセル処理を中止しました。\n返金処理に失敗しました。先生にご連絡ください。\n" + subMsg);
     } else {
       const failMsg = isPastLimit
         ? "この時間はキャンセルできません。\nレッスン開始12時間前を過ぎています。" + (T.pastDeadlineMsg ? "\n\n" + T.pastDeadlineMsg : "")
