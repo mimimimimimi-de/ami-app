@@ -891,8 +891,12 @@ function setStatus(msg, isError = false) {
 
 function showView(id) {
   ["registerView", "doneView", "alreadyView"].forEach(v => {
-    document.getElementById(v).style.display = v === id ? "block" : "none";
+    const el = document.getElementById(v);
+    if (el) el.style.display = v === id ? "block" : "none";
   });
+  // processingOverlayも必ず非表示に
+  const overlay = document.getElementById("processingOverlay");
+  if (overlay) overlay.classList.remove("show");
 }
 
 async function register() {
