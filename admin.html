@@ -654,6 +654,7 @@ async function sendLessonReport() {
       userId, studied, words, url: textbookUrl, homework, review, comment,
       t: Date.now()
     });
+    console.log("送信URL:", GAS_URL + "?" + params.toString());
     const res = await fetch(GAS_URL + "?" + params.toString());
     const data = await res.json();
     if (data.ok) {
