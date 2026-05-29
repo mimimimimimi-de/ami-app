@@ -424,39 +424,6 @@ body {
 
     <!-- 登録前 -->
     <div id="registerView">
-
-      <!-- 言語選択 -->
-      <div class="tz-section" style="margin-bottom:16px;">
-        <div class="lang-label">🌐 言語を選んでください</div>
-        <div class="lang-label-sub">Select your language</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
-          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
-          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
-          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
-          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
-          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
-          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
-          <button type="button" class="lang-btn" data-lang="es" onclick="selectLang('es', this)">🇪🇸 Español</button>
-        </div>
-      </div>
-
-      <!-- タイムゾーン選択 -->
-      <div class="tz-section" style="margin-bottom:16px;">
-        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
-        <div class="tz-label-en">Select your timezone</div>
-        <div class="tz-dropdown">
-          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
-            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
-            <span class="arrow">▼</span>
-          </button>
-          <div class="tz-popup" id="tzPopup">
-            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
-            <div class="tz-list" id="tzList"></div>
-          </div>
-        </div>
-      </div>
-
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
@@ -477,6 +444,37 @@ body {
           <div class="step-text">
             <div class="title">予約スタート！<span class="en-sub"></span></div>
             <div class="desc">先生からLINEが届いたら予約できるようになります。<span class="en-sub"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 言語選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="lang-label">🌐 言語を選んでください</div>
+        <div class="lang-label-sub">Select your language</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
+          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
+          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
+          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
+          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
+          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
+        </div>
+      </div>
+
+      <!-- タイムゾーン選択 -->
+      <div class="tz-section">
+        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
+        <div class="tz-label-en">Select your timezone</div>
+        <div class="tz-dropdown">
+          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
+            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="tz-popup" id="tzPopup">
+            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
+            <div class="tz-list" id="tzList"></div>
           </div>
         </div>
       </div>
@@ -631,21 +629,6 @@ const LANG_TEXT = {
     alreadyMsgPrice: "Bereits registriert und Gebuhr festgelegt. Gehen Sie zur Buchungsseite！",
     alreadyMsgWait: "Registriert. Wir benachrichtigen Sie uber LINE, sobald der Lehrer Ihre Gebuhr festlegt.",
     bookBtn: "📅 Unterricht buchen", bookBtnSub: "", registering: "Wird registriert..."
-  },
-  es: {
-    step1title: "Primero regístrese", step1desc: "¡Solo toque el botón de abajo！<br>Registro automático con su cuenta LINE.",
-    step2title: "El profesor establece la tarifa", step2desc: "Después del registro, el profesor establecerá su tarifa de lección.",
-    step3title: "¡Comience a reservar！", step3desc: "Cuando reciba un mensaje LINE del profesor, podrá hacer reservas.",
-    tzLabel: "🌍 Seleccione su zona horaria", tzLabelSub: "",
-    langLabel: "🌐 Seleccione su idioma", langLabelSub: "",
-    registerBtn: "Registrarse", registerBtnSub: "",
-    note: "Su nombre de LINE se registrará automáticamente.<br>La información personal se usa solo para la gestión de reservas.",
-    doneTitle: "¡Registro completado！", doneTitleSub: "",
-    doneMsg: "¡Registro exitoso！<br>Le notificaremos por LINE<br><span class='highlight'>cuando el profesor establezca su tarifa.</span>", doneMsgSub: "",
-    alreadyTitle: "Ya registrado", alreadyTitleSub: "",
-    alreadyMsgPrice: "Ya registrado y tarifa establecida. ¡Vaya a la página de reservas！",
-    alreadyMsgWait: "Registrado. Le notificaremos por LINE cuando el profesor establezca su tarifa.",
-    bookBtn: "📅 Reservar lección", bookBtnSub: "", registering: "Registrando..."
   }
 };
 
@@ -673,10 +656,10 @@ function applyLang(lang) {
   steps.forEach((s, i) => {
     if (stepTitles[i]) stepTitles[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.title]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.title] || ''}</span>`;
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
     if (stepDescs[i]) stepDescs[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.desc] || ''}</span>`;
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
   });
 
   // オーバーレイサブテキスト
@@ -699,23 +682,23 @@ function applyLang(lang) {
   const regBtn = document.getElementById("registerBtn");
   if (regBtn) regBtn.innerHTML = isJa
     ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`
-    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);font-size:12px;display:block;">${T.registerBtn || ''}</span>`;
+    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`;
 
   // 注意書き
   const note = document.querySelector(".note");
   if (note) note.innerHTML = isJa
     ? `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.note}<br><span class="en-sub" style="font-size:11px;color:#aaa;">${T.note || ''}</span>`;
+    : `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`;
 
   // 登録完了画面
   const doneH2 = document.querySelector("#doneView h2");
   if (doneH2) doneH2.innerHTML = isJa
     ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub" style="display:block;font-size:12px;font-weight:400;color:#aaa;margin-top:3px;">${T.doneTitle || ''}</span>`;
+    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`;
   const doneP = document.querySelector("#doneView p");
   if (doneP) doneP.innerHTML = isJa
     ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub" style="font-size:11px;color:#aaa;">${T.doneMsg || ''}</span>`;
+    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`;
 
   // 登録済み画面
   const subAlreadyTitle = document.getElementById("subAlreadyTitle");
@@ -739,31 +722,83 @@ let selectedTimezone = "";
 
 // タイムゾーン一覧
 const TIMEZONES = [
-  { tz: "Pacific/Honolulu",      label: "Hawaii",                offset: "UTC-10" },
-  { tz: "America/Anchorage",     label: "Alaska",                offset: "UTC-9" },
+  // Americas
+  { tz: "Pacific/Honolulu",      label: "Hawaii",                         offset: "UTC-10" },
+  { tz: "America/Anchorage",     label: "Alaska",                         offset: "UTC-9" },
   { tz: "America/Los_Angeles",   label: "Los Angeles / Seattle / Vancouver (PT)", offset: "UTC-8/-7" },
-  { tz: "America/Denver",        label: "Denver / Salt Lake City (MT)", offset: "UTC-7/-6" },
+  { tz: "America/Tijuana",       label: "Tijuana / Baja California",      offset: "UTC-8/-7" },
+  { tz: "America/Denver",        label: "Denver / Salt Lake City (MT)",   offset: "UTC-7/-6" },
+  { tz: "America/Phoenix",       label: "Phoenix / Arizona (no DST)",     offset: "UTC-7" },
   { tz: "America/Chicago",       label: "Chicago / Dallas / Houston (CT)", offset: "UTC-6/-5" },
+  { tz: "America/Mexico_City",   label: "Mexico City / Guadalajara",      offset: "UTC-6/-5" },
+  { tz: "America/Bogota",        label: "Bogotá / Lima / Quito",          offset: "UTC-5" },
   { tz: "America/New_York",      label: "New York / Toronto / Miami (ET)", offset: "UTC-5/-4" },
-  { tz: "America/Halifax",       label: "Halifax / Atlantic (AT)", offset: "UTC-4/-3" },
-  { tz: "America/Sao_Paulo",     label: "São Paulo / Brazil",    offset: "UTC-3" },
-  { tz: "Atlantic/Azores",       label: "Azores",                offset: "UTC-1" },
-  { tz: "Europe/London",         label: "London / Dublin (GMT/BST)", offset: "UTC+0/+1" },
-  { tz: "Europe/Paris",          label: "Paris / Berlin / Rome / Amsterdam (CET)", offset: "UTC+1/+2" },
-  { tz: "Europe/Helsinki",       label: "Helsinki / Kiev / Tallinn (EET)", offset: "UTC+2/+3" },
-  { tz: "Europe/Moscow",         label: "Moscow",                offset: "UTC+3" },
-  { tz: "Asia/Dubai",            label: "Dubai / Abu Dhabi",     offset: "UTC+4" },
-  { tz: "Asia/Karachi",          label: "Karachi / Pakistan",    offset: "UTC+5" },
-  { tz: "Asia/Kolkata",          label: "India / Mumbai / Delhi", offset: "UTC+5:30" },
-  { tz: "Asia/Dhaka",            label: "Dhaka / Bangladesh",    offset: "UTC+6" },
-  { tz: "Asia/Bangkok",          label: "Bangkok / Jakarta / Hanoi", offset: "UTC+7" },
-  { tz: "Asia/Singapore",        label: "Singapore / Kuala Lumpur / Manila", offset: "UTC+8" },
-  { tz: "Asia/Shanghai",         label: "China / Beijing / Shanghai / Taipei", offset: "UTC+8" },
-  { tz: "Asia/Hong_Kong",        label: "Hong Kong",             offset: "UTC+8" },
-  { tz: "Asia/Tokyo",            label: "Japan / Tokyo (JST)",   offset: "UTC+9" },
-  { tz: "Asia/Seoul",            label: "Korea / Seoul",         offset: "UTC+9" },
-  { tz: "Australia/Sydney",      label: "Sydney / Melbourne (AEST)", offset: "UTC+10/+11" },
-  { tz: "Pacific/Auckland",      label: "New Zealand / Auckland", offset: "UTC+12/+13" },
+  { tz: "America/Caracas",       label: "Caracas / Venezuela",            offset: "UTC-4" },
+  { tz: "America/Halifax",       label: "Halifax / Atlantic (AT)",        offset: "UTC-4/-3" },
+  { tz: "America/Santiago",      label: "Santiago / Chile",               offset: "UTC-4/-3" },
+  { tz: "America/La_Paz",        label: "La Paz / Bolivia",               offset: "UTC-4" },
+  { tz: "America/Buenos_Aires",  label: "Buenos Aires / Argentina",       offset: "UTC-3" },
+  { tz: "America/Sao_Paulo",     label: "São Paulo / Brazil",             offset: "UTC-3" },
+  { tz: "America/Montevideo",    label: "Montevideo / Uruguay",           offset: "UTC-3" },
+  { tz: "America/St_Johns",      label: "Newfoundland",                   offset: "UTC-3:30" },
+  { tz: "Atlantic/South_Georgia",label: "South Georgia",                  offset: "UTC-2" },
+  { tz: "Atlantic/Azores",       label: "Azores",                         offset: "UTC-1" },
+  { tz: "Atlantic/Cape_Verde",   label: "Cape Verde",                     offset: "UTC-1" },
+  // Europe & Africa
+  { tz: "Europe/London",         label: "London / Dublin (GMT/BST)",      offset: "UTC+0/+1" },
+  { tz: "Africa/Casablanca",     label: "Casablanca / Rabat",             offset: "UTC+0/+1" },
+  { tz: "Africa/Accra",          label: "Accra / Dakar / Abidjan",        offset: "UTC+0" },
+  { tz: "Europe/Paris",          label: "Paris / Berlin / Rome / Madrid (CET)", offset: "UTC+1/+2" },
+  { tz: "Europe/Amsterdam",      label: "Amsterdam / Brussels",           offset: "UTC+1/+2" },
+  { tz: "Europe/Warsaw",         label: "Warsaw / Prague / Budapest",     offset: "UTC+1/+2" },
+  { tz: "Africa/Lagos",          label: "Lagos / Kinshasa / Luanda",      offset: "UTC+1" },
+  { tz: "Africa/Tunis",          label: "Tunis / Algiers",                offset: "UTC+1" },
+  { tz: "Europe/Athens",         label: "Athens / Bucharest",             offset: "UTC+2/+3" },
+  { tz: "Europe/Helsinki",       label: "Helsinki / Kyiv / Tallinn",      offset: "UTC+2/+3" },
+  { tz: "Europe/Istanbul",       label: "Istanbul / Turkey",              offset: "UTC+3" },
+  { tz: "Africa/Cairo",          label: "Cairo / Egypt",                  offset: "UTC+2" },
+  { tz: "Africa/Johannesburg",   label: "Johannesburg / Harare",          offset: "UTC+2" },
+  { tz: "Africa/Nairobi",        label: "Nairobi / Kampala / Addis Ababa", offset: "UTC+3" },
+  { tz: "Europe/Moscow",         label: "Moscow / St. Petersburg",        offset: "UTC+3" },
+  { tz: "Asia/Baghdad",          label: "Baghdad / Iraq",                 offset: "UTC+3" },
+  { tz: "Asia/Riyadh",           label: "Riyadh / Jeddah / Kuwait",       offset: "UTC+3" },
+  { tz: "Asia/Tehran",           label: "Tehran / Iran",                  offset: "UTC+3:30" },
+  { tz: "Asia/Dubai",            label: "Dubai / Abu Dhabi / Baku",       offset: "UTC+4" },
+  { tz: "Asia/Muscat",           label: "Muscat / Oman",                  offset: "UTC+4" },
+  { tz: "Asia/Tbilisi",          label: "Tbilisi / Georgia",              offset: "UTC+4" },
+  { tz: "Asia/Kabul",            label: "Kabul / Afghanistan",            offset: "UTC+4:30" },
+  { tz: "Asia/Karachi",          label: "Karachi / Pakistan",             offset: "UTC+5" },
+  { tz: "Asia/Tashkent",         label: "Tashkent / Uzbekistan",          offset: "UTC+5" },
+  { tz: "Asia/Kolkata",          label: "India / Mumbai / Delhi",         offset: "UTC+5:30" },
+  { tz: "Asia/Colombo",          label: "Sri Lanka",                      offset: "UTC+5:30" },
+  { tz: "Asia/Kathmandu",        label: "Kathmandu / Nepal",              offset: "UTC+5:45" },
+  { tz: "Asia/Dhaka",            label: "Dhaka / Bangladesh",             offset: "UTC+6" },
+  { tz: "Asia/Almaty",           label: "Almaty / Kazakhstan",            offset: "UTC+6" },
+  { tz: "Asia/Rangoon",          label: "Yangon / Myanmar",               offset: "UTC+6:30" },
+  { tz: "Asia/Bangkok",          label: "Bangkok / Jakarta / Hanoi",      offset: "UTC+7" },
+  { tz: "Asia/Ho_Chi_Minh",      label: "Ho Chi Minh / Vietnam",          offset: "UTC+7" },
+  { tz: "Asia/Phnom_Penh",       label: "Phnom Penh / Cambodia",          offset: "UTC+7" },
+  { tz: "Asia/Vientiane",        label: "Vientiane / Laos",               offset: "UTC+7" },
+  { tz: "Asia/Singapore",        label: "Singapore / Kuala Lumpur",       offset: "UTC+8" },
+  { tz: "Asia/Manila",           label: "Manila / Philippines",           offset: "UTC+8" },
+  { tz: "Asia/Shanghai",         label: "China / Beijing / Shanghai",     offset: "UTC+8" },
+  { tz: "Asia/Taipei",           label: "Taipei / Taiwan",                offset: "UTC+8" },
+  { tz: "Asia/Hong_Kong",        label: "Hong Kong",                      offset: "UTC+8" },
+  { tz: "Asia/Brunei",           label: "Brunei",                         offset: "UTC+8" },
+  { tz: "Asia/Makassar",         label: "Bali / Lombok / Sulawesi",       offset: "UTC+8" },
+  { tz: "Asia/Tokyo",            label: "Japan / Tokyo (JST)",            offset: "UTC+9" },
+  { tz: "Asia/Seoul",            label: "Korea / Seoul",                  offset: "UTC+9" },
+  { tz: "Asia/Pyongyang",        label: "Pyongyang / North Korea",        offset: "UTC+9" },
+  { tz: "Australia/Perth",       label: "Perth / Western Australia",      offset: "UTC+8" },
+  { tz: "Australia/Darwin",      label: "Darwin / Northern Territory",    offset: "UTC+9:30" },
+  { tz: "Australia/Adelaide",    label: "Adelaide / South Australia",     offset: "UTC+9:30/+10:30" },
+  { tz: "Australia/Brisbane",    label: "Brisbane / Queensland",          offset: "UTC+10" },
+  { tz: "Australia/Sydney",      label: "Sydney / Melbourne (AEST)",      offset: "UTC+10/+11" },
+  { tz: "Pacific/Port_Moresby",  label: "Port Moresby / Papua New Guinea", offset: "UTC+10" },
+  { tz: "Pacific/Noumea",        label: "Nouméa / New Caledonia",         offset: "UTC+11" },
+  { tz: "Pacific/Auckland",      label: "New Zealand / Auckland",         offset: "UTC+12/+13" },
+  { tz: "Pacific/Fiji",          label: "Fiji",                           offset: "UTC+12" },
+  { tz: "Pacific/Tongatapu",     label: "Tonga",                          offset: "UTC+13" },
 ];
 
 function toggleDropdown() {
