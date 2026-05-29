@@ -774,7 +774,8 @@ async function executeCancel() {
     }
   } catch (e) {
     console.error(e);
-    showResult(false, "キャンセル処理に失敗しました。\n先生にご連絡ください。");
+    const T_catch = window._cancelT || CANCEL_TRANS[localStorage.getItem("userLang") || "ja"] || CANCEL_TRANS["en"];
+    showResultRefundFailed(T_catch.refundFailed || "Refund failed.");
   } finally {
     document.getElementById("processingOverlay").classList.remove("show");
     const btn2 = document.getElementById("cancelBtn");
