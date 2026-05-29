@@ -425,6 +425,39 @@ body {
     <!-- 登録前 -->
     <div id="registerView">
       <div class="steps">
+      <!-- 言語選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="lang-label">🌐 言語を選んでください</div>
+        <div class="lang-label-sub">Select your language</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
+          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
+          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
+          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
+          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
+          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
+          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
+          <button type="button" class="lang-btn" data-lang="es" onclick="selectLang('es', this)">🇪🇸 Español</button>
+        </div>
+      </div>
+
+      <!-- タイムゾーン選択 -->
+      <div class="tz-section" style="margin-bottom:16px;">
+        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
+        <div class="tz-label-en">Select your timezone</div>
+        <div class="tz-dropdown">
+          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
+            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
+            <span class="arrow">▼</span>
+          </button>
+          <div class="tz-popup" id="tzPopup">
+            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
+            <div class="tz-list" id="tzList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
           <div class="step-text">
@@ -448,45 +481,14 @@ body {
         </div>
       </div>
 
-      <!-- 言語選択 -->
-      <div class="tz-section" style="margin-bottom:16px;">
-        <div class="lang-label">🌐 言語を選んでください</div>
-        <div class="lang-label-sub">Select your language</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-          <button type="button" class="lang-btn active" data-lang="ja" onclick="selectLang('ja', this)">🇯🇵 日本語</button>
-          <button type="button" class="lang-btn" data-lang="en" onclick="selectLang('en', this)">🇺🇸 English</button>
-          <button type="button" class="lang-btn" data-lang="zh" onclick="selectLang('zh', this)">🇨🇳 中文</button>
-          <button type="button" class="lang-btn" data-lang="ko" onclick="selectLang('ko', this)">🇰🇷 한국어</button>
-          <button type="button" class="lang-btn" data-lang="th" onclick="selectLang('th', this)">🇹🇭 ไทย</button>
-          <button type="button" class="lang-btn" data-lang="fr" onclick="selectLang('fr', this)">🇫🇷 Français</button>
-          <button type="button" class="lang-btn" data-lang="de" onclick="selectLang('de', this)">🇩🇪 Deutsch</button>
-        </div>
-      </div>
-
-      <!-- タイムゾーン選択 -->
-      <div class="tz-section">
-        <div class="tz-label">🌍 あなたのタイムゾーンを選んでください</div>
-        <div class="tz-label-en">Select your timezone</div>
-        <div class="tz-dropdown">
-          <button type="button" class="tz-selected-btn" id="tzBtn" onclick="toggleDropdown()">
-            <span id="tzBtnText" class="placeholder">タイムゾーンを選択 / Select timezone</span>
-            <span class="arrow">▼</span>
-          </button>
-          <div class="tz-popup" id="tzPopup">
-            <input class="tz-search" type="text" id="tzSearch" placeholder="🔍 検索 / Search (e.g. Tokyo, New York...)" oninput="filterTimezones()" autocomplete="off">
-            <div class="tz-list" id="tzList"></div>
-          </div>
-        </div>
-      </div>
-
       <button class="register-btn" id="registerBtn" onclick="register()">
-        📝 登録する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
+        📝 登録する<span class="en-sub" id="registerBtnSub" style="display:block;font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;"></span>
       </button>
 
-      <p class="note">
+      <p class="note" id="noteText">
         LINEのお名前が自動で登録されます。<br>
         個人情報は予約管理のみに使用します。<br>
-        <span class="en-sub"></span>
+        <span class="en-sub" id="noteSub"></span>
       </p>
 
       <div class="status" id="status"></div>
@@ -629,6 +631,20 @@ const LANG_TEXT = {
     alreadyMsgPrice: "Bereits registriert und Gebuhr festgelegt. Gehen Sie zur Buchungsseite！",
     alreadyMsgWait: "Registriert. Wir benachrichtigen Sie uber LINE, sobald der Lehrer Ihre Gebuhr festlegt.",
     bookBtn: "📅 Unterricht buchen", bookBtnSub: "", registering: "Wird registriert..."
+  },
+  es: {
+    step1title: "Primero regístrese", step1desc: "¡Solo toque el botón de abajo！<br>Registro automático con su cuenta LINE.",
+    step2title: "El profesor establece la tarifa", step2desc: "Después del registro, el profesor establecerá su tarifa de lección.",
+    step3title: "¡Comience a reservar！", step3desc: "Cuando reciba un mensaje LINE del profesor, podrá hacer reservas.",
+    tzLabel: "🌍 Seleccione su zona horaria", tzLabelSub: "", langLabel: "🌐 Seleccione su idioma", langLabelSub: "",
+    registerBtn: "Registrarse", registerBtnSub: "",
+    note: "Su nombre de LINE se registrará automáticamente.<br>La información personal se usa solo para la gestión de reservas.",
+    doneTitle: "¡Registro completado！", doneTitleSub: "",
+    doneMsg: "¡Registro exitoso！<br>Le notificaremos por LINE<br><span class='highlight'>cuando el profesor establezca su tarifa.</span>", doneMsgSub: "",
+    alreadyTitle: "Ya registrado", alreadyTitleSub: "",
+    alreadyMsgPrice: "Ya registrado y tarifa establecida. ¡Vaya a la página de reservas！",
+    alreadyMsgWait: "Registrado. Le notificaremos por LINE cuando el profesor establezca su tarifa.",
+    bookBtn: "📅 Reservar lección", bookBtnSub: "", registering: "Registrando..."
   }
 };
 
@@ -656,10 +672,10 @@ function applyLang(lang) {
   steps.forEach((s, i) => {
     if (stepTitles[i]) stepTitles[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.title]}<span class="en-sub"></span>`;
+      : `${LANG_TEXT.ja[s.title]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.title] || ''}</span>`;
     if (stepDescs[i]) stepDescs[i].innerHTML = isJa
       ? `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`
-      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub"></span>`;
+      : `${LANG_TEXT.ja[s.desc]}<span class="en-sub" style="display:block;font-size:11px;color:#aaa;margin-top:2px;">${T[s.desc] || ''}</span>`;
   });
 
   // オーバーレイサブテキスト
@@ -670,41 +686,41 @@ function applyLang(lang) {
   const tzLabel = document.querySelector(".tz-label");
   if (tzLabel) tzLabel.textContent = LANG_TEXT.ja.tzLabel;
   const tzLabelEn = document.querySelector(".tz-label-en");
-  if (tzLabelEn) tzLabelEn.textContent = isJa ? LANG_TEXT.en.tzLabel : T.tzLabel;
+  if (tzLabelEn) tzLabelEn.textContent = isJa ? LANG_TEXT.en.tzLabel : T.tzLabel || LANG_TEXT.en.tzLabel;
 
   // 言語ラベル
   const langLabel = document.querySelector(".lang-label");
   if (langLabel) langLabel.textContent = LANG_TEXT.ja.langLabel;
   const langLabelSub = document.querySelector(".lang-label-sub");
-  if (langLabelSub) langLabelSub.textContent = isJa ? LANG_TEXT.en.langLabel : T.langLabel;
+  if (langLabelSub) langLabelSub.textContent = isJa ? LANG_TEXT.en.langLabel : T.langLabel || LANG_TEXT.en.langLabel;
 
   // 登録ボタン
   const regBtn = document.getElementById("registerBtn");
   if (regBtn) regBtn.innerHTML = isJa
-    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`
-    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>`;
+    ? `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="display:block;font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;"></span>`
+    : `📝 ${LANG_TEXT.ja.registerBtn}<span class="en-sub" style="display:block;font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;">${T.registerBtn || ''}</span>`;
 
   // 注意書き
   const note = document.querySelector(".note");
   if (note) note.innerHTML = isJa
     ? `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.note}<br><span class="en-sub"></span>`;
+    : `${LANG_TEXT.ja.note}<br><span class="en-sub" style="font-size:11px;color:#aaa;">${T.note || ''}</span>`;
 
   // 登録完了画面
   const doneH2 = document.querySelector("#doneView h2");
   if (doneH2) doneH2.innerHTML = isJa
     ? `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub"></span>`;
+    : `${LANG_TEXT.ja.doneTitle}<span class="en-sub" style="display:block;font-size:13px;font-weight:400;color:#aaa;margin-top:4px;">${T.doneTitle || ''}</span>`;
   const doneP = document.querySelector("#doneView p");
   if (doneP) doneP.innerHTML = isJa
     ? `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`
-    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub"></span>`;
+    : `${LANG_TEXT.ja.doneMsg}<br><span class="en-sub" style="font-size:11px;color:#aaa;">${T.doneMsg || ''}</span>`;
 
   // 登録済み画面
   const subAlreadyTitle = document.getElementById("subAlreadyTitle");
-  if (subAlreadyTitle) subAlreadyTitle.textContent = isJa ? LANG_TEXT.en.alreadyTitle : T.alreadyTitle;
+  if (subAlreadyTitle) subAlreadyTitle.textContent = isJa ? '' : (T.alreadyTitle || LANG_TEXT.en.alreadyTitle);
   const subBookBtn = document.getElementById("subBookBtn");
-  if (subBookBtn) subBookBtn.textContent = isJa ? LANG_TEXT.en.bookBtn.replace("📅 ", "") : T.bookBtn.replace("📅 ", "");
+  if (subBookBtn) subBookBtn.textContent = isJa ? '' : (T.bookBtn || '').replace("📅 ", "");
 }
 
 let userId = null;
