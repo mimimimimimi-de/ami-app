@@ -338,7 +338,7 @@ body {
 .done-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
 .done-card .highlight { color: var(--green); font-weight: 700; }
 
-.already-card { display: none; text-align: center; }
+.already-card { text-align: center; }
 .already-icon { font-size: 48px; margin-bottom: 12px; }
 .already-card h2 { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
 .already-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
@@ -971,6 +971,11 @@ async function register() {
 }
 
 async function init() {
+  // 初期状態を設定
+  document.getElementById("doneView").style.display = "none";
+  document.getElementById("alreadyView").style.display = "none";
+  document.getElementById("registerView").style.display = "block";
+
   setStatus("LINE情報を確認しています... / Checking LINE info...");
 
   try {
