@@ -639,7 +639,8 @@ async function loadChangeData() {
     }
 
     const jstTime = data.reservation.time;
-    const localTime = getLocalTimeLabel(data.reservation.date, jstTime);
+    const _lt1 = getLocalTimeLabel(data.reservation.date, jstTime);
+    const _lt1Str = localTimeStr(_lt1, userTzName);
     const T = window._changeT || {};
     document.getElementById("reservationInfo").innerHTML = `
       <div style="display:flex;flex-direction:column;gap:12px;">
@@ -652,7 +653,7 @@ async function loadChangeData() {
           <span style="font-size:12px;color:#999;flex-shrink:0;">現在の日時<br><span style="font-size:11px;color:#ccc;">${T.currentTime || "Current Time"}</span></span>
           <div style="text-align:right;margin-left:12px;">
             <div style="font-size:13px;font-weight:600;color:#444;">${formatShort(data.reservation.date)} ${jstTime} (JST)</div>
-            ${localTime ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${localTime} (${userTzName || ''})</div>` : ''}
+            ${_lt1Str ? `<div style="font-size:11px;margin-top:2px;">${_lt1Str}</div>` : ''}
           </div>
         </div>
       </div>
@@ -778,10 +779,16 @@ function nextWeek() {
   renderCalendar();
 }
 
+function localTimeStr(obj, tzName) {
+  if (!obj) return '';
+  const t = obj.time + (obj.badge ? '<span style="color:#e67e22;font-weight:700;">' + obj.badge + '</span>' : '');
+  const color = obj.diff !== 0 ? '#e67e22' : '#aaa';
+  return '<span style="color:' + color + ';">' + t + ' (' + (tzName || '') + ')</span>';
+}
 function handleSlotTap(date, time) {
   const displayDate = formatShort(date);
-  const localTime = getLocalTimeLabel(date, time);
-  const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
+  const _lt2 = getLocalTimeLabel(date, time);
+  const _lt2Str = localTimeStr(_lt2, userTzName);
   const T = window._changeT || {};
 
   // confirmの代わりにカスタム確認ダイアログを表示
@@ -794,7 +801,7 @@ function handleSlotTap(date, time) {
   modal.innerHTML = `
     <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;text-align:center;">
       <p style="font-size:16px;font-weight:700;margin-bottom:4px;">📅 ${displayDate} ${time} (JST)</p>
-      ${localTime ? `<p style="font-size:12px;color:#aaa;margin:0 0 8px;">${localTime} (${userTzName || ''})</p>` : '<p style="margin:0 0 8px;"></p>'}
+      ${_lt2Str ? `<p style="font-size:12px;margin:0 0 8px;">${_lt2Str}</p>` : '<p style="margin:0 0 8px;"></p>'}
       <p style="font-size:14px;color:#666;margin-bottom:20px;">に変更しますか？<br><span style="font-size:12px;color:#aaa;">${T.confirmMsg || "Change to this time?"}</span></p>
       <div style="display:flex;gap:10px;">
         <button onclick="document.getElementById('confirmModal').remove()" style="flex:1;padding:14px;background:#e5e5e5;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">戻る<span style="display:block;font-size:11px;font-weight:400;color:#888;">${T.back || "Back"}</span></button>
@@ -828,8 +835,8 @@ async function executeChange(date, time) {
       return;
     }
 
-    const localTime = getLocalTimeLabel(date, time);
-    const timeDisplay = localTime ? `${time} (JST) / ${localTime} (${userTzName || ''})` : time;
+    const _lt3 = getLocalTimeLabel(date, time);
+    const _lt3Str = localTimeStr(_lt3, userTzName);
     const T = window._changeT || {};
 
     document.getElementById("doneInfo").innerHTML = `
@@ -838,7 +845,7 @@ async function executeChange(date, time) {
           <span style="font-size:12px;color:#999;flex-shrink:0;">新しい日時<br><span style="font-size:11px;color:#ccc;">${T.newTime || "New Time"}</span></span>
           <div style="text-align:right;margin-left:12px;">
             <div style="font-size:13px;font-weight:600;color:#444;">${formatShort(date)} ${time} (JST)</div>
-            ${localTime ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${localTime} (${userTzName || ''})</div>` : ''}
+            ${_lt3Str ? `<div style="font-size:11px;margin-top:2px;">${_lt3Str}</div>` : ''}
           </div>
         </div>
         <div style="height:0.5px;background:#eee;"></div>
