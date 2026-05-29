@@ -938,10 +938,18 @@ async function register() {
       document.getElementById("alreadyTextSub").textContent = msgSub;
 
       if (!data.hasPrice) {
-        document.querySelector(".book-link").style.display = "none";
+        const bookLink = document.querySelector(".book-link");
+        if (bookLink) bookLink.style.display = "none";
       }
 
-      showView("alreadyView");
+      // 確実にalreadyViewを表示
+      document.getElementById("registerView").style.display = "none";
+      document.getElementById("doneView").style.display = "none";
+      const alreadyEl = document.getElementById("alreadyView");
+      alreadyEl.style.display = "block";
+      alreadyEl.style.visibility = "visible";
+      alreadyEl.style.opacity = "1";
+      document.getElementById("processingOverlay").classList.remove("show");
       return;
     }
 
