@@ -298,11 +298,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     <div id="resultMessage" style="background:#f8f8f8;border-radius:14px;padding:16px;font-size:13px;color:#555;white-space:pre-line;line-height:1.8;margin-bottom:16px;"></div>
 
-    <p style="text-align:center;font-size:13px;color:#aaa;margin:0 0 16px;">
-      このページは閉じて大丈夫です。<br>
-      <span id="canCloseSub" style="font-size:11px;"></span>
-    </p>
-
     <button class="absence" type="button" id="absenceBtn2" style="display:none;">
       📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span>
     </button>
@@ -769,7 +764,7 @@ async function executeCancel() {
       showResult(false, "すでにキャンセル済みです。\n" + subMsg);
     } else if (isRefundFailed) {
       const subMsg = T.refundFailed || "Refund failed. Please contact the teacher.";
-      showResult(false, "キャンセル処理を中止しました。\n返金処理に失敗しました。先生にご連絡ください。\n" + subMsg);
+      showResultRefundFailed(subMsg);
     } else {
       const failMsg = isPastLimit
         ? "この時間はキャンセルできません。\nレッスン開始12時間前を過ぎています。" + (T.pastDeadlineMsg ? "\n\n" + T.pastDeadlineMsg : "")
@@ -849,6 +844,26 @@ async function sendAbsence() {
       } catch(e) {}
     });
   }); // absenceModal OK button
+}
+
+function showResultRefundFailed(subMsg) {
+  document.getElementById("confirmCard").classList.add("hidden");
+  document.getElementById("resultCard").classList.remove("hidden");
+  const T = window._cancelT || CANCEL_TRANS[localStorage.getItem("userLang") || "ja"] || CANCEL_TRANS["en"];
+  const iconWrap = document.getElementById("resultIconWrap");
+  const iconSvg = document.getElementById("resultIconSvg");
+  const title = document.getElementById("resultTitle");
+  const titleSub = document.getElementById("resultTitleSub");
+  const msg = document.getElementById("resultMessage");
+  const closeSub = document.getElementById("closeBtnSub");
+  iconWrap.style.background = "#fdf0ef";
+  iconSvg.setAttribute("stroke", "#e74c3c");
+  iconSvg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+  title.textContent = "キャンセル処理に失敗しました";
+  title.style.color = "#e74c3c";
+  if (titleSub) titleSub.textContent = subMsg;
+  if (msg) msg.style.display = "none";
+  if (closeSub) closeSub.textContent = T.closeMsg || "Tap × to close";
 }
 
 function showResult(isSuccess, message) {
