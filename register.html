@@ -891,9 +891,7 @@ function setStatus(msg, isError = false) {
 
 function showView(id) {
   ["registerView", "doneView", "alreadyView"].forEach(v => {
-    const el = document.getElementById(v);
-    if (!el) { alert("ERROR: element not found: " + v); return; }
-    el.style.display = v === id ? "block" : "none";
+    document.getElementById(v).style.display = v === id ? "block" : "none";
   });
 }
 
@@ -922,7 +920,9 @@ async function register() {
     const data = await res.json();
 
     if (data.already) {
-      document.getElementById("processingOverlay").classList.remove("show");
+      const ov = document.getElementById("processingOverlay");
+      ov.classList.remove("show");
+      ov.style.display = "none";
       const T = LANG_TEXT[selectedLang] || {};
       const isJa = selectedLang === "ja";
 
