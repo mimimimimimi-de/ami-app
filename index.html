@@ -1476,13 +1476,35 @@ function goMultiConfirm() {
   document.getElementById("multiConfirmBackSub").textContent = T.back || "Back";
   const list = document.getElementById("multiConfirmList");
   const lessonLabel = selectedMinutes + "分レッスン";
+  const lessonSub = T.lesson ? T.lesson + " " + selectedMinutes + " min" : "";
+  const ticketSub = T.ticket ? T.ticket + " ×" + multiSelected.length : "";
   list.innerHTML = `
-    <div style="font-size:12px;color:#999;margin-bottom:10px;">レッスン：<strong style="color:#333;">${lessonLabel}</strong> &nbsp; 回数券：<strong style="color:#06C755;">×${multiSelected.length}回</strong></div>
-    ${multiSelected.map((s, i) => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #eee;">
-        <span style="font-size:13px;color:#555;">${i + 1}.</span>
-        <span style="font-size:13px;font-weight:600;color:#333;">${s.displayDate} ${s.time} <span style="font-size:11px;font-weight:400;color:#aaa;">(JST)</span></span>
-      </div>`).join('')}
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:0.5px solid #eee;">
+        <span style="font-size:12px;color:#999;">レッスン <span style="font-size:11px;color:#ccc;">/ ${T.lesson || "Lesson"}</span></span>
+        <span style="font-size:13px;font-weight:600;color:#333;">${lessonLabel}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:0.5px solid #eee;">
+        <span style="font-size:12px;color:#999;">回数券 <span style="font-size:11px;color:#ccc;">/ ${T.ticket || "Ticket"}</span></span>
+        <span style="font-size:13px;font-weight:600;color:#06C755;">×${multiSelected.length}回 <span style="font-size:11px;font-weight:400;color:#aaa;">/ ×${multiSelected.length} ${T.remaining || "lessons"}</span></span>
+      </div>
+    </div>
+    ${multiSelected.map((s, i) => {
+      const localTime = formatTimeWithTz(s.date, s.time);
+      const localOnly = (userTimezone && userTimezone !== 'Asia/Tokyo')
+        ? localTime.replace(s.time + ' (JST) / ', '')
+        : '';
+      return `
+      <div style="padding:8px 0;border-bottom:0.5px solid #f0f0f0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <span style="font-size:12px;color:#999;margin-top:2px;">${i + 1}.</span>
+          <div style="text-align:right;">
+            <div style="font-size:13px;font-weight:600;color:#333;">${s.displayDate} ${s.time} <span style="font-size:11px;font-weight:400;color:#aaa;">(JST)</span></div>
+            ${localOnly ? `<div style="font-size:11px;color:#aaa;margin-top:2px;">${localOnly}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
   `;
   go("multiConfirmPage");
 }
