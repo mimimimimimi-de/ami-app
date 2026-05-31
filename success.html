@@ -210,12 +210,13 @@
         ]);
 
         checkoutData = checkoutResult || {};
+        const meta = checkoutData.metadata || {};
         paymentIntentId = checkoutData.payment_intent || "";
-        if (checkoutData.selectedDate) date = checkoutData.selectedDate;
-        if (checkoutData.selectedTime) time = checkoutData.selectedTime;
-        if (checkoutData.lessonType) lessonType = checkoutData.lessonType;
-        if (checkoutData.price) {
-          priceLabel = "$" + checkoutData.price;
+        if (meta.selectedDate) date = meta.selectedDate;
+        if (meta.selectedTime) time = meta.selectedTime;
+        if (meta.lessonType) lessonType = meta.lessonType;
+        if (meta.price) {
+          priceLabel = "$" + meta.price;
         } else if (localPrice) {
           priceLabel = "$" + localPrice;
         }
@@ -265,7 +266,7 @@
         return;
       }
 
-      const tempReservationId = localStorage.getItem("tempReservationId");
+      const tempReservationId = localStorage.getItem("tempReservationId") || (checkoutData.metadata && checkoutData.metadata.tempReservationId) || "";
 
       const reservationData = {
         name: profile.displayName || "LINEユーザー",
