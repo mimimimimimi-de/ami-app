@@ -913,7 +913,8 @@ async function register() {
       "&name=" + encodeURIComponent(displayName) +
       "&timezone=" + encodeURIComponent(selectedTimezone) +
       "&lang=" + encodeURIComponent(selectedLang) +
-      "&t=" + Date.now()
+      "&t=" + Date.now(),
+      { redirect: "follow" }
     );
 
     const data = await res.json();
@@ -984,7 +985,6 @@ async function init() {
     console.error(e);
     setStatus("LINEアプリ内で開き直してください。/ Please reopen in the LINE app.", true);
     document.getElementById("registerBtn").disabled = true;
-    showView("registerView");
   }
 }
 
