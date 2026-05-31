@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
   try {
-    const { lessonType, selectedDate, selectedTime, userId, lang } = req.body;
+    const { lessonType, selectedDate, selectedTime, userId, lang, tempReservationId } = req.body;
     if (!lessonType || !selectedDate || !selectedTime || !userId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -39,7 +39,8 @@ module.exports = async function handler(req, res) {
         selectedDate,
         selectedTime,
         userId,
-        price: String(priceJson.price)
+        price: String(priceJson.price),
+        tempReservationId: tempReservationId || ""
       },
       allow_promotion_codes: true,
       success_url: `https://ami-app-eta.vercel.app/success.html?session_id={CHECKOUT_SESSION_ID}${langParam}`,
