@@ -419,6 +419,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     <h2>日時を選んでください</h2>
     <p style="font-size:11px;color:#aaa;letter-spacing:0.08em;text-transform:uppercase;text-align:center;margin:4px 0 12px;" id="calTitleSub">Select Date & Time</p>
     <p style="font-size:13px;color:#888;text-align:center;margin:4px 0 12px;">○をタップして予約する時間を選んでください<br><span id="calTapSub" style="font-size:11px;color:#bbb;">Tap ○ to select your preferred time slot</span></p>
+
+    <!-- 複数予約モード切替 -->
+    <div id="multiBookToggleWrap" style="display:none;background:#f0fdf4;border:1px solid #bbf0cc;border-radius:12px;padding:10px 14px;margin-bottom:10px;text-align:center;">
+      <label style="display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:13px;color:#333;">
+        <input type="checkbox" id="multiBookToggle" onchange="toggleMultiMode()" style="width:18px;height:18px;accent-color:#06C755;">
+        <span>まとめて予約する（最大5件）</span>
+      </label>
+      <div id="multiBookToggleSub" style="font-size:11px;color:#aaa;margin-top:3px;"></div>
+    </div>
+
+    <!-- 選択中スロット表示バー -->
+    <div id="multiSelectedBar" style="display:none;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:12px;padding:10px 14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:13px;font-weight:700;color:#2e7d32;">選択中 <span id="multiSelectedCount">0</span>件<span id="multiSelectedSub" style="font-size:11px;font-weight:400;color:#aaa;margin-left:6px;"></span></span>
+        <span style="font-size:11px;color:#aaa;" id="multiMaxSub">最大5件</span>
+      </div>
+      <div id="multiSelectedList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <button type="button" id="multiConfirmBtn" onclick="goMultiConfirm()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:12px;padding:12px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;display:block;">
+        まとめて予約する（<span id="multiConfirmCount">0</span>件）
+        <span id="multiConfirmBtnSub" style="display:block;font-size:11px;color:rgba(255,255,255,0.8);"></span>
+      </button>
+    </div>
+
     <div class="tz-info" id="tzInfo">📍 表示時刻: 読み込み中...</div>
 
     <div style="display:flex;gap:8px;margin:12px 0;">
@@ -441,6 +464,32 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     </div>
 
     <button type="button" style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;margin-top:16px;" onclick="go('price')">← 戻る <span style="font-size:11px;color:#aaa;" id="calBackSub"></span></button>
+  </div>
+
+  <!-- 複数予約確認ページ -->
+  <div class="card hidden" id="multiConfirmPage">
+    <h2>まとめて予約する</h2>
+    <p style="font-size:11px;color:#aaa;text-align:center;margin:4px 0 16px;" id="multiConfirmTitleSub">Confirm Multiple Bookings</p>
+    <div id="multiConfirmList" style="background:#f8fdf9;border:0.5px solid #d0ead8;border-radius:14px;padding:14px;margin-bottom:16px;"></div>
+    <button type="button" id="multiBookBtn" onclick="executeMultiBook()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:14px;padding:15px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;display:block;margin-bottom:10px;">
+      まとめて予約する
+      <span id="multiBookBtnSub" style="display:block;font-size:11px;color:rgba(255,255,255,0.8);"></span>
+    </button>
+    <button type="button" onclick="go('calendarPage')" style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;">← 戻る <span style="font-size:11px;color:#aaa;" id="multiConfirmBackSub"></span></button>
+  </div>
+
+  <!-- 複数予約結果ページ -->
+  <div class="card hidden" id="multiResultPage">
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:40px;margin-bottom:8px;" id="multiResultIcon">✅</div>
+      <h2 id="multiResultTitle">予約結果</h2>
+      <p style="font-size:11px;color:#aaa;margin-top:4px;" id="multiResultTitleSub">Booking Results</p>
+    </div>
+    <div id="multiResultList" style="margin-bottom:16px;"></div>
+    <a href="https://liff.line.me/2009890655-O8QZVlRf" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:14px;padding:15px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;display:block;text-align:center;">
+      マイ予約を確認する
+      <span id="myBookingsBtnSub" style="display:block;font-size:11px;color:rgba(255,255,255,0.8);"></span>
+    </a>
   </div>
 
   <div class="card hidden" id="confirmPage">
@@ -476,7 +525,7 @@ const TRANSLATIONS = {
     next: "Next", selectDateNext: "Select date & time",
     back: "Back",
     selectDateTime: "Select Date & Time",
-    tapToSelect: "Tap ○ to select your preferred time slot",
+    tapToSelect: "Tap ○ to select your preferred time slot", multiBookBtn: "Book Multiple", multiSelected: "selected", multiMax: "Max 5 lessons", multiConfirmTitle: "Confirm Multiple Bookings", multiBookConfirm: "Book all selected", multiSuccess: "Booking confirmed!", multiFail: "Could not book", multiNoTicket: "No valid ticket", multiResult: "Booking Results", myBookingsBtn: "View My Bookings",
     timesShownIn: "Times shown in JST",
     prevWeek: "Prev", nextWeek: "Next", prevWeekError: "Cannot go before today.", nextWeekError: "Bookings are available up to 1 month ahead.",
     scrollHint: "Scroll to see more days →",
@@ -506,7 +555,7 @@ const TRANSLATIONS = {
     next: "下一步", selectDateNext: "选择日期和时间",
     back: "返回",
     selectDateTime: "请选择日期和时间",
-    tapToSelect: "点击○选择您的课程时间",
+    tapToSelect: "点击○选择您的课程时间", multiBookBtn: "批量预约", multiSelected: "已选择", multiMax: "最多5节课", multiConfirmTitle: "确认批量预约", multiBookConfirm: "预约所有选择", multiSuccess: "预约成功！", multiFail: "无法预约", multiNoTicket: "没有有效次券", multiResult: "预约结果", myBookingsBtn: "查看我的预约",
     timesShownIn: "时间以JST显示",
     prevWeek: "上一周", nextWeek: "下一周", prevWeekError: "不能选择今天之前的日期.", nextWeekError: "只能预约1个月以内的时间.",
     scrollHint: "横向滚动查看更多日期 →",
@@ -536,7 +585,7 @@ const TRANSLATIONS = {
     next: "다음", selectDateNext: "날짜 및 시간 선택",
     back: "뒤로",
     selectDateTime: "날짜와 시간을 선택해주세요",
-    tapToSelect: "○을 탭하여 수업 시간을 선택해주세요",
+    tapToSelect: "○을 탭하여 수업 시간을 선택해주세요", multiBookBtn: "일괄 예약", multiSelected: "선택됨", multiMax: "최대 5레슨", multiConfirmTitle: "일괄 예약 확인", multiBookConfirm: "선택한 모든 예약", multiSuccess: "예약 확정！", multiFail: "예약 불가", multiNoTicket: "유효한 횟수권 없음", multiResult: "예약 결과", myBookingsBtn: "내 예약 확인",
     timesShownIn: "JST 기준으로 표시",
     prevWeek: "이전 주", nextWeek: "다음 주", prevWeekError: "오늘 이전 주는 선택할 수 없습니다.", nextWeekError: "1개월 이후로는 예약할 수 없습니다.",
     scrollHint: "옆으로 스크롤하여 다른 날짜 확인 →",
@@ -566,7 +615,7 @@ const TRANSLATIONS = {
     next: "ถัดไป", selectDateNext: "เลือกวันและเวลา",
     back: "ย้อนกลับ",
     selectDateTime: "กรุณาเลือกวันและเวลา",
-    tapToSelect: "แตะ ○ เพื่อเลือกเวลาบทเรียน",
+    tapToSelect: "แตะ ○ เพื่อเลือกเวลาบทเรียน", multiBookBtn: "จองหลายครั้ง", multiSelected: "เลือกแล้ว", multiMax: "สูงสุด 5 บทเรียน", multiConfirmTitle: "ยืนยันการจองหลายรายการ", multiBookConfirm: "จองทั้งหมดที่เลือก", multiSuccess: "ยืนยันการจองแล้ว！", multiFail: "ไม่สามารถจองได้", multiNoTicket: "ไม่มีคูปองที่ใช้ได้", multiResult: "ผลการจอง", myBookingsBtn: "ดูการจองของฉัน",
     timesShownIn: "แสดงเวลาตาม JST",
     prevWeek: "สัปดาห์ก่อน", nextWeek: "สัปดาห์ถัดไป", prevWeekError: "ไม่สามารถเลือกสัปดาห์ก่อนวันนี้ได้", nextWeekError: "สามารถจองได้ล่วงหน้าสูงสุด 1 เดือน",
     scrollHint: "เลื่อนเพื่อดูวันอื่น →",
@@ -596,7 +645,7 @@ const TRANSLATIONS = {
     next: "Suivant", selectDateNext: "Choisir date et heure",
     back: "Retour",
     selectDateTime: "Choisissez la date et l'heure",
-    tapToSelect: "Appuyez sur ○ pour sélectionner un créneau",
+    tapToSelect: "Appuyez sur ○ pour sélectionner un créneau", multiBookBtn: "Réservations multiples", multiSelected: "sélectionné(s)", multiMax: "Max 5 leçons", multiConfirmTitle: "Confirmer les réservations", multiBookConfirm: "Réserver tout", multiSuccess: "Réservation confirmée！", multiFail: "Impossible de réserver", multiNoTicket: "Pas de ticket valide", multiResult: "Résultats", myBookingsBtn: "Mes réservations",
     timesShownIn: "Heures affichées en JST",
     prevWeek: "Semaine précédente", nextWeek: "Semaine suivante", prevWeekError: "Impossible de revenir avant aujourd'hui.", nextWeekError: "Les réservations sont disponibles jusqu'à 1 mois à l'avance.",
     scrollHint: "Faites défiler pour voir plus de jours →",
@@ -626,7 +675,7 @@ const TRANSLATIONS = {
     next: "Weiter", selectDateNext: "Datum und Uhrzeit wählen",
     back: "Zurück",
     selectDateTime: "Wählen Sie Datum und Uhrzeit",
-    tapToSelect: "Tippen Sie auf ○, um einen Zeitslot auszuwählen",
+    tapToSelect: "Tippen Sie auf ○, um einen Zeitslot auszuwählen", multiBookBtn: "Mehrfachbuchung", multiSelected: "ausgewählt", multiMax: "Max. 5 Stunden", multiConfirmTitle: "Mehrfachbuchung bestätigen", multiBookConfirm: "Alle buchen", multiSuccess: "Buchung bestätigt！", multiFail: "Buchung nicht möglich", multiNoTicket: "Kein gültiges Ticket", multiResult: "Buchungsergebnisse", myBookingsBtn: "Meine Buchungen",
     timesShownIn: "Zeiten in JST angezeigt",
     prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", prevWeekError: "Vor heute ist keine Auswahl möglich.", nextWeekError: "Buchungen sind bis zu 1 Monat im Voraus möglich.",
     scrollHint: "Scrollen Sie, um mehr Tage zu sehen →",
@@ -849,6 +898,15 @@ function go(id) {
   document.querySelectorAll(".card").forEach(c => c.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
+  if (id === "calendarPage") {
+    // マルチモードをリセットせずに初期化
+    isMultiMode = false;
+    multiSelected = [];
+    const toggle = document.getElementById("multiBookToggle");
+    if (toggle) toggle.checked = false;
+    updateMultiBar();
+    initMultiMode();
+  }
 }
 
 function setNextBtnLoading(isLoading) {
@@ -1303,7 +1361,12 @@ function generateCalendar() {
         const tooSoon = isWithin12Hours(date, time);
         const busy = isOverlap(start, end, busyItems);
         if (inWindow && !tooSoon && !busy) {
-          html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
+          const isMultiSelected = isMultiMode && multiSelected.some(s => s.date === date && s.time === time);
+          if (isMultiMode) {
+            html += `<td class="available" onclick="pickSlotMulti('${date}','${time}')" style="${isMultiSelected ? 'background:#e3f2fd;' : ''}"><span style="color:${isMultiSelected ? '#1976d2' : '#06C755'};font-weight:700;font-size:18px;">${isMultiSelected ? '●' : '○'}</span></td>`;
+          } else {
+            html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
+          }
         } else {
           html += `<td class="unavailable">×</td>`;
         }
@@ -1349,6 +1412,183 @@ function generateCalendar() {
       cornerTh.style.background = "#f8faf9";
     }
   }, 0);
+}
+
+// ===== 複数予約モード =====
+let isMultiMode = false;
+let multiSelected = []; // [{date, time, displayDate}]
+let multiTicketId = null;
+let multiTicketRemaining = 0;
+
+function toggleMultiMode() {
+  isMultiMode = document.getElementById("multiBookToggle").checked;
+  multiSelected = [];
+  updateMultiBar();
+  generateCalendar();
+}
+
+function updateMultiBar() {
+  const bar = document.getElementById("multiSelectedBar");
+  const T = window._currentT || {};
+  if (isMultiMode) {
+    bar.style.display = "block";
+    document.getElementById("multiSelectedCount").textContent = multiSelected.length;
+    document.getElementById("multiConfirmCount").textContent = multiSelected.length;
+    document.getElementById("multiSelectedSub").textContent = T.multiSelected ? "/ " + T.multiSelected : "";
+    document.getElementById("multiMaxSub").textContent = "最大5件 / " + (T.multiMax || "Max 5");
+    document.getElementById("multiConfirmBtnSub").textContent = T.multiBookBtn || "Book Multiple";
+    const list = document.getElementById("multiSelectedList");
+    list.innerHTML = multiSelected.map((s, i) => `
+      <span style="background:#fff;border:1px solid #a5d6a7;border-radius:8px;padding:3px 8px;font-size:11px;color:#2e7d32;display:inline-flex;align-items:center;gap:4px;">
+        ${s.displayDate} ${s.time}
+        <span onclick="removeMultiSlot(${i})" style="cursor:pointer;color:#e74c3c;font-weight:700;margin-left:2px;">×</span>
+      </span>`).join('');
+    document.getElementById("multiConfirmBtn").style.display = multiSelected.length > 0 ? "block" : "none";
+  } else {
+    bar.style.display = "none";
+  }
+}
+
+function removeMultiSlot(idx) {
+  multiSelected.splice(idx, 1);
+  updateMultiBar();
+  generateCalendar();
+}
+
+function goMultiConfirm() {
+  if (multiSelected.length === 0) return;
+  const T = window._currentT || {};
+  document.getElementById("multiConfirmTitleSub").textContent = T.multiConfirmTitle || "Confirm Multiple Bookings";
+  document.getElementById("multiBookBtnSub").textContent = T.multiBookConfirm || "Book all selected";
+  document.getElementById("multiConfirmBackSub").textContent = T.back || "Back";
+  const list = document.getElementById("multiConfirmList");
+  const lessonLabel = selectedMinutes + "分レッスン";
+  list.innerHTML = `
+    <div style="font-size:12px;color:#999;margin-bottom:10px;">レッスン：<strong style="color:#333;">${lessonLabel}</strong> &nbsp; 回数券：<strong style="color:#06C755;">×${multiSelected.length}回</strong></div>
+    ${multiSelected.map((s, i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #eee;">
+        <span style="font-size:13px;color:#555;">${i + 1}.</span>
+        <span style="font-size:13px;font-weight:600;color:#333;">${s.displayDate} ${s.time} <span style="font-size:11px;font-weight:400;color:#aaa;">(JST)</span></span>
+      </div>`).join('')}
+  `;
+  go("multiConfirmPage");
+}
+
+async function executeMultiBook() {
+  if (multiSelected.length === 0) return;
+  const T = window._currentT || {};
+  showProcessing("予約処理中...", T.processing || "Processing...");
+
+  const results = [];
+  for (const slot of multiSelected) {
+    try {
+      // 仮予約作成
+      const tempRes = await fetch(GAS_URL + `?action=createTempReservation&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(userName)}&date=${slot.date}&time=${slot.time}&lesson=${encodeURIComponent(selectedMinutes + "分レッスン")}&price=0&t=${Date.now()}`);
+      const tempData = await tempRes.json();
+      if (!tempData.ok) {
+        results.push({ slot, ok: false, reason: tempData.message || "埋まっています" });
+        continue;
+      }
+      // 回数券を使用
+      const useRes = await fetch(GAS_URL + `?action=useTicket&ticketId=${encodeURIComponent(multiTicketId)}&userId=${encodeURIComponent(userId)}&t=${Date.now()}`);
+      const useData = await useRes.json();
+      if (!useData.ok) {
+        results.push({ slot, ok: false, reason: useData.message || "回数券エラー" });
+        continue;
+      }
+      // 予約確定
+      const confirmRes = await fetch(GAS_URL + `?action=confirmTempReservation&reservationId=${encodeURIComponent(tempData.reservationId)}&paymentIntentId=${encodeURIComponent("ticket:" + multiTicketId)}&t=${Date.now()}`);
+      const confirmData = await confirmRes.json();
+      if (!confirmData.ok) {
+        results.push({ slot, ok: false, reason: confirmData.message || "確定エラー" });
+      } else {
+        results.push({ slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl });
+      }
+    } catch (e) {
+      results.push({ slot, ok: false, reason: "エラーが発生しました" });
+    }
+  }
+
+  // LINEに一括通知（GASのsendMultiBookingNotify）
+  const successItems = results.filter(r => r.ok);
+  if (successItems.length > 0) {
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'notifyMultiBooking',
+          userId,
+          name: userName,
+          lesson: selectedMinutes + "分レッスン",
+          bookings: successItems.map(r => ({ date: r.slot.date, time: r.slot.time, reservationId: r.reservationId, meetUrl: r.meetUrl }))
+        })
+      });
+    } catch(e) {}
+  }
+
+  hideProcessing();
+  showMultiResult(results);
+}
+
+function showMultiResult(results) {
+  const T = window._currentT || {};
+  const successCount = results.filter(r => r.ok).length;
+  const failCount = results.filter(r => !r.ok).length;
+
+  document.getElementById("multiResultIcon").textContent = successCount > 0 ? "✅" : "❌";
+  document.getElementById("multiResultTitle").textContent = `予約結果 ${successCount}件確定`;
+  document.getElementById("multiResultTitleSub").textContent = T.multiResult || "Booking Results";
+  document.getElementById("myBookingsBtnSub").textContent = T.myBookingsBtn || "View My Bookings";
+
+  const list = document.getElementById("multiResultList");
+  list.innerHTML = results.map(r => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:${r.ok ? '#f0fdf4' : '#fff5f5'};border-radius:10px;margin-bottom:6px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#333;">${r.slot.displayDate} ${r.slot.time}</div>
+        ${!r.ok ? `<div style="font-size:11px;color:#e74c3c;margin-top:2px;">${r.reason}</div>` : ''}
+      </div>
+      <span style="font-size:18px;">${r.ok ? '✅' : '❌'}</span>
+    </div>`).join('');
+
+  go("multiResultPage");
+}
+
+function initMultiMode() {
+  // 回数券があるユーザーにのみ複数予約トグルを表示
+  if (ticketCache && ticketCache.ok) {
+    const lessonKey = selectedMinutes === 50 ? "50分" : "25分";
+    const validTickets = (ticketCache.tickets || []).filter(t => t.isValid && String(t.lesson).includes(lessonKey));
+    if (validTickets.length > 0) {
+      multiTicketId = validTickets[0].ticketId;
+      multiTicketRemaining = validTickets.reduce((sum, t) => sum + t.remaining, 0);
+      document.getElementById("multiBookToggleWrap").style.display = "block";
+      const T = window._currentT || {};
+      document.getElementById("multiBookToggleSub").textContent = T.multiMax || "Max 5 lessons";
+    }
+  }
+}
+
+function pickSlotMulti(date, time) {
+  const parts = date.split("-");
+  const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
+  const key = date + "_" + time;
+  const idx = multiSelected.findIndex(s => s.date === date && s.time === time);
+  if (idx >= 0) {
+    // 解除
+    multiSelected.splice(idx, 1);
+  } else {
+    // 追加（上限チェック）
+    const maxCount = Math.min(5, multiTicketRemaining);
+    if (multiSelected.length >= maxCount) {
+      const T = window._currentT || {};
+      showCalPopup("🎟️", `最大${maxCount}件まで選択できます`, T.multiMax || `Max ${maxCount} lessons`, "閉じる / " + (T.close || "Close"), "#e67e22");
+      return;
+    }
+    multiSelected.push({ date, time, displayDate });
+  }
+  updateMultiBar();
+  generateCalendar();
 }
 
 async function pickSlot(date, time) {
