@@ -1540,7 +1540,7 @@ async function executeMultiBook() {
         results.push({ slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl });
       }
     } catch (e) {
-      results.push({ slot, ok: false, reason: "エラーが発生しました" });
+      results.push({ slot, ok: false, reason: "エラー: " + e.message });
     }
   }
 
