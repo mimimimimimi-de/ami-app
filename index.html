@@ -1544,7 +1544,7 @@ async function executeMultiBook() {
     }
   }
 
-  // LINEに一括通知（GASのsendMultiBookingNotify）
+  // LINEに一括通知
   const successItems = results.filter(r => r.ok);
   if (successItems.length > 0) {
     try {
@@ -1557,9 +1557,10 @@ async function executeMultiBook() {
           name: displayName,
           lesson: selectedMinutes + "分レッスン",
           bookings: successItems.map(r => ({ date: r.slot.date, time: r.slot.time, reservationId: r.reservationId, meetUrl: r.meetUrl }))
-        })
+        }),
+        mode: 'no-cors'
       });
-    } catch(e) {}
+    } catch(e) { console.log('notify error:', e); }
   }
 
   hideProcessing();
