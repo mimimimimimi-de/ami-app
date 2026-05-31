@@ -920,9 +920,7 @@ async function register() {
     const data = await res.json();
 
     if (data.already) {
-      const ov = document.getElementById("processingOverlay");
-      ov.classList.remove("show");
-      ov.style.display = "none";
+      document.getElementById("processingOverlay").classList.remove("show");
       const T = LANG_TEXT[selectedLang] || {};
       const isJa = selectedLang === "ja";
 
