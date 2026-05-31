@@ -1151,6 +1151,7 @@ async function openCalendar() {
     return;
   }
 
+  initMultiMode();
   generateCalendar();
 }
 
@@ -1362,7 +1363,18 @@ function generateCalendar() {
         const busy = isOverlap(start, end, busyItems);
         if (inWindow && !tooSoon && !busy) {
           const isMultiSelected = isMultiMode && multiSelected.some(s => s.date === date && s.time === time);
-          if (isMultiMode) {
+          // マルチモード時：選択済みスロットと時間が重複するかチェック
+          const blockMins = getBlockMinutes(selectedMinutes);
+          const slotStart = new Date(`${date}T${time}:00+09:00`);
+          const slotEnd = new Date(slotStart.getTime() + blockMins * 60000);
+          const multiConflict = isMultiMode && !isMultiSelected && multiSelected.some(s => {
+            const sStart = new Date(`${s.date}T${s.time}:00+09:00`);
+            const sEnd = new Date(sStart.getTime() + blockMins * 60000);
+            return slotStart < sEnd && slotEnd > sStart;
+          });
+          if (isMultiMode && multiConflict) {
+            html += `<td class="unavailable">×</td>`;
+          } else if (isMultiMode) {
             html += `<td class="available" onclick="pickSlotMulti('${date}','${time}')" style="${isMultiSelected ? 'background:#e3f2fd;' : ''}"><span style="color:${isMultiSelected ? '#1976d2' : '#06C755'};font-weight:700;font-size:18px;">${isMultiSelected ? '●' : '○'}</span></td>`;
           } else {
             html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
