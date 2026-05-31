@@ -338,7 +338,7 @@ body {
 .done-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
 .done-card .highlight { color: var(--green); font-weight: 700; }
 
-.already-card { display: none; text-align: center; }
+.already-card { text-align: center; }
 .already-icon { font-size: 48px; margin-bottom: 12px; }
 .already-card h2 { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 10px; }
 .already-card p { font-size: 14px; color: var(--text2); line-height: 1.8; }
@@ -423,8 +423,8 @@ body {
   <div class="card">
 
     <!-- 登録前 -->
-    <div id="registerView" style="display:none;">
-      <div class="steps">
+    <div id="registerView">
+
       <!-- 言語選択 -->
       <div class="tz-section" style="margin-bottom:16px;">
         <div class="lang-label">🌐 言語を選んでください</div>
@@ -493,9 +493,10 @@ body {
 
       <div class="status" id="status"></div>
     </div>
+    <!-- /registerView -->
 
     <!-- 登録完了 -->
-    <div class="done-card" id="doneView" style="display:none;">
+    <div class="done-card" id="doneView">
       <div class="done-icon">🎉</div>
       <h2>登録完了！<span class="en-sub"></span></h2>
       <div class="done-name" id="doneName"></div>
@@ -509,11 +510,11 @@ body {
     </div>
 
     <!-- 登録済み -->
-    <div class="already-card" id="alreadyView" style="display:none;">
+    <div class="already-card" id="alreadyView">
       <div class="already-icon">✅</div>
       <h2>すでに登録済みです<span class="en-sub" id="subAlreadyTitle"></span></h2>
       <p id="alreadyText">登録が確認できました。</p>
-      <p id="alreadyTextSub" style="font-size:12px;color:#aaa;margin-top:-8px;"></p>
+      <p id="alreadyTextSub" style="font-size:12px;color:#aaa;margin-top:6px;"></p>
       <a class="book-link" href="https://ami-app-eta.vercel.app/">
         📅 レッスンを予約する<span class="en-sub" id="subBookBtn" style="color:rgba(255,255,255,0.8);"></span>
       </a>
@@ -891,8 +892,12 @@ function setStatus(msg, isError = false) {
 
 function showView(id) {
   ["registerView", "doneView", "alreadyView"].forEach(v => {
-    document.getElementById(v).style.display = v === id ? "block" : "none";
+    const el = document.getElementById(v);
+    if (el) el.style.display = v === id ? "block" : "none";
   });
+  // processingOverlayも必ず非表示に
+  const overlay = document.getElementById("processingOverlay");
+  if (overlay) overlay.classList.remove("show");
 }
 
 async function register() {
@@ -913,17 +918,13 @@ async function register() {
       "&name=" + encodeURIComponent(displayName) +
       "&timezone=" + encodeURIComponent(selectedTimezone) +
       "&lang=" + encodeURIComponent(selectedLang) +
-      "&t=" + Date.now(),
-      { redirect: "follow" }
+      "&t=" + Date.now()
     );
 
     const data = await res.json();
 
     if (data.already) {
-      const ov = document.getElementById("processingOverlay");
-      ov.classList.remove("show");
-      ov.style.display = "none";
-      ov.style.visibility = "hidden";
+      document.getElementById("processingOverlay").classList.remove("show");
       const T = LANG_TEXT[selectedLang] || {};
       const isJa = selectedLang === "ja";
 
@@ -938,19 +939,28 @@ async function register() {
       document.getElementById("alreadyTextSub").textContent = msgSub;
 
       if (!data.hasPrice) {
-        document.querySelector(".book-link").style.display = "none";
+        const bookLink = document.querySelector(".book-link");
+        if (bookLink) bookLink.style.display = "none";
       }
 
-      showView("alreadyView");
+      // 確実にalreadyViewを表示
+      document.getElementById("registerView").style.display = "none";
+      document.getElementById("doneView").style.display = "none";
+      const alreadyEl = document.getElementById("alreadyView");
+      alreadyEl.style.display = "block";
+      alreadyEl.style.visibility = "visible";
+      alreadyEl.style.opacity = "1";
+      document.getElementById("processingOverlay").classList.remove("show");
+      localStorage.setItem("userLang", selectedLang);
+      localStorage.setItem("userTimezone", selectedTimezone);
       return;
     }
 
     if (data.ok) {
-      const ov2 = document.getElementById("processingOverlay");
-      ov2.classList.remove("show");
-      ov2.style.display = "none";
-      ov2.style.visibility = "hidden";
+      document.getElementById("processingOverlay").classList.remove("show");
       document.getElementById("doneName").textContent = displayName + " さん";
+      localStorage.setItem("userLang", selectedLang);
+      localStorage.setItem("userTimezone", selectedTimezone);
       showView("doneView");
       return;
     }
@@ -966,6 +976,11 @@ async function register() {
 }
 
 async function init() {
+  // 初期状態を設定
+  document.getElementById("doneView").style.display = "none";
+  document.getElementById("alreadyView").style.display = "none";
+  document.getElementById("registerView").style.display = "block";
+
   setStatus("LINE情報を確認しています... / Checking LINE info...");
 
   try {
@@ -985,7 +1000,6 @@ async function init() {
     // タイムゾーンリスト表示＆自動検出
     renderTimezones(TIMEZONES);
     autoDetectTimezone();
-    showView("registerView");
 
   } catch (e) {
     console.error(e);
