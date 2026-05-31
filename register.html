@@ -920,7 +920,10 @@ async function register() {
     const data = await res.json();
 
     if (data.already) {
-      document.getElementById("processingOverlay").classList.remove("show");
+      const ov = document.getElementById("processingOverlay");
+      ov.classList.remove("show");
+      ov.style.display = "none";
+      ov.style.visibility = "hidden";
       const T = LANG_TEXT[selectedLang] || {};
       const isJa = selectedLang === "ja";
 
@@ -943,7 +946,10 @@ async function register() {
     }
 
     if (data.ok) {
-      document.getElementById("processingOverlay").classList.remove("show");
+      const ov2 = document.getElementById("processingOverlay");
+      ov2.classList.remove("show");
+      ov2.style.display = "none";
+      ov2.style.visibility = "hidden";
       document.getElementById("doneName").textContent = displayName + " さん";
       showView("doneView");
       return;
