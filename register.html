@@ -891,7 +891,9 @@ function setStatus(msg, isError = false) {
 
 function showView(id) {
   ["registerView", "doneView", "alreadyView"].forEach(v => {
-    document.getElementById(v).style.display = v === id ? "block" : "none";
+    const el = document.getElementById(v);
+    if (!el) { alert("ERROR: element not found: " + v); return; }
+    el.style.display = v === id ? "block" : "none";
   });
 }
 
@@ -918,8 +920,6 @@ async function register() {
     );
 
     const data = await res.json();
-
-    alert("GASレスポンス: " + JSON.stringify(data));
 
     if (data.already) {
       document.getElementById("processingOverlay").classList.remove("show");
