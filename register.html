@@ -955,7 +955,7 @@ async function register() {
     console.error(e);
     document.getElementById("processingOverlay").classList.remove("show");
     btn.disabled = false;
-    setStatus("登録に失敗しました。もう一度お試しください。/ Registration failed. Please try again.", true);
+    setStatus("エラー: " + e.message + " / " + e.toString(), true);
   }
 }
 
