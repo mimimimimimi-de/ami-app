@@ -984,6 +984,7 @@ async function init() {
     console.error(e);
     setStatus("LINEアプリ内で開き直してください。/ Please reopen in the LINE app.", true);
     document.getElementById("registerBtn").disabled = true;
+    showView("registerView");
   }
 }
 
