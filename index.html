@@ -1518,7 +1518,7 @@ async function executeMultiBook() {
   for (const slot of multiSelected) {
     try {
       // 仮予約作成
-      const tempRes = await fetch(GAS_URL + `?action=createTempReservation&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(userName)}&date=${slot.date}&time=${slot.time}&lesson=${encodeURIComponent(selectedMinutes + "分レッスン")}&price=0&t=${Date.now()}`);
+      const tempRes = await fetch(GAS_URL + `?action=createTempReservation&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(displayName)}&date=${slot.date}&time=${slot.time}&lesson=${encodeURIComponent(selectedMinutes + "分レッスン")}&price=0&t=${Date.now()}`);
       const tempData = await tempRes.json();
       if (!tempData.ok) {
         results.push({ slot, ok: false, reason: tempData.message || "埋まっています" });
@@ -1554,7 +1554,7 @@ async function executeMultiBook() {
         body: JSON.stringify({
           action: 'notifyMultiBooking',
           userId,
-          name: userName,
+          name: displayName,
           lesson: selectedMinutes + "分レッスン",
           bookings: successItems.map(r => ({ date: r.slot.date, time: r.slot.time, reservationId: r.reservationId, meetUrl: r.meetUrl }))
         })
