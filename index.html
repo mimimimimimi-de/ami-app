@@ -1306,9 +1306,22 @@ function getLocalTimeLabel(dateStr, timeStr) {
 function generateCalendar() {
   const calendar = document.getElementById("calendar");
 
-  // userTimezoneが未設定なら必ずブラウザから取得
-  if (!userTimezone) {
-    detectTimezone();
+  // userTimezoneを確実に設定（優先順位: 現在の値 > localStorage > ブラウザTZ）
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') {
+    const storedTz = localStorage.getItem("userTimezone");
+    if (storedTz && storedTz !== 'Asia/Tokyo') {
+      userTimezone = storedTz;
+      try {
+        userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    } else {
+      detectTimezone();
+    }
+  }
+  if (userTimezone && userTimezone !== 'Asia/Tokyo' && !userTzName) {
+    try {
+      userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    } catch(e) {}
   }
 
   // キャッシュがない場合はローディング表示
@@ -1372,10 +1385,22 @@ function generateCalendar() {
     html += `<tr><td colspan="${days.length + 1}" style="padding:20px;text-align:center;color:#aaa;">この週は空き時間がありません<br><span style="font-size:12px;">No available slots this week</span></td></tr>`;
   } else {
     times.forEach(time => {
-      const localTimeObj = showLocalTime && days.length > 0 ? getLocalTimeLabel(formatFull(days[0]), time) : null;
+      // 時刻列ヘッダー：最初の表示日付で現地時間を計算
+      const firstDay = days.find(d => {
+        const dateStr = formatFull(d);
+        const isSunday = d.getDay() === 0;
+        const isTemporary = temporaryDates.includes(dateStr);
+        const wins = isTemporary ? (temporaryWindows[dateStr] || []) : (isSunday ? [] : getTimeWindows(d));
+        const bm = getBlockMinutes(selectedMinutes);
+        return wins.some(w => {
+          const t = timeToMinutes(time);
+          return t >= timeToMinutes(w.start) && t + bm <= timeToMinutes(w.end);
+        });
+      }) || days[0];
+      const localTimeObj = showLocalTime ? getLocalTimeLabel(formatFull(firstDay), time) : null;
       const localTimeStr = localTimeObj ? localTimeObj.time + (localTimeObj.badge ? `<span style="color:#e67e22;font-weight:700;">${localTimeObj.badge}</span>` : '') : '';
       const localTimeColor = localTimeObj && localTimeObj.diff !== 0 ? '#e67e22' : '#aaa';
-      html += `<tr><td>${time}<br>${localTimeStr ? `<span style="font-size:11px;color:${localTimeColor};">${localTimeStr}</span>` : ''}</td>`;
+      html += `<tr><td>${time}${localTimeStr ? `<br><span style="font-size:11px;color:${localTimeColor};">${localTimeStr}</span>` : ''}</td>`;
       days.forEach(day => {
         const date = formatFull(day);
         const isSunday = day.getDay() === 0;

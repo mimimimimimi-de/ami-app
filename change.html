@@ -692,9 +692,22 @@ async function loadChangeData() {
 function renderCalendar() {
   const calendar = document.getElementById("calendar");
 
-  // userTimezoneが未設定なら必ずブラウザから取得
-  if (!userTimezone) {
-    detectTimezone();
+  // userTimezoneを確実に設定（優先順位: 現在の値 > localStorage > ブラウザTZ）
+  if (!userTimezone || userTimezone === 'Asia/Tokyo') {
+    const storedTz = localStorage.getItem("userTimezone");
+    if (storedTz && storedTz !== 'Asia/Tokyo') {
+      userTimezone = storedTz;
+      try {
+        userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    } else {
+      detectTimezone();
+    }
+  }
+  if (userTimezone && userTimezone !== 'Asia/Tokyo' && !userTzName) {
+    try {
+      userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    } catch(e) {}
   }
 
   const allDates = optionsData.dates || [];
@@ -730,8 +743,9 @@ function renderCalendar() {
     html += "<tr><td colspan='" + (visibleDates.length + 1) + "' style='padding:20px;color:#aaa;text-align:center;'>この週に選べる時間がありません<br><span style='font-size:12px;'>No slots this week</span></td></tr>";
   } else {
     times.forEach(time => {
-      const firstDate = visibleDates.find(d => d.date);
-      const localTimeObj = showLocalTime && firstDate ? getLocalTimeLabel(firstDate.date, time) : null;
+      // その時間が予約可能な最初の日付で現地時間を計算
+      const firstAvailDate = visibleDates.find(d => d.times && d.times.includes(time)) || visibleDates.find(d => d.date);
+      const localTimeObj = showLocalTime && firstAvailDate ? getLocalTimeLabel(firstAvailDate.date, time) : null;
       const localTimeStr = localTimeObj ? localTimeObj.time + (localTimeObj.badge ? "<span style='color:#e67e22;font-weight:700;'>" + localTimeObj.badge + "</span>" : '') : '';
       const localTimeColor = localTimeObj && localTimeObj.diff !== 0 ? '#e67e22' : '#aaa';
       html += "<tr><td>" + time + (localTimeStr ? "<br><span style='font-size:11px;color:" + localTimeColor + ";'>" + localTimeStr + "</span>" : "") + "</td>";
