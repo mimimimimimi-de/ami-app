@@ -1283,6 +1283,11 @@ function getLocalTimeLabel(dateStr, timeStr) {
 function generateCalendar() {
   const calendar = document.getElementById("calendar");
 
+  // userTimezoneが未設定なら必ずブラウザから取得
+  if (!userTimezone) {
+    detectTimezone();
+  }
+
   // キャッシュがない場合はローディング表示
   if (!calendarData) {
     calendar.innerHTML = `
@@ -1330,24 +1335,6 @@ function generateCalendar() {
 
   const times = Array.from(timeSet).sort();
   const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
-
-  // calNote（タイムゾーン説明）表示
-  const calNoteEl = document.getElementById('calNote');
-  if (calNoteEl) {
-    if (showLocalTime) {
-      const DAY_NOTE_TRANS = {
-        en: 'prev.day / next day', zh: '前一天 / 次日', ko: '전날 / 다음날',
-        th: 'วันก่อน / วันถัดไป', fr: 'jour préc. / jour suiv.',
-        de: 'Vortag / nächster Tag', es: 'día ant. / día sig.'
-      };
-      const _lang = localStorage.getItem('userLang') || 'en';
-      const dayNoteSub = DAY_NOTE_TRANS[_lang] || DAY_NOTE_TRANS['en'];
-      calNoteEl.style.display = 'block';
-      calNoteEl.innerHTML = '🌍 現地時間 (' + (userTzName || userTimezone) + ') を表示中<br><span style="color:#e67e22;">(-1)</span> = 前日 / <span style="color:#e67e22;">(+1)</span> = 翌日 &nbsp;|&nbsp; ' + dayNoteSub;
-    } else {
-      calNoteEl.style.display = 'none';
-    }
-  }
 
   // 1テーブルで生成（thにsticky適用）
   let html = "<table class='calendar-table'><thead><tr><th>時間 (JST)" + (showLocalTime ? `<br><span style="font-size:10px;color:#aaa;">${userTzName || ''}</span>` : '') + "</th>";
@@ -1420,7 +1407,12 @@ function generateCalendar() {
   };
   const _userLang = localStorage.getItem('userLang') || 'en';
   const dayNoteSub = DAY_NOTE_TRANS[_userLang] || DAY_NOTE_TRANS['en'];
-  const noteHeight = showLocalTime ? 36 : 0;
+
+  // まずカレンダーを描画
+  calendar.style.setProperty('--cal-note-height', '0px');
+  calendar.innerHTML = html;
+
+  // その後calNoteを更新（calendar.innerHTML書き換えの影響を受けない別要素）
   const calNote = document.getElementById('calNote');
   if (calNote) {
     if (showLocalTime) {
@@ -1430,8 +1422,6 @@ function generateCalendar() {
       calNote.style.display = 'none';
     }
   }
-  calendar.style.setProperty('--cal-note-height', '0px');
-  calendar.innerHTML = html;
 
   // 左上角セルを縦横両方sticky固定
   setTimeout(() => {

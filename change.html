@@ -683,6 +683,12 @@ async function loadChangeData() {
 
 function renderCalendar() {
   const calendar = document.getElementById("calendar");
+
+  // userTimezoneが未設定なら必ずブラウザから取得
+  if (!userTimezone) {
+    detectTimezone();
+  }
+
   const allDates = optionsData.dates || [];
   const showLocalTime = userTimezone && userTimezone !== 'Asia/Tokyo';
   const T = window._changeT || {};
@@ -745,6 +751,12 @@ function renderCalendar() {
   };
   const _userLang2 = localStorage.getItem('userLang') || 'en';
   const dayNoteSub2 = DAY_NOTE_TRANS2[_userLang2] || DAY_NOTE_TRANS2['en'];
+
+  // まずカレンダーを描画
+  calendar.style.setProperty('--cal-note-height', '0px');
+  calendar.innerHTML = html;
+
+  // その後calNoteを更新
   const calNote2 = document.getElementById('calNote');
   if (calNote2) {
     if (showLocalTime) {
@@ -754,8 +766,6 @@ function renderCalendar() {
       calNote2.style.display = 'none';
     }
   }
-  calendar.style.setProperty('--cal-note-height', '0px');
-  calendar.innerHTML = html;
 
   setTimeout(() => {
     const cornerTh = calendar.querySelector("thead tr th:first-child");
