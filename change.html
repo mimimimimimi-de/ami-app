@@ -140,7 +140,7 @@ button {
 
 .calendar-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 480px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
@@ -790,7 +790,7 @@ function showCalPopup(icon, title, sub, btnLabel, btnColor) {
 function prevWeek() {
   const T = window._changeT || {};
   if (weekOffset <= 0) {
-    alert("今日より前の週は選べません。\n" + (T.prevWeekError || "Cannot go before today."));
+    showCalPopup("🗓", "今日より前の週は選べません", T.prevWeekError || "Cannot go before today.", "閉じる / " + (T.close || "Close"), "#06C755");
     return;
   }
   weekOffset -= pageSize;

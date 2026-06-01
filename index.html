@@ -131,7 +131,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .calendar-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 480px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
@@ -192,12 +192,13 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .available {
   color: #06C755;
-  font-size: 16px !important;
+  font-size: 16px;
   font-weight: 800;
   cursor: pointer;
   background: #f1fff6;
   transition: background 0.1s;
   text-align: center;
+  vertical-align: middle;
 }
 
 .available:active { background: #d4f5e0; }
@@ -1185,7 +1186,7 @@ function prevWeek() {
 
 function nextWeek() {
   const T = window._currentT || {};
-  if (weekOffset >= 21) {
+  if (weekOffset >= 28) {
     showCalPopup("🗓", "予約できるのは1ヶ月先までです", T.nextWeekError || "Bookings are available up to 1 month ahead.", "閉じる / " + (T.close || "Close"), "#06C755");
     return;
   }
