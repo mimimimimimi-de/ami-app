@@ -642,11 +642,19 @@ async function loadChangeData() {
     // GASからタイムゾーンを取得して適用
     if (data.timezone && data.timezone !== '' && data.timezone !== 'Asia/Tokyo') {
       userTimezone = data.timezone;
+      localStorage.setItem("userTimezone", data.timezone);
       try {
         const now = new Date();
         userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
-        document.getElementById("tzInfo").textContent = `📍 日本時間 (JST) / あなたの時間 (${userTzName}) も表示`;
       } catch(e) {}
+    } else {
+      // GASにタイムゾーン未設定 → ブラウザのTZを使用（detectTimezoneは先頭で呼び済み）
+      // userTimezoneはdetectTimezone()で設定済みのものをそのまま使う
+    }
+
+    // tzInfo更新
+    if (userTimezone && userTimezone !== 'Asia/Tokyo') {
+      document.getElementById("tzInfo").textContent = `📍 日本時間 (JST) / あなたの時間 (${userTzName || userTimezone}) も表示`;
     }
 
     const jstTime = data.reservation.time;

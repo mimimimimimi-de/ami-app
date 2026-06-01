@@ -1084,8 +1084,9 @@ function applyPriceData(data, minutes) {
   document.getElementById("priceText").textContent = "$" + selectedPrice;
   document.getElementById("nextBtn").disabled = false;
 
-  if (data.timezone && data.timezone !== '') {
+  if (data.timezone && data.timezone !== '' && data.timezone !== 'Asia/Tokyo') {
     userTimezone = data.timezone;
+    localStorage.setItem("userTimezone", data.timezone);
     try {
       const now = new Date();
       userTzName = now.toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
@@ -1110,13 +1111,6 @@ async function openCalendar() {
   }
   weekOffset = 0;
   go("calendarPage");
-
-  // タイムゾーン表示
-  if (userTimezone && userTimezone !== 'Asia/Tokyo') {
-    document.getElementById("tzInfo").textContent = `📍 表示時刻: 日本時間 (JST) / あなたの時間 (${userTzName || userTimezone}) も確認できます`;
-  } else {
-    document.getElementById("tzInfo").textContent = "📍 表示時刻: 日本時間 (JST) / Times shown in JST";
-  }
 
   // カレンダーのローディング表示
   const calendar = document.getElementById("calendar");
@@ -1150,6 +1144,35 @@ async function openCalendar() {
     alert("エラー: " + e.message + "\nuserId: " + userId);
     calendar.innerHTML = `<p style="padding:20px;color:#d93025;text-align:center;">カレンダーの読み込みに失敗しました。<br><span style="font-size:11px;">${e.message}</span></p>`;
     return;
+  }
+
+  // generateCalendar前にタイムゾーンを確実に設定
+  // 優先順位: 1.priceCache(GAS) 2.localStorage 3.ブラウザTZ
+  const cachedData = priceCache[selectedMinutes] || priceCache[25] || priceCache[50];
+  if (cachedData && cachedData.timezone && cachedData.timezone !== '' && cachedData.timezone !== 'Asia/Tokyo') {
+    userTimezone = cachedData.timezone;
+    localStorage.setItem("userTimezone", cachedData.timezone);
+    try {
+      userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+    } catch(e) {}
+  } else {
+    // priceCacheにtimezoneがない場合はブラウザTZを使用（detectTimezoneで取得）
+    if (!userTimezone || userTimezone === 'Asia/Tokyo') {
+      detectTimezone();
+    }
+    // userTzNameが未設定なら設定
+    if (userTimezone && userTimezone !== 'Asia/Tokyo' && !userTzName) {
+      try {
+        userTzName = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: userTimezone }).split(' ').pop();
+      } catch(e) {}
+    }
+  }
+
+  // tzInfo表示を更新
+  if (userTimezone && userTimezone !== 'Asia/Tokyo') {
+    document.getElementById("tzInfo").textContent = `📍 日本時間 (JST) / あなたの時間 (${userTzName || userTimezone}) も表示`;
+  } else {
+    document.getElementById("tzInfo").textContent = "📍 表示時刻: 日本時間 (JST) / Times shown in JST";
   }
 
   initMultiMode();
