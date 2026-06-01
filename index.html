@@ -1514,35 +1514,33 @@ async function executeMultiBook() {
   const T = window._currentT || {};
   showProcessing("予約処理中...", T.processing || "Processing...");
 
-  const results = [];
-  for (const slot of multiSelected) {
+  // 並列処理で高速化
+  const results = await Promise.all(multiSelected.map(async (slot) => {
     try {
       // 仮予約作成
       const tempRes = await fetch(GAS_URL + `?action=createTempReservation&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(displayName)}&date=${slot.date}&time=${slot.time}&lesson=${encodeURIComponent(selectedMinutes + "分レッスン")}&price=${encodeURIComponent("回数券")}&t=${Date.now()}`);
       const tempData = await tempRes.json();
       if (!tempData.ok) {
-        results.push({ slot, ok: false, reason: tempData.message || "埋まっています" });
-        continue;
+        return { slot, ok: false, reason: tempData.message || "埋まっています" };
       }
       // 回数券を使用
       const useRes = await fetch(GAS_URL + `?action=useTicket&ticketId=${encodeURIComponent(multiTicketId)}&userId=${encodeURIComponent(userId)}&t=${Date.now()}`);
       const useData = await useRes.json();
       if (!useData.ok) {
-        results.push({ slot, ok: false, reason: useData.message || "回数券エラー" });
-        continue;
+        return { slot, ok: false, reason: useData.message || "回数券エラー" };
       }
       // 予約確定
       const confirmRes = await fetch(GAS_URL + `?action=confirmTempReservation&reservationId=${encodeURIComponent(tempData.reservationId)}&paymentIntentId=${encodeURIComponent("ticket:" + multiTicketId)}&t=${Date.now()}`);
       const confirmData = await confirmRes.json();
       if (!confirmData.ok) {
-        results.push({ slot, ok: false, reason: confirmData.message || "確定エラー" });
+        return { slot, ok: false, reason: confirmData.message || "確定エラー" };
       } else {
-        results.push({ slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl });
+        return { slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl };
       }
     } catch (e) {
-      results.push({ slot, ok: false, reason: "エラー: " + e.message });
+      return { slot, ok: false, reason: "エラー: " + e.message };
     }
-  }
+  }));
 
   // LINEに一括通知
   const successItems = results.filter(r => r.ok);
