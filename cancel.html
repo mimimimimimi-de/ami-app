@@ -602,15 +602,7 @@ async function initLiffSilent() {
 
 function closePage() {
   try {
-    if (typeof liff !== 'undefined') {
-      liff.init({ liffId: LIFF_ID }).then(() => {
-        liff.closeWindow();
-      }).catch(() => {
-        liff.closeWindow();
-      });
-    } else {
-      window.close();
-    }
+    liff.closeWindow();
   } catch(e) {
     window.close();
   }
