@@ -601,9 +601,17 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  if (typeof liff !== 'undefined' && liff.isInClient()) {
-    liff.closeWindow();
-  } else {
+  try {
+    if (typeof liff !== 'undefined') {
+      liff.init({ liffId: LIFF_ID }).then(() => {
+        liff.closeWindow();
+      }).catch(() => {
+        liff.closeWindow();
+      });
+    } else {
+      window.close();
+    }
+  } catch(e) {
     window.close();
   }
 }
