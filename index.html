@@ -1614,8 +1614,7 @@ async function executeMultiBook() {
           name: displayName,
           lesson: selectedMinutes + "分レッスン",
           bookings: successItems.map(r => ({ date: r.slot.date, time: r.slot.time, reservationId: r.reservationId, meetUrl: r.meetUrl }))
-        }),
-        mode: 'no-cors'
+        })
       });
     } catch(e) { console.log('notify error:', e); }
   }
