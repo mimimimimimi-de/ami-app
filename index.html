@@ -1635,7 +1635,7 @@ async function executeMultiBook() {
     try {
       await fetch(GAS_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           action: 'notifyMultiBooking',
           userId,
