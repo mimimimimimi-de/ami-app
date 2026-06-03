@@ -601,7 +601,11 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  window.location.replace('https://liff.line.me/2009890655-O8QZVlRf');
+  if (typeof liff !== 'undefined' && liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    window.close();
+  }
 }
 
 async function loadCancelData() {
