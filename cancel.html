@@ -282,7 +282,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     <!-- 欠席ボタン（常に表示） -->
     <button class="absence" type="button" id="absenceBtn">📨 欠席を先生に連絡する<span class="en-sub" style="color:rgba(255,255,255,0.8);"></span></button>
-    <button class="back-small" type="button" onclick="closePage()">閉じる / Close</button>
+    <button class="back-small" type="button" onclick="closePage()" style="display:none;">閉じる / Close</button>
 
     <div class="status" id="status"></div>
   </div>
@@ -601,9 +601,9 @@ async function initLiffSilent() {
 }
 
 function closePage() {
-  try {
+  if (typeof liff !== 'undefined' && liff.isInClient()) {
     liff.closeWindow();
-  } catch(e) {
+  } else {
     window.close();
   }
 }
