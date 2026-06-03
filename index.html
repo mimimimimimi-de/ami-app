@@ -1426,8 +1426,8 @@ function generateCalendar() {
           const multiConflict = isMultiMode && !isMultiSelected && multiSelected.some(s => {
             const sStart = new Date(`${s.date}T${s.time}:00+09:00`);
             const sEnd = new Date(sStart.getTime() + blockMins * 60000);
-            // 選択済みスロットの開始後〜終了前はブロック（前はブロックしない）
-            return slotStart >= sStart && slotStart < sEnd;
+            // 双方向チェック：選択済みスロットと今から選ぼうとするスロットが重なるか
+            return slotStart < sEnd && slotEnd > sStart;
           });
           if (isMultiMode && multiConflict) {
             html += `<td class="unavailable">×</td>`;
