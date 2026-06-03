@@ -437,7 +437,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
         <span style="font-size:11px;color:#aaa;" id="multiMaxSub">最大5件</span>
       </div>
       <div id="multiSelectedList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-      <button type="button" id="multiConfirmBtn" onclick="goMultiConfirm()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:12px;padding:12px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;display:block;">
+      <button type="button" id="multiConfirmBtn" onclick="goMultiConfirm()" style="all:unset;width:100%;box-sizing:border-box;background:#06C755;color:#fff;border-radius:12px;padding:12px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;display:block;visibility:hidden;">
         まとめて予約する（<span id="multiConfirmCount">0</span>件）
         <span id="multiConfirmBtnSub" style="display:block;font-size:11px;color:rgba(255,255,255,0.8);"></span>
       </button>
@@ -476,7 +476,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
       まとめて予約する
       <span id="multiBookBtnSub" style="display:block;font-size:11px;color:rgba(255,255,255,0.8);"></span>
     </button>
-    <button type="button" onclick="go('calendarPage')" style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;">← 戻る <span style="font-size:11px;color:#aaa;" id="multiConfirmBackSub"></span></button>
+    <button type="button" onclick="resetMultiAndBack()" style="all:unset;width:100%;box-sizing:border-box;background:#f5f5f5;border-radius:12px;padding:14px;text-align:center;font-size:14px;color:#555;cursor:pointer;">← 戻る <span style="font-size:11px;color:#aaa;" id="multiConfirmBackSub"></span></button>
   </div>
 
   <!-- 複数予約結果ページ -->
@@ -1515,7 +1515,7 @@ function updateMultiBar() {
         ${s.displayDate} ${s.time}
         <span onclick="removeMultiSlot(${i})" style="cursor:pointer;color:#e74c3c;font-weight:700;margin-left:2px;">×</span>
       </span>`).join('');
-    document.getElementById("multiConfirmBtn").style.display = multiSelected.length > 0 ? "block" : "none";
+    document.getElementById("multiConfirmBtn").style.visibility = multiSelected.length > 0 ? "visible" : "hidden";
   } else {
     bar.style.display = "none";
   }
@@ -1573,33 +1573,61 @@ async function executeMultiBook() {
   const T = window._currentT || {};
   showProcessing("予約処理中...", T.processing || "Processing...");
 
-  // 並列処理で高速化
-  const results = await Promise.all(multiSelected.map(async (slot) => {
+  // 使用可能な回数券リストを期限が早い順に並べる
+  const lessonKey = selectedMinutes === 50 ? "50分" : "25分";
+  const availableTickets = (ticketCache.tickets || [])
+    .filter(t => t.isValid && String(t.lesson).includes(lessonKey))
+    .sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+
+  // 各チケットの残枚数をローカルで管理
+  const ticketRemaining = {};
+  availableTickets.forEach(t => { ticketRemaining[t.ticketId] = t.remaining; });
+
+  // 次に使うチケットIDを取得する関数
+  function getNextTicketId() {
+    for (const t of availableTickets) {
+      if (ticketRemaining[t.ticketId] > 0) return t.ticketId;
+    }
+    return null;
+  }
+
+  // 直列処理（回数券の残枚数を正しく管理するため）
+  const results = [];
+  for (const slot of multiSelected) {
     try {
+      const ticketId = getNextTicketId();
+      if (!ticketId) {
+        results.push({ slot, ok: false, reason: T.multiNoTicket || "回数券が不足しています" });
+        continue;
+      }
       // 仮予約作成
       const tempRes = await fetch(GAS_URL + `?action=createTempReservation&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(displayName)}&date=${slot.date}&time=${slot.time}&lesson=${encodeURIComponent(selectedMinutes + "分レッスン")}&price=${encodeURIComponent("回数券")}&t=${Date.now()}`);
       const tempData = await tempRes.json();
       if (!tempData.ok) {
-        return { slot, ok: false, reason: tempData.message || "埋まっています" };
+        results.push({ slot, ok: false, reason: tempData.message || "埋まっています" });
+        continue;
       }
       // 回数券を使用
-      const useRes = await fetch(GAS_URL + `?action=useTicket&ticketId=${encodeURIComponent(multiTicketId)}&userId=${encodeURIComponent(userId)}&t=${Date.now()}`);
+      const useRes = await fetch(GAS_URL + `?action=useTicket&ticketId=${encodeURIComponent(ticketId)}&userId=${encodeURIComponent(userId)}&t=${Date.now()}`);
       const useData = await useRes.json();
       if (!useData.ok) {
-        return { slot, ok: false, reason: useData.message || "回数券エラー" };
+        results.push({ slot, ok: false, reason: useData.message || "回数券エラー" });
+        continue;
       }
+      // ローカルの残枚数を減らす
+      ticketRemaining[ticketId]--;
       // 予約確定
-      const confirmRes = await fetch(GAS_URL + `?action=confirmTempReservation&reservationId=${encodeURIComponent(tempData.reservationId)}&paymentIntentId=${encodeURIComponent("ticket:" + multiTicketId)}&t=${Date.now()}`);
+      const confirmRes = await fetch(GAS_URL + `?action=confirmTempReservation&reservationId=${encodeURIComponent(tempData.reservationId)}&paymentIntentId=${encodeURIComponent("ticket:" + ticketId)}&t=${Date.now()}`);
       const confirmData = await confirmRes.json();
       if (!confirmData.ok) {
-        return { slot, ok: false, reason: confirmData.message || "確定エラー" };
+        results.push({ slot, ok: false, reason: confirmData.message || "確定エラー" });
       } else {
-        return { slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl };
+        results.push({ slot, ok: true, reservationId: tempData.reservationId, meetUrl: confirmData.meetUrl });
       }
     } catch (e) {
-      return { slot, ok: false, reason: "エラー: " + e.message };
+      results.push({ slot, ok: false, reason: "エラー: " + e.message });
     }
-  }));
+  }
 
   // LINEに一括通知
   const successItems = results.filter(r => r.ok);
@@ -1666,6 +1694,17 @@ function initMultiMode() {
       document.getElementById("multiBookToggleSub").textContent = T.multiMax || "Max 5 lessons · Ticket holders only";
     }
   }
+}
+
+function resetMultiAndBack() {
+  // 選択状態・モードをリセットしてカレンダーページに戻る
+  multiSelected = [];
+  isMultiMode = false;
+  const toggle = document.getElementById("multiBookToggle");
+  if (toggle) toggle.checked = false;
+  updateMultiBar();
+  generateCalendar();
+  go('calendarPage');
 }
 
 function pickSlotMulti(date, time) {
