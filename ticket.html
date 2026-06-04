@@ -567,6 +567,7 @@ body {
   <div class="total-card">
     <div class="total-label">合計金額 / Total</div>
     <div class="total-price" id="totalPrice"><span>$</span>--</div>
+    <div id="jpyRef" style="font-size:11px;color:#aaa;margin-top:2px;"></div>
     <div class="total-detail" id="totalDetail">レッスンを選択してください</div>
   </div>
 
@@ -800,6 +801,28 @@ window.addEventListener("DOMContentLoaded", () => {
 let displayName = null;
 let selectedLesson = 25;
 let prices = { 25: null, 50: null };
+let usdJpyRate = null;
+
+async function fetchUsdJpy() {
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    usdJpyRate = data.rates && data.rates.JPY ? data.rates.JPY : null;
+  } catch(e) {
+    usdJpyRate = null;
+  }
+}
+
+function updateJpyRef(totalUsd) {
+  const el = document.getElementById('jpyRef');
+  if (!el) return;
+  if (!usdJpyRate || !totalUsd) {
+    el.textContent = '';
+    return;
+  }
+  const jpy = Math.round(totalUsd * usdJpyRate);
+  el.textContent = '≈ ¥' + jpy.toLocaleString() + '（参考）';
+}
 
 function setStatus(msg, isError = false) {
   const el = document.getElementById("status");
@@ -839,7 +862,7 @@ function updateTotal() {
   minusBtn.disabled = count <= 2;
 
   if (!price || count < 2) {
-    document.getElementById("totalPrice").innerHTML = "<span>$</span>--";
+    document.getElementById("totalPrice").innerHTML = "<span>$</span>--"; updateJpyRef(null);
     document.getElementById("totalDetail").textContent = count < 2
       ? "2回以上を入力してください"
       : ("料金を取得中... / " + (T.loading || "Loading price..."));
@@ -859,11 +882,11 @@ function updateTotal() {
 
   if (discountRate > 0) {
     document.getElementById("totalPrice").innerHTML =
-      `<span style="font-size:14px;text-decoration:line-through;color:#aaa;margin-right:8px;">$${totalBefore}</span><span>$</span>${total} <span style="font-size:14px;color:#e74c3c;font-weight:700;">${discountLabel}</span>`;
+      `<span style="font-size:14px;text-decoration:line-through;color:#aaa;margin-right:8px;">$${totalBefore}</span><span>$</span>${total} <span style="font-size:14px;color:#e74c3c;font-weight:700;">${discountLabel}</span>`; updateJpyRef(total);
     document.getElementById("totalDetail").textContent =
       `$${price} × ${count}回 - ${discountRate * 100}%OFF / 有効期限2ヶ月`;
   } else {
-    document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`;
+    document.getElementById("totalPrice").innerHTML = `<span>$</span>${total}`; updateJpyRef(total);
     document.getElementById("totalDetail").textContent =
       `$${price} × ${count}回 / 有効期限2ヶ月 (${T.policy1 || "Valid for 2 months"})`;
   }
@@ -969,6 +992,7 @@ async function init() {
     setStatus("");
     // バックグラウンドで料金取得（待たせない）
     fetchPrices();
+    fetchUsdJpy();
 
   } catch (e) {
     console.error(e);
