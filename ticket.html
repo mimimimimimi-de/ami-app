@@ -821,7 +821,7 @@ function updateJpyRef(totalUsd) {
     return;
   }
   const jpy = Math.round(totalUsd * usdJpyRate);
-  el.textContent = '≈ ¥' + jpy.toLocaleString() + '（参考）';
+  el.textContent = '約 ¥' + jpy.toLocaleString();
 }
 
 function setStatus(msg, isError = false) {
