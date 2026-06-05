@@ -728,6 +728,8 @@ function t(key, lang) {
 
 function applyTranslations(lang) {
   const l = lang || getLang();
+  window._currentLang = l;
+  window._currentT = TRANSLATIONS[l] || TRANSLATIONS["en"];
   if (l === "ja") return;
 
   const T = TRANSLATIONS[l] || TRANSLATIONS["en"];
@@ -951,6 +953,11 @@ async function init() {
     userId = profile.userId;
     displayName = profile.displayName || "未設定";
     liffReady = true;
+    // 日本語ユーザーのためにデフォルト言語をセット
+    if (!window._currentLang) {
+      window._currentLang = 'ja';
+      window._currentT = TRANSLATIONS['ja'] || {};
+    }
     detectTimezone();
 
     // LIFFが完了したらすぐボタンを有効化
