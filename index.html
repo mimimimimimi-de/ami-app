@@ -1631,14 +1631,15 @@ async function executeMultiBook() {
 
   // LINEに一括通知
   const successItems = results.filter(r => r.ok);
-  if (successItems.length > 0) {
+  const notifyUserId = userId || localStorage.getItem("userId") || '';
+  if (successItems.length > 0 && notifyUserId) {
     try {
       await fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           action: 'notifyMultiBooking',
-          userId,
+          userId: notifyUserId,
           name: displayName,
           lesson: selectedMinutes + "分レッスン",
           bookings: successItems.map(r => ({ date: r.slot.date, time: r.slot.time, reservationId: r.reservationId, meetUrl: r.meetUrl }))
