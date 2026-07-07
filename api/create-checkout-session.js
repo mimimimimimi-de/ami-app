@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
   try {
-    const { lessonType, selectedDate, selectedTime, userId, lang, tempReservationId } = req.body;
+    const { lessonType, selectedDate, selectedTime, userId, lang, tempReservationId, isLastMinute } = req.body;
     if (!lessonType || !selectedDate || !selectedTime || !userId) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -17,7 +17,10 @@ module.exports = async function handler(req, res) {
     if (!priceJson.ok || !priceJson.price) {
       return res.status(400).json({ error: "Price not found" });
     }
-    const unitAmount = Number(priceJson.price) * 100;
+    const basePrice = Number(priceJson.price);
+    const discountRate = isLastMinute ? 0.1 : 0;
+    const finalPrice = Math.round(basePrice * (1 - discountRate) * 100) / 100;
+    const unitAmount = Math.round(finalPrice * 100);
     const langParam = lang && lang !== "ja" ? `&lang=${encodeURIComponent(lang)}` : "";
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -27,7 +30,7 @@ module.exports = async function handler(req, res) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `${lessonMinutes}分レッスン`
+              name: isLastMinute ? `${lessonMinutes}分レッスン（直前割10%OFF）` : `${lessonMinutes}分レッスン`
             },
             unit_amount: unitAmount
           },
@@ -39,7 +42,9 @@ module.exports = async function handler(req, res) {
         selectedDate,
         selectedTime,
         userId,
-        price: String(priceJson.price),
+        price: String(finalPrice),
+        originalPrice: String(basePrice),
+        isLastMinute: isLastMinute ? "true" : "false",
         tempReservationId: tempReservationId || ""
       },
       allow_promotion_codes: true,
