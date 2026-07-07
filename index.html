@@ -816,15 +816,6 @@ let userId = null;
 let displayName = "未設定";
 let selectedMinutes = null;
 let selectedPrice = null;
-let isLastMinute = false; // 直前割フラグ
-
-function checkLastMinute(date, time) {
-  const now = new Date();
-  const slotStart = new Date(date + 'T' + time + ':00+09:00');
-  const diffMs = slotStart - now;
-  const diffHours = diffMs / (1000 * 60 * 60);
-  return diffHours >= 12 && diffHours < 24;
-}
 let selectedDate = null;
 let selectedTime = null;
 let weekOffset = 0;
@@ -1450,12 +1441,7 @@ function generateCalendar() {
           } else if (isMultiMode) {
             html += `<td class="available" onclick="pickSlotMulti('${date}','${time}')" style="${isMultiSelected ? 'background:#e3f2fd;' : ''}"><span style="color:${isMultiSelected ? '#1976d2' : '#06C755'};font-weight:700;font-size:18px;">${isMultiSelected ? '●' : '○'}</span></td>`;
           } else {
-            const lm = checkLastMinute(date, time);
-            if (lm) {
-              html += `<td class="available" onclick="pickSlot('${date}','${time}')" style="background:#fff8f0;"><div style="display:flex;flex-direction:column;align-items:center;gap:1px;"><span style="color:#e67e22;font-weight:800;font-size:18px;">○</span><span style="font-size:9px;background:#fff3cd;color:#856404;border-radius:3px;padding:1px 3px;white-space:nowrap;">⚡-10%</span></div></td>`;
-            } else {
-              html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
-            }
+            html += `<td class="available" onclick="pickSlot('${date}','${time}')">○</td>`;
           }
         } else {
           html += `<td class="unavailable">×</td>`;
@@ -1757,7 +1743,6 @@ async function pickSlot(date, time) {
 
   selectedDate = date;
   selectedTime = time;
-  isLastMinute = checkLastMinute(date, time);
 
   const parts = date.split("-");
   const displayDate = Number(parts[1]) + "/" + Number(parts[2]);
@@ -1787,7 +1772,7 @@ async function pickSlot(date, time) {
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
           <span style="font-size:12px;color:#999;">料金 <span style="font-size:11px;color:#ccc;">/ ${T.fee || "Fee"}</span></span>
-          <span style="font-size:14px;font-weight:600;color:#06C755;">${isLastMinute ? `<span style="text-decoration:line-through;color:#ccc;font-size:12px;font-weight:400;">$${selectedPrice}</span> <span style="color:#e67e22;">$${Math.round(selectedPrice * 0.9 * 100) / 100}</span>` : `$${selectedPrice}`}</span>
+          <span style="font-size:14px;font-weight:600;color:#06C755;">$${selectedPrice}</span>
         </div>
         <div style="height:0.5px;background:#eee;"></div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;">
@@ -1804,7 +1789,6 @@ async function pickSlot(date, time) {
         </div>
       </div>
     </div>
-    ${isLastMinute ? `<div style="background:#fff8f0;border:0.5px solid #f5c084;border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#856404;"><span style="font-weight:700;">⚡ 直前割が適用されています！</span><br>通常料金から10%OFFになっています。<br><span style="color:#aaa;">Last-minute discount (10% OFF) applied.</span></div>` : ''}
     <div style="background:#fffbf0;border:0.5px solid #f0e0a0;border-radius:12px;padding:12px 14px;font-size:12px;color:#888;line-height:1.8;">
       <strong style="color:#b8860b;">キャンセルポリシー <span style="font-weight:400;">/ ${T.cancelPolicy || "Cancellation Policy"}</span></strong><br>
       ・12時間前まで：返金あり / ${T.cancelLine1 || "Up to 12h before: refundable"}<br>
@@ -1865,7 +1849,7 @@ async function loadPaymentOptions(lessonLabel) {
       <div class="payment-option" onclick="selectPayment('stripe', this)">
         <div class="opt-header">
           <div class="radio"></div>
-          <div class="opt-label">💳 単回決済 / ${T.payNow || "Pay now"}（${isLastMinute ? `<span style="text-decoration:line-through;color:#ccc;">$${selectedPrice}</span> <span style="color:#e67e22;">$${Math.round(selectedPrice * 0.9 * 100) / 100}</span>` : `$${selectedPrice}`}）</div>
+          <div class="opt-label">💳 単回決済 / ${T.payNow || "Pay now"}（$${selectedPrice}）</div>
         </div>
         <div class="opt-sub">クレジットカードで今回分のみ / ${T.payByCard || "Pay by card for this session only"}</div>
       </div>`;
@@ -2092,7 +2076,7 @@ async function checkout() {
 
     const res = await fetch("/api/create-checkout-session", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId, lang: window._currentLang || "en", tempReservationId, isLastMinute })
+      body: JSON.stringify({ lessonType: selectedMinutes, selectedDate, selectedTime, userId, lang: window._currentLang || "en", tempReservationId })
     });
 
     const data = await res.json();
