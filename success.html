@@ -297,18 +297,49 @@
           );
           const confirmData = await confirmRes.json();
           if (!confirmData.ok) {
-            // 万が一の競合（他の人が先に確定した場合）→ 返金
-            statusEl.classList.add("error");
-            setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
-            if (paymentIntentId) {
-              await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ paymentIntentId: paymentIntentId })
-              });
+            if (confirmData.conflict) {
+              // 競合（他の人が先に確定した場合）→ 返金
+              statusEl.classList.add("error");
+              setStatus("⚠️ 申し訳ありません。\nこの時間はすでに他の方が予約されました。\n返金処理を行います。", ST ? ST.slotTaken : "Sorry, this time slot was just booked.\nYou will be refunded.");
+              if (paymentIntentId) {
+                await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ paymentIntentId: paymentIntentId })
+                });
+              }
+              document.getElementById("closeBtn").style.display = "block";
+              return;
+            } else {
+              // 仮予約期限切れ等 → スプレッドシートに既に予約が存在するか確認
+              try {
+                const checkRes = await fetch(GAS_URL + "?action=checkReservationByPayment&paymentIntentId=" + encodeURIComponent(paymentIntentId) + "&t=" + Date.now());
+                const checkData = await checkRes.json();
+                if (checkData.exists) {
+                  // 既に予約確定済み → 返金せず続行
+                  if (checkData.meetUrl) reservationData.meetUrl = checkData.meetUrl;
+                } else {
+                  // 予約が存在しない → 返金
+                  statusEl.classList.add("error");
+                  setStatus("⚠️ 申し訳ありません。\n予約の確定に失敗したため返金処理を行います。\nお手数ですが再度予約してください。", "Sorry, reservation failed. You will be refunded. Please try booking again.");
+                  if (paymentIntentId) {
+                    await fetch("https://ami-app-eta.vercel.app/api/refund-payment", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ paymentIntentId: paymentIntentId })
+                    });
+                  }
+                  document.getElementById("closeBtn").style.display = "block";
+                  return;
+                }
+              } catch(e) {
+                // 確認失敗時は安全のため返金しない
+                statusEl.classList.add("error");
+                setStatus("⚠️ 予約の確定に失敗しました。\n先生にご連絡ください。", "Reservation confirmation failed. Please contact the teacher.");
+                document.getElementById("closeBtn").style.display = "block";
+                return;
+              }
             }
-            document.getElementById("closeBtn").style.display = "block";
-            return;
           }
 
           // confirmTempReservationがmeetUrlを返すのでreservationDataに反映
